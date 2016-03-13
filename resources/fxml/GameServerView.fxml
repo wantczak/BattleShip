@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane fx:id="root" prefHeight="425.0" prefWidth="544.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="battleship.gui.game.GameServerViewController">
+   <children>
+      <TextField layoutX="79.0" layoutY="74.0" />
+      <ToggleButton layoutX="139.0" layoutY="180.0" mnemonicParsing="false" text="ToggleButton" />
+   </children>
+</AnchorPane>
