@@ -13,6 +13,7 @@
             <Button fx:id="btnStartGame" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Rozpocznij nową grę" />
             <Button fx:id="btnJoinGame" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Dołącz do gry" />
             <Button fx:id="btnClose" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Zakończ" />
+            <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="198.0" text="Help" />
          </children>
          <BorderPane.margin>
             <Insets left="5.0" right="5.0" top="10.0" />
