@@ -51,3 +51,25 @@ public class GameServerViewController {
 	}
 	
 }
+<<<<<<< HEAD
+=======
+
+// System.out.println("Row: "+ GridPane.getRowIndex(src));
+// System.out.println("Column: "+ GridPane.getColumnIndex(src));
+// Player1GameBoard[1][5] = 1;
+// Player1GameBoard[8][6] = 1;
+// Player1GameBoard[2][7] = 1;
+// Player1GameBoard[4][8] = 1;
+//
+// checkField(GridPane.getRowIndex(src),GridPane.getColumnIndex(src),src);
+// }
+//
+// private void checkField(int row,int column, Node button){
+// if (Player1GameBoard[row][column] == 1){
+// Button btn = (Button) button;
+// btn.setStyle("-fx-background-color: slateblue;");
+//
+// }
+// }
+// }
+>>>>>>> refs/remotes/origin/Rozmieszczenie2
