@@ -9,6 +9,7 @@ import battleship.gui.game.GameServerViewController;
  * @author Paweł Czernek
  * 
  */
+
 public class Board {
 
 	private BoardState[][] board = new BoardState[11][11];
