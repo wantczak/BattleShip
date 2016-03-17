@@ -2,13 +2,14 @@ package battleship.model;
 
 import java.awt.Point;
 import java.io.IOException;
-import battleship.gui.game.GameServerViewController;
+
 
 /*====== Model planszy przechowującej stany poszczegulnych pól gry=========
  * 
  * @author Paweł Czernek
  * 
  */
+
 public class Board {
 
 	private BoardState[][] board = new BoardState[11][11];
