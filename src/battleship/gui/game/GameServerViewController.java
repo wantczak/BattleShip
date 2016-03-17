@@ -16,8 +16,7 @@ public class GameServerViewController {
 
 	@FXML private Parent root;
 	@FXML private GridPane Player1GridPane;
-	@FXML
-	public Button button01;
+	@FXML public Button button01;
 	int[][] Player1GameBoard = new int[12][12];
 
 	public Parent getView() {
@@ -47,7 +46,6 @@ public class GameServerViewController {
 		if (Player1GameBoard[row][column] == 1){
 			Button btn = (Button) button;
 			btn.setStyle("-fx-background-color: slateblue;");
-
 		}
 	}
 	
