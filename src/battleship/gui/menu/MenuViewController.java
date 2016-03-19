@@ -17,7 +17,7 @@ import javafx.scene.layout.BorderPane;
  */
 public class MenuViewController {
 	//KONTROLKI FXML Z VIEW	
-	@FXML private Parent root;
+	@FXML private Parent menu;
 	@FXML private Button btnClose; //Button zamykajacy aplikacje
 	@FXML private Button btnStartGame; //Button otwierajacy okno serwera do startu gry
 	@FXML private Button btnJoinGame; //Button otwierajacy okno aktywnych gier do dolaczenia
@@ -27,7 +27,7 @@ public class MenuViewController {
 	
 	
 	public Parent getView() {
-		return root;
+		return menu;
 	}
 	//==============DOSTEP DO APP FACTORY===========
 	public void init(MainAppFactory factory){

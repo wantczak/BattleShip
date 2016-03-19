@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane fx:id="root" prefHeight="379.0" prefWidth="624.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="battleship.gui.menu.MenuViewController">
+<BorderPane fx:id="menu" prefHeight="379.0" prefWidth="624.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="battleship.gui.menu.MenuViewController">
    <left>
       <VBox alignment="TOP_CENTER" prefHeight="369.0" prefWidth="147.0" spacing="15.0" BorderPane.alignment="CENTER">
          <children>

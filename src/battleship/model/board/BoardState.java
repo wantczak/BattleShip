@@ -1,4 +1,4 @@
-package battleship.model;
+package battleship.model.board;
 
 public enum BoardState {
 	PUSTE_POLE,
