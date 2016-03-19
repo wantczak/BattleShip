@@ -1,4 +1,4 @@
-package battleship.model;
+package battleship.model.user;
 
 public enum Player {
 	SERVER_PLAYER,
