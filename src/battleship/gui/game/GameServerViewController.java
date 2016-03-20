@@ -33,10 +33,9 @@ public class GameServerViewController {
 	@FXML private TextField textFieldServerIP;
 	@FXML private TextField textFieldServerPort;
 	@FXML private TextArea textLogServer;	
-	@FXML private TextArea logAreaServer;
 	
-	public void setTextAreaLogi(String massage){
-		this.logAreaServer.setText(massage);
+	public void setTextAreaLogi(String message){
+		this.textLogServer.appendText("\n"+message);
 	}
 	
 	private ServerProcedure serverProcedure;
@@ -72,11 +71,7 @@ public class GameServerViewController {
 			//4. Oczekiwanie na przeciwnika
 			//5. Podlaczenie sie do clienta - test pingowania
 			//6. Start gry 
-						
-
-		});
-		
-		
+		});		
 	}
 	
 	
@@ -88,12 +83,13 @@ public class GameServerViewController {
 	private void Player1ClickedAction(MouseEvent e) {
 		Node src = (Node) e.getSource();
 		if (serverProcedure.getServerProcedure() == Procedure.DEPLOY_SHIPS){
-			player1board.locateShips((int)GridPane.getColumnIndex(src),(int) GridPane.getRowIndex(src));
-			checkFields(player1board);
+			//TO BEDZIE DZIALAC PRZY TESTACH SIECIOWYCH.
 		}
+		
 		player1board.setViewControllerReference(this);
 		player1board.locateShips((int)GridPane.getColumnIndex(src),(int) GridPane.getRowIndex(src));
 		checkFields(player1board);
+
 	}
 
 	private void checkFields(Board board) {
@@ -134,15 +130,15 @@ public class GameServerViewController {
 	private void startGameProcedure(){
 		startGameThread = new Thread(new Runnable() {
 		     public void run() {
+		    	 //PROCEDURA START_GAME
 				if (serverProcedure.getServerProcedure() == Procedure.START_GAME){
-					
 					if (networkConnection == null) networkConnection = new NetworkConnection();
 					textFieldServerIP.setText(networkConnection.getLocalIP());
 					textFieldServerPort.setText(String.valueOf(networkConnection.getConnectionPort()));
-					
 					serverProcedure.setServerProcedure(Procedure.OPEN_CONNECTION);
 				}
 				
+				//PROCEDURA OPEN_CONNECTION
 				if (serverProcedure.getServerProcedure() == Procedure.OPEN_CONNECTION){
 					try {
 						if(networkConnection.createServerConnection(textLogServer)){
@@ -153,14 +149,11 @@ public class GameServerViewController {
 					}
 				}
 				
+				//PROCEDURA DEPLOY_SHIPS
 				if (serverProcedure.getServerProcedure() == Procedure.DEPLOY_SHIPS){
 					textLogServer.appendText("\n ROZPOCZECIE GRY!");
 					textLogServer.appendText("\n ROZSTAW STATKI!");
-
 				}
- 
-				
-
 		     }
 		});  
 		startGameThread.start();
