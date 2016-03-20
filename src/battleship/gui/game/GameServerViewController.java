@@ -32,19 +32,13 @@ public class GameServerViewController {
 	@FXML private TextField textFieldServerGame; 
 	@FXML private TextField textFieldServerIP;
 	@FXML private TextField textFieldServerPort;
-<<<<<<< HEAD
-	@FXML private TextArea textLogServer;
-	
-=======
-	
+	@FXML private TextArea textLogServer;	
 	@FXML private TextArea logAreaServer;
 	
 	public void setTextAreaLogi(String massage){
 		this.logAreaServer.setText(massage);
 	}
 	
-
->>>>>>> refs/remotes/origin/Rozmieszczenie4
 	private ServerProcedure serverProcedure;
 	private NetworkConnection networkConnection;
 
@@ -93,16 +87,13 @@ public class GameServerViewController {
 	@FXML
 	private void Player1ClickedAction(MouseEvent e) {
 		Node src = (Node) e.getSource();
-<<<<<<< HEAD
 		if (serverProcedure.getServerProcedure() == Procedure.DEPLOY_SHIPS){
 			player1board.locateShips((int)GridPane.getColumnIndex(src),(int) GridPane.getRowIndex(src));
 			checkFields(player1board);
 		}
-=======
 		player1board.setViewControllerReference(this);
 		player1board.locateShips((int)GridPane.getColumnIndex(src),(int) GridPane.getRowIndex(src));
 		checkFields(player1board);
->>>>>>> refs/remotes/origin/Rozmieszczenie4
 	}
 
 	private void checkFields(Board board) {
