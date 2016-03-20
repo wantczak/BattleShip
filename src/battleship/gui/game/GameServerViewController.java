@@ -32,7 +32,12 @@ public class GameServerViewController {
 	@FXML private TextField textFieldServerGame; 
 	@FXML private TextField textFieldServerIP;
 	@FXML private TextField textFieldServerPort;
-	@FXML private TextArea textLogServer;
+	@FXML private TextArea textLogServer;	
+	@FXML private TextArea logAreaServer;
+	
+	public void setTextAreaLogi(String massage){
+		this.logAreaServer.setText(massage);
+	}
 	
 	private ServerProcedure serverProcedure;
 	private NetworkConnection networkConnection;
@@ -61,7 +66,7 @@ public class GameServerViewController {
 			
 			//DOCELOWO TUTAJ BEDZIE ODPALANIE NOWEGO WATKU OBSLUGUJACEGO PROCEDURY
 			//ODPALANIA NOWEJ GRY:
-			//1. Pobranie IP z komputera ( to mo¿na w sumie zrealizowac zawsze przy odpalaniu okna)
+			//1. Pobranie IP z komputera ( to moï¿½na w sumie zrealizowac zawsze przy odpalaniu okna)
 			//2. Proba stworzenia Hosta
 			//3. Okno informujace ze trzeba rozmiescic statki na planszy
 			//4. Oczekiwanie na przeciwnika
@@ -86,6 +91,9 @@ public class GameServerViewController {
 			player1board.locateShips((int)GridPane.getColumnIndex(src),(int) GridPane.getRowIndex(src));
 			checkFields(player1board);
 		}
+		player1board.setViewControllerReference(this);
+		player1board.locateShips((int)GridPane.getColumnIndex(src),(int) GridPane.getRowIndex(src));
+		checkFields(player1board);
 	}
 
 	private void checkFields(Board board) {
@@ -96,6 +104,9 @@ public class GameServerViewController {
 				btn = (Button)getNodeFromGridPane(Player1GridPane, i, j);
 				if (boardSt[i][j] == BoardState.STATEK) {
 					btn.setStyle("-fx-background-color: slateblue;");
+				}
+				if (boardSt[i][j] == BoardState.PUSTE_POLE) {
+					btn.setStyle("default");
 				}
 			}
 		}
