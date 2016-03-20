@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -27,6 +28,13 @@ public class GameServerViewController {
 	@FXML private TextField textFieldServerGame; 
 	@FXML private TextField textFieldServerIP;
 	@FXML private TextField textFieldServerPort;
+	
+	@FXML private TextArea logAreaServer;
+	
+	public void setTextAreaLogi(String massage){
+		this.logAreaServer.setText(massage);
+	}
+	
 
 	private ServerProcedure serverProcedure;
 	Board player1board = new Board();
@@ -48,7 +56,7 @@ public class GameServerViewController {
 			
 			//DOCELOWO TUTAJ BEDZIE ODPALANIE NOWEGO WATKU OBSLUGUJACEGO PROCEDURY
 			//ODPALANIA NOWEJ GRY:
-			//1. Pobranie IP z komputera ( to mo¿na w sumie zrealizowac zawsze przy odpalaniu okna)
+			//1. Pobranie IP z komputera ( to moï¿½na w sumie zrealizowac zawsze przy odpalaniu okna)
 			//2. Proba stworzenia Hosta
 			//3. Okno informujace ze trzeba rozmiescic statki na planszy
 			//4. Oczekiwanie na przeciwnika
@@ -74,6 +82,7 @@ public class GameServerViewController {
 	@FXML
 	private void Player1ClickedAction(MouseEvent e) {
 		Node src = (Node) e.getSource();
+		player1board.setViewControllerReference(this);
 		player1board.locateShips((int)GridPane.getColumnIndex(src),(int) GridPane.getRowIndex(src));
 		checkFields(player1board);
 	}
@@ -86,6 +95,9 @@ public class GameServerViewController {
 				btn = (Button)getNodeFromGridPane(Player1GridPane, i, j);
 				if (boardSt[i][j] == BoardState.STATEK) {
 					btn.setStyle("-fx-background-color: slateblue;");
+				}
+				if (boardSt[i][j] == BoardState.PUSTE_POLE) {
+					btn.setStyle("default");
 				}
 			}
 		}
