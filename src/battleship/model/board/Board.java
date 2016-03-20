@@ -69,9 +69,9 @@ public class Board {
 					if(!czyJestStatekWsasiedztwie(poczatek)){
 						board[poczatek.x][poczatek.y] = BoardState.STATEK;
 						czyPunktWstaw = true;
-						viewController.setTextAreaLogi("Wskaż kierunek.");
+						viewController.setTextAreaLogi("Wskaz kierunek.");
 					}else{
-						viewController.setTextAreaLogi("Pozycja za blisko istniejącego statku! Wstaw jeszcze raz.");
+						viewController.setTextAreaLogi("Pozycja za blisko istniejacego statku! Wstaw jeszcze raz.");
 						return;
 					}
 				} else {
@@ -82,7 +82,7 @@ public class Board {
 							if(punktKierunku.y-poczatek.y>0){
 								koniec = new Point(poczatek.x, poczatek.y+dlugosc-1);
 								if(koniec.y>10){
-									viewController.setTextAreaLogi("Statek wychodzi poza planszę, rozmieść jeszcze raz");
+									viewController.setTextAreaLogi("Statek wychodzi poza plansze, rozmiesc jeszcze raz");
 									//board[poczatek.x][poczatek.y] = BoardState.PUSTE_POLE;
 									czyPunktWstaw = false;
 									koniec = null;
@@ -91,7 +91,7 @@ public class Board {
 								for(int d=0; d<dlugosc;d++){
 									//board[poczatek.x][poczatek.y] = BoardState.PUSTE_POLE;
 									if(czyJestStatekWsasiedztwie(new Point(poczatek.x, poczatek.y+d))){
-										viewController.setTextAreaLogi("Za blisko innego statku, rozmieść jeszcze raz");
+										viewController.setTextAreaLogi("Za blisko innego statku, rozmiesc jeszcze raz");
 										czyPunktWstaw = false;
 										koniec = null;
 										return;
@@ -103,7 +103,7 @@ public class Board {
 							} else {
 								koniec = new Point(poczatek.x, poczatek.y-dlugosc+1);
 								if(koniec.y<0){
-									viewController.setTextAreaLogi("Statek wychodzi poza planszę, rozmieść jeszcze raz");
+									viewController.setTextAreaLogi("Statek wychodzi poza plansze, rozmiesc jeszcze raz");
 									czyPunktWstaw = false;
 									koniec = null;
 									return;
@@ -111,7 +111,7 @@ public class Board {
 								for(int d=0; d<dlugosc;d++){
 									//board[poczatek.x][poczatek.y] = BoardState.PUSTE_POLE;
 									if(czyJestStatekWsasiedztwie(new Point(poczatek.x, poczatek.y-d))){
-										viewController.setTextAreaLogi("Za blisko innego statku, rozmieść jeszcze raz");
+										viewController.setTextAreaLogi("Za blisko innego statku, rozmiesc jeszcze raz");
 										czyPunktWstaw = false;
 										koniec = null;
 										return;
@@ -127,7 +127,7 @@ public class Board {
 							if(punktKierunku.x-poczatek.x>0){
 								koniec = new Point(poczatek.x+dlugosc-1, poczatek.y);
 								if(koniec.x>10){
-									viewController.setTextAreaLogi("Statek wychodzi poza planszę, rozmieść jeszcze raz");
+									viewController.setTextAreaLogi("Statek wychodzi poza plansze, rozmiesc jeszcze raz");
 									czyPunktWstaw = false;
 									koniec = null;
 									return;
@@ -135,7 +135,7 @@ public class Board {
 								for(int d=0; d<dlugosc;d++){
 									//board[poczatek.x][poczatek.y] = BoardState.PUSTE_POLE;
 									if(czyJestStatekWsasiedztwie(new Point(poczatek.x+d, poczatek.y))){
-										viewController.setTextAreaLogi("Za blisko innego statku, rozmieść jeszcze raz");
+										viewController.setTextAreaLogi("Za blisko innego statku, rozmiesc jeszcze raz");
 										czyPunktWstaw = false;
 										koniec = null;
 										return;
@@ -147,7 +147,7 @@ public class Board {
 							} else {
 								koniec = new Point(poczatek.x-dlugosc+1, poczatek.y);
 								if(koniec.x<0){
-									viewController.setTextAreaLogi("Statek wychodzi poza planszę, rozmieść jeszcze raz");
+									viewController.setTextAreaLogi("Statek wychodzi poza plansze, rozmiesc jeszcze raz");
 									czyPunktWstaw = false;
 									koniec = null;
 									return;
@@ -155,7 +155,7 @@ public class Board {
 								for(int d=0; d<dlugosc;d++){
 									//board[poczatek.x][poczatek.y] = BoardState.PUSTE_POLE;
 									if(czyJestStatekWsasiedztwie(new Point(poczatek.x-d, poczatek.y))){
-										viewController.setTextAreaLogi("Za blisko innego statku, rozmieść jeszcze raz");
+										viewController.setTextAreaLogi("Za blisko innego statku, rozmiesc jeszcze raz");
 										czyPunktWstaw = false;
 										koniec = null;
 										return;
@@ -173,9 +173,9 @@ public class Board {
 						else if (iloscStatkow > 4) dlugosc = 3;
 						else dlugosc = 2;
 						if(iloscStatkow>0){
-							viewController.setTextAreaLogi("Wskaż punkt początkowy "+dlugosc+" masztowca.");
+							viewController.setTextAreaLogi("Wskaz punkt poczatkowy "+dlugosc+" masztowca.");
 						} else{
-							viewController.setTextAreaLogi("Rozmieszczanie statków zakończone.");
+							viewController.setTextAreaLogi("Rozmieszczanie statkow zakonczone.");
 						}
 						
 				}
