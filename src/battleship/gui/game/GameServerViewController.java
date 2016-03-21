@@ -34,9 +34,6 @@ public class GameServerViewController {
 	@FXML private TextField textFieldServerPort;
 	@FXML private TextArea textLogServer;	
 	
-	public void setTextAreaLogi(String message){
-		this.textLogServer.appendText("\n"+message);
-	}
 	
 	private ServerProcedure serverProcedure;
 	private NetworkConnection networkConnection;
@@ -45,6 +42,7 @@ public class GameServerViewController {
 
 	//Deklaracja threadów
 	Thread startGameThread;
+	
 	public Parent getView() {
 		return root;
 	}
@@ -54,6 +52,17 @@ public class GameServerViewController {
 	public void setMenuViewController(MenuViewController menuViewController) {
 		this.menuViewController = menuViewController;
 	}
+	
+	//METODA UZUPELNIAJACA AREALOGS
+	public void setTextAreaLogi(String message){
+		this.textLogServer.appendText("\n"+message);
+	}
+	
+	//METODA USTAWIAJACA PROCEDURE Z ZEWNATRZ KLASY
+	public void setProcedure(Procedure procedure){
+		serverProcedure.setServerProcedure(procedure);
+	}
+
 	
 	//METODA ODPALANA PRZY TWORZENIU NOWEGO SERWERA
 	@FXML
