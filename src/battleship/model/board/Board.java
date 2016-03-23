@@ -6,21 +6,21 @@ import battleship.gui.game.GameServerViewController;
 import battleship.model.server.ServerProcedure.Procedure;
 import battleship.model.user.Player;
 
-/*====== Model planszy przechowującej stany poszczegulnych pól gry=========
- * 
+/**
+ * Model planszy przechowującej stany poszczegulnych pól gry
  * @author Paweł Czernek
  * 
  */
 
 public class Board {
-	private BoardState[][] board = new BoardState[11][11];
-	private Player boardOwner = null;
+	private BoardState[][] board = new BoardState[11][11]; //Tablica ze stanami planszy
 	private int iloscStatkow = 8;
 	private GameServerViewController serverViewController;
 	
 	public Board() {
 	}
 	
+	// Ustawienie referencji do kontrolera widoku dla serwera
 	public void setViewControllerReference(GameServerViewController controller){
 		this.serverViewController = controller;
 	}
@@ -28,8 +28,12 @@ public class Board {
 	public BoardState[][] getBoardState(){
 		return board;
 	}
-
-	// Metoda resetująca planszę do stanu przed rozmieszczeniem statków
+	
+	/**
+	 * Metoda resetująca planszę i ustawiająca wszystkie pola na puste
+	 * 
+	 */
+			
 	public void resetBoard() {
 		for (int i = 0; i < board.length; i++) {
 			for (int j = 0; j < board[i].length; j++) {
@@ -44,7 +48,12 @@ public class Board {
 											// kierunek
 	private Point poczatek; // początek statku
 
-	// Metoda rozmieszczająca statki na planszy
+	
+	/**
+	 * Metoda rozmieszczająca statki na planszy
+	 * @param x współrzędna X pola statku
+	 * @param y współrzędna Y pola statku
+	 */
 	public void locateShips(int x, int y) {
 
 		Point punktKierunku; // punkt wskazania w którym kierunku układać statek
@@ -54,18 +63,16 @@ public class Board {
 		int dlugosc; // dlugość wstawianego statku
 		
 			if (iloscStatkow > 0) {
-
 				if (iloscStatkow > 7)
 					dlugosc = 5;
 				else if (iloscStatkow > 6)
 					dlugosc = 4;
-				
 				else if (iloscStatkow > 4)
 					dlugosc = 3;
 				else dlugosc = 2;
 				
 
-				if (!czyPunktWstaw) {
+				if (!czyPunktWstaw) { //Wstawianie punktu początkowego dla statku
 					poczatek = new Point(x, y);
 					if(!czyJestStatekWsasiedztwie(poczatek)){
 						board[poczatek.x][poczatek.y] = BoardState.STATEK;
@@ -75,22 +82,22 @@ public class Board {
 						serverViewController.setTextAreaLogi("Pozycja za blisko istniejacego statku! Wstaw jeszcze raz.");
 						return;
 					}
-				} else {
+				} else {  //Wstawianie punktu kierunkowego w którym ma być rozmieszczany statek
 						punktKierunku = new Point(x, y);
-						board[poczatek.x][poczatek.y] = BoardState.PUSTE_POLE;
+						board[poczatek.x][poczatek.y] = BoardState.PUSTE_POLE; 	// tymczasowe usunięcie punktu
+																				// aby nie powodował kolizji s 
+																				// samym sobą w funkcji sprawdzania kolizji statków
 						
 						if(poczatek.x == punktKierunku.x){
 							if(punktKierunku.y-poczatek.y>0){
 								koniec = new Point(poczatek.x, poczatek.y+dlugosc-1);
 								if(koniec.y>10){
 									serverViewController.setTextAreaLogi("Statek wychodzi poza plansze, rozmiesc jeszcze raz");
-									//board[poczatek.x][poczatek.y] = BoardState.PUSTE_POLE;
 									czyPunktWstaw = false;
 									koniec = null;
 									return;
 								}
 								for(int d=0; d<dlugosc;d++){
-									//board[poczatek.x][poczatek.y] = BoardState.PUSTE_POLE;
 									if(czyJestStatekWsasiedztwie(new Point(poczatek.x, poczatek.y+d))){
 										serverViewController.setTextAreaLogi("Za blisko innego statku, rozmiesc jeszcze raz");
 										czyPunktWstaw = false;
@@ -101,6 +108,8 @@ public class Board {
 								for(int d=0; d<dlugosc;d++){
 									board[poczatek.x][poczatek.y+d] = BoardState.STATEK;
 								}
+								czyPunktWstaw = false;
+								iloscStatkow--;
 							} else {
 								koniec = new Point(poczatek.x, poczatek.y-dlugosc+1);
 								if(koniec.y<0){
@@ -110,7 +119,6 @@ public class Board {
 									return;
 								}
 								for(int d=0; d<dlugosc;d++){
-									//board[poczatek.x][poczatek.y] = BoardState.PUSTE_POLE;
 									if(czyJestStatekWsasiedztwie(new Point(poczatek.x, poczatek.y-d))){
 										serverViewController.setTextAreaLogi("Za blisko innego statku, rozmiesc jeszcze raz");
 										czyPunktWstaw = false;
@@ -121,8 +129,9 @@ public class Board {
 								for(int d=0; d<dlugosc;d++){
 									board[poczatek.x][poczatek.y-d] = BoardState.STATEK;
 								}
+								czyPunktWstaw = false;
+								iloscStatkow--;
 							}
-							czyPunktWstaw = false;
 							
 						} else if (poczatek.y == punktKierunku.y){
 							if(punktKierunku.x-poczatek.x>0){
@@ -134,7 +143,6 @@ public class Board {
 									return;
 								}
 								for(int d=0; d<dlugosc;d++){
-									//board[poczatek.x][poczatek.y] = BoardState.PUSTE_POLE;
 									if(czyJestStatekWsasiedztwie(new Point(poczatek.x+d, poczatek.y))){
 										serverViewController.setTextAreaLogi("Za blisko innego statku, rozmiesc jeszcze raz");
 										czyPunktWstaw = false;
@@ -145,6 +153,8 @@ public class Board {
 								for(int d=0; d<dlugosc;d++){
 									board[poczatek.x+d][poczatek.y] = BoardState.STATEK;
 								}
+								czyPunktWstaw = false;
+								iloscStatkow--;
 							} else {
 								koniec = new Point(poczatek.x-dlugosc+1, poczatek.y);
 								if(koniec.x<0){
@@ -154,7 +164,6 @@ public class Board {
 									return;
 								}
 								for(int d=0; d<dlugosc;d++){
-									//board[poczatek.x][poczatek.y] = BoardState.PUSTE_POLE;
 									if(czyJestStatekWsasiedztwie(new Point(poczatek.x-d, poczatek.y))){
 										serverViewController.setTextAreaLogi("Za blisko innego statku, rozmiesc jeszcze raz");
 										czyPunktWstaw = false;
@@ -165,26 +174,38 @@ public class Board {
 								for(int d=0; d<dlugosc;d++){
 									board[poczatek.x-d][poczatek.y] = BoardState.STATEK;
 								}
+								czyPunktWstaw = false;
+								iloscStatkow--;
 							}
+						} else {
+							board[poczatek.x][poczatek.y] = BoardState.STATEK;
+							czyPunktWstaw = true;
 						}
-						czyPunktWstaw = false;
-						iloscStatkow--;
+						
 						if (iloscStatkow > 7) dlugosc = 5;
 						else if (iloscStatkow > 6) dlugosc = 4;
 						else if (iloscStatkow > 4) dlugosc = 3;
 						else dlugosc = 2;
-						if(iloscStatkow>0){
+						
+						if(iloscStatkow>0 && !czyPunktWstaw){
 							serverViewController.setTextAreaLogi("Wskaz punkt poczatkowy "+dlugosc+" masztowca.");
-						} else{
+						} else if(iloscStatkow>0 && czyPunktWstaw){
+							serverViewController.setTextAreaLogi("Wskaz kierunek.");
+						} else {
 							serverViewController.setTextAreaLogi("Rozmieszczanie statkow zakonczone.");
 							serverViewController.setProcedure(Procedure.READY_TO_START);
 						}
 						
 				}
 			}
-		}
+		} //Koniec rozmieszczania statków
 	
-	//funkcja sprawdzająca  kolizje przy rozkładzie statków
+	
+	/**
+	 * Metoda pomocnicza sprawdzająca kolizje między statkami
+	 * @param point
+	 * @return
+	 */
 	private boolean czyJestStatekWsasiedztwie(Point point) {
 		Point p = new Point(point.x, point.y);
 		for(int i=-1; i<2;i++){

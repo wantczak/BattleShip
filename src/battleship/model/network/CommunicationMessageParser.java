@@ -13,8 +13,8 @@ public class CommunicationMessageParser {
 	
 	/**
 	 * 
-	 * @param message
-	 * @return
+	 * @param message obiekt zawierający parametry strzału
+	 * @return tablica bitowa z parametrami strzału
 	 */
 	public byte[] decodeMessage(CommunicationMessage message){
 		byte[] table = message.toString().getBytes();
@@ -23,8 +23,8 @@ public class CommunicationMessageParser {
 	
 	/**
 	 * 
-	 * @param message
-	 * @return
+	 * @param message parametry strzały w formie tablicy bitowej
+	 * @return obiekt z zapisanymi parametrami strzału
 	 */
 	public CommunicationMessage encodeMessage(byte[] message){
 		String strMessage;
