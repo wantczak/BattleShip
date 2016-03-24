@@ -40,7 +40,7 @@ public class GameServerViewController {
 
 	Board player1board = new Board();
 
-	//Deklaracja threadów
+	//Deklaracja threadï¿½w
 	Thread startGameThread;
 	
 	public Parent getView() {
