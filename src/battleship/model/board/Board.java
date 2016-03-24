@@ -8,6 +8,7 @@ import battleship.model.user.Player;
 
 /**
  * Model planszy przechowującej stany poszczegulnych pól gry
+ * 
  * @author Paweł Czernek
  * 
  */
@@ -41,16 +42,117 @@ public class Board {
 			}
 		}
 	}
+	
+	/**
+	 * Metoda obsługująca oddany strzał 
+	 * 
+	 * @param x współrzędna X pola strzału
+	 * @param y współrzędna Y pola strzału
+	 */
+	public BoardState shot(int x, int y){
+		if (board[x][y] == BoardState.PUSTE_POLE){
+			board[x][y] = BoardState.PUDLO;
+			return BoardState.PUDLO;
+		} else {
+			board[x][y] = BoardState.STATEK_TRAFIONY;
+			if(isSunk(x,y)){
+				setSunk(x, y);
+				return BoardState.STATEK_ZATOPIONY;
+			}
+			return BoardState.STATEK_TRAFIONY;
+		}
+	}
+	
+	/**
+	 * Metoda pomocnicza sprawdzająca czy po strzale statek został zatopiony
+	 * 
+	 * @param x współrzędna X pola strzału
+	 * @param y współrzędna Y pola strzału
+	 * @return czy statek został zatopiony
+	 */
+	private boolean isSunk(int x, int y){
+		int t = x;
+		while (--t >= 0
+				&& (board[t][y] == BoardState.STATEK || board[t][y] == BoardState.STATEK_TRAFIONY))
+			if (board[t][y] == BoardState.STATEK)
+				return false;
+		t = x;
+		while (++t < 11
+				&& (board[t][y] == BoardState.STATEK || board[t][y] == BoardState.STATEK_TRAFIONY))
+			if (board[t][y] == BoardState.STATEK)
+				return false;
+		t = y;
+		while (--t >= 0
+				&& (board[x][t] == BoardState.STATEK || board[x][t] == BoardState.STATEK_TRAFIONY))
+			if (board[x][t] == BoardState.STATEK)
+				return false;
+		t = y;
+		while (++t < 11
+				&& (board[x][t] == BoardState.STATEK || board[x][t] == BoardState.STATEK_TRAFIONY))
+			if (board[x][t] == BoardState.STATEK)
+				return false;
+		return true;
+	}
+	
+	/**
+	 * Metoda pomocnicza oznaczająca statek jako zatopiony
+	 * 
+	 * @param x współrzędna X pola strzału
+	 * @param y współrzędna Y pola strzału
+	 */
+	private void setSunk(int x, int y) {
+		int t = x;
+		while (--t >= 0 && board[t][y] == BoardState.STATEK_TRAFIONY){
+			board[t][y] = BoardState.STATEK_ZATOPIONY;
+			for(int i=-1; i<2;i++){
+				for(int j=-1; j<2; j++){
+					if (board[round(t+i)][round(y+j)] == BoardState.PUSTE_POLE)
+					board[round(t+i)][round(y+j)] = BoardState.PUDLO;
+				}
+			}
+		}
+		t = x;
+		while (++t < 11 && board[t][y] == BoardState.STATEK_TRAFIONY){
+			board[t][y] = BoardState.STATEK_ZATOPIONY;
+			for(int i=-1; i<2;i++){
+				for(int j=-1; j<2; j++){
+					if (board[round(t+i)][round(y+j)] == BoardState.PUSTE_POLE)
+					board[round(t+i)][round(y+j)] = BoardState.PUDLO;
+				}
+			}
+		}
+		t = y;
+		while (--t >= 0 && board[x][t] == BoardState.STATEK_TRAFIONY){
+			board[x][t] = BoardState.STATEK_ZATOPIONY;
+			for(int i=-1; i<2;i++){
+				for(int j=-1; j<2; j++){
+					if (board[round(x+i)][round(t+j)] == BoardState.PUSTE_POLE)
+					board[round(x+i)][round(t+j)] = BoardState.PUDLO;
+				}
+			}
+		}
+		t = y;
+		while (++t < 11 && board[x][t] == BoardState.STATEK_TRAFIONY){
+			board[x][t] = BoardState.STATEK_ZATOPIONY;
+			for(int i=-1; i<2;i++){
+				for(int j=-1; j<2; j++){
+					if (board[round(x+i)][round(t+j)] == BoardState.PUSTE_POLE)
+					board[round(x+i)][round(t+j)] = BoardState.PUDLO;
+				}
+			}
+		}
+	}
+
 
 	private boolean czyPunktWstaw = false; // parametr okreslający czy w obecnej
 											// iteracji metody wstawiany punkt
 											// początkowy czy punkt wskazujący
 											// kierunek
 	private Point poczatek; // początek statku
-
 	
 	/**
 	 * Metoda rozmieszczająca statki na planszy
+	 * 
 	 * @param x współrzędna X pola statku
 	 * @param y współrzędna Y pola statku
 	 */
@@ -203,6 +305,7 @@ public class Board {
 	
 	/**
 	 * Metoda pomocnicza sprawdzająca kolizje między statkami
+	 * 
 	 * @param point
 	 * @return
 	 */
@@ -210,7 +313,7 @@ public class Board {
 		Point p = new Point(point.x, point.y);
 		for(int i=-1; i<2;i++){
 			for(int j=-1; j<2; j++){
-				if(board[round(p.x+i)][round(p.y+j)] == BoardState.STATEK || board[round(p.x+i)][round(p.y)] == BoardState.STATEK_TRAFIONY) return true;
+				if(board[round(p.x+i)][round(p.y+j)] == BoardState.STATEK) return true;
 			}
 		}
 		return false;

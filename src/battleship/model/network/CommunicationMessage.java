@@ -5,6 +5,7 @@ import battleship.model.user.Player;
 /**
  * Klasa odpowiedzialna za przechowywanie informacji przesyłanej przez internet
  * po oddaniu strzału i jako odpowiedź na strzał.
+ * 
  * @author Paweł Czernek
  *
  */
