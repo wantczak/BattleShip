@@ -1,8 +1,10 @@
 package battleship.gui.game;
 
 import battleship.gui.menu.MenuViewController;
+import battleship.model.network.GameChooserThread;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 /**
  * 
  * @author Wojciech Antczak
@@ -11,6 +13,8 @@ import javafx.scene.Parent;
 public class GameChooserViewController {
 
 	@FXML private Parent chooserBorderPane;
+	@FXML private Button btnNetworkTest;
+	
 	
 	private MenuViewController menuViewController;
 	public Parent getView() {
@@ -21,7 +25,14 @@ public class GameChooserViewController {
 		this.menuViewController = menuViewController;		
 	}
 	
-	// Button - menuViewController.setGameClientViewController(getGameClientViewController());
+	@FXML
+	private void initialize(){
+		btnNetworkTest.setOnAction(e->{
+			System.out.println("GAME CHOOSER");
+			GameChooserThread chooserThread = new GameChooserThread();
+			chooserThread.start();
+		});
+	}
 
 	
 }

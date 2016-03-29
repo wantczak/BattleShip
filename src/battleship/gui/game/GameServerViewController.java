@@ -7,6 +7,7 @@ import battleship.gui.menu.MenuViewController;
 import battleship.model.board.Board;
 import battleship.model.board.BoardState;
 import battleship.model.network.NetworkConnection;
+import battleship.model.network.ServerBroadcastingThread;
 import battleship.model.server.ServerProcedure;
 import battleship.model.server.ServerProcedure.Procedure;
 import javafx.fxml.FXML;
@@ -150,10 +151,14 @@ public class GameServerViewController {
 				//PROCEDURA OPEN_CONNECTION
 				if (serverProcedure.getServerProcedure() == Procedure.OPEN_CONNECTION){
 					try {
-						if(networkConnection.createServerConnection(textLogServer)){
+						ServerBroadcastingThread serverBroadcastingThread = new ServerBroadcastingThread(textLogServer);
+						serverBroadcastingThread.start(); //odpalenie watka
+						//if(networkConnection.createServerConnection(textLogServer)){
+						if(serverBroadcastingThread.getClientConnected()){
 							serverProcedure.setServerProcedure(Procedure.DEPLOY_SHIPS);
+							serverBroadcastingThread.interrupt();
 						}
-					} catch (IOException e) {
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}

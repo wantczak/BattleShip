@@ -26,6 +26,5 @@ public class GameClientViewController {
 
 	public void setGameChooserViewController(GameChooserViewController gameChooserViewController) {
 		this.gameChooserViewController = gameChooserViewController;
-	}
-	
+	}	
 }

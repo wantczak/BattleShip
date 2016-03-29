@@ -28,8 +28,6 @@ public class NetworkConnection {
     private int connectionPort = 8080; //zmienna Integer serverPort
     private Socket serverConnection;
     private boolean connectionStatus;
-    private DatagramSocket socket;
-    private DatagramPacket packet;
 
 	/**
 	 * Funkcja sprawdzajaca IP danego komputera i zwracajaca je w formie String
@@ -90,19 +88,14 @@ public class NetworkConnection {
 		return connectionStatus;
 		*/
 		try{
-			textLogServer.appendText("[SERVER] Rozpoczecie wysylania broadcastingu obecnosci w sieci \n");
 			
-            socket = new DatagramSocket(connectionPort);
 			//stextLogServer.appendText("[SERVER] Inicjalizacja polaczenia serwerowego \n");
 
 		}
 		
 		catch (Exception ex){
-            System.out.println("Problem z utworzeniem socketu na porcie: " + connectionPort );
 		}
 		
-        packet = new DatagramPacket (new byte[1], 1);
-
 			
 		return connectionStatus;
 
