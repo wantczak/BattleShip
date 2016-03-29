@@ -2,6 +2,8 @@ package battleship.model.network;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
@@ -21,11 +23,14 @@ import javafx.scene.control.TextField;
 public class NetworkConnection {
 
 	//DEKLARACJA ZMIENNYCH
-	ServerSocket serverSocket; //Deklaracja pojedynczego serverSocketa
-    String localIP; //zmienna String serverIP
-    int connectionPort = 8080; //zmienna Integer serverPort
-    Socket serverConnection;
-    boolean connectionStatus;
+	private ServerSocket serverSocket; //Deklaracja pojedynczego serverSocketa
+	private String localIP; //zmienna String serverIP
+    private int connectionPort = 8080; //zmienna Integer serverPort
+    private Socket serverConnection;
+    private boolean connectionStatus;
+    private DatagramSocket socket;
+    private DatagramPacket packet;
+
 	/**
 	 * Funkcja sprawdzajaca IP danego komputera i zwracajaca je w formie String
 	 * @author Wojciech Antczak
@@ -58,7 +63,7 @@ public class NetworkConnection {
 	 * @throws IOException 
 	 */
 	public boolean createServerConnection(TextArea textLogServer) throws IOException{
-		try{
+		/*try{
 			serverSocket = new ServerSocket(connectionPort);
 			serverSocket.setReuseAddress(true);
 
@@ -83,6 +88,24 @@ public class NetworkConnection {
 		}
 		
 		return connectionStatus;
+		*/
+		try{
+			textLogServer.appendText("[SERVER] Rozpoczecie wysylania broadcastingu obecnosci w sieci \n");
+			
+            socket = new DatagramSocket(connectionPort);
+			//stextLogServer.appendText("[SERVER] Inicjalizacja polaczenia serwerowego \n");
+
+		}
+		
+		catch (Exception ex){
+            System.out.println("Problem z utworzeniem socketu na porcie: " + connectionPort );
+		}
+		
+        packet = new DatagramPacket (new byte[1], 1);
+
+			
+		return connectionStatus;
+
 	}
 
 }

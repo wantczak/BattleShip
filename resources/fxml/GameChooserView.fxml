@@ -1,8 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="battleship.gui.game.GameChooserViewController">
-	<!-- TODO Add Nodes -->
-</AnchorPane>
-
+<BorderPane fx:id="chooserBorderPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="655.0" prefWidth="1205.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="battleship.gui.game.GameChooserViewController">
+   <center>
+      <VBox alignment="TOP_CENTER" maxWidth="1.7976931348623157E308" prefHeight="655.0" prefWidth="900.0" spacing="10.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label text="Lista serwerów" />
+            <TableView prefHeight="554.0" prefWidth="949.0">
+              <columns>
+                <TableColumn prefWidth="75.0" text="IP serwera" />
+                <TableColumn prefWidth="75.0" text="Rozpoczęta gra" />
+                  <TableColumn prefWidth="75.0" text="Nazwa Gracza" />
+                  <TableColumn prefWidth="75.0" text="Status gry" />
+              </columns>
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
+            </TableView>
+         </children>
+         <padding>
+            <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+         </padding>
+      </VBox>
+   </center>
+   <right>
+      <VBox alignment="TOP_CENTER" prefHeight="635.0" prefWidth="206.0" spacing="10.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label text="Gracz:" />
+            <TextField />
+         </children>
+         <BorderPane.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </BorderPane.margin>
+      </VBox>
+   </right>
+</BorderPane>

@@ -10,11 +10,11 @@ import javafx.scene.Parent;
  */
 public class GameChooserViewController {
 
-	@FXML private Parent root;
+	@FXML private Parent chooserBorderPane;
 	
 	private MenuViewController menuViewController;
 	public Parent getView() {
-		return root;
+		return chooserBorderPane;
 	}
 
 	public void setMenuViewController(MenuViewController menuViewController) {

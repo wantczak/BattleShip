@@ -24,8 +24,6 @@ public class MenuViewController {
 	@FXML private BorderPane contentPane;
 	MainAppFactory factory;
 	
-	
-	
 	public Parent getView() {
 		return menu;
 	}
@@ -68,7 +66,8 @@ public class MenuViewController {
 		
 		//metoda obslugujaca nacisniecia buttona btnJoinGame
 		btnJoinGame.setOnAction(event->{
-			
+			contentPane.setCenter(gameChooserViewController.getView());
+
 		});	
 	}
 	
