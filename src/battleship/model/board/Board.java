@@ -19,6 +19,7 @@ public class Board {
 	private GameServerViewController serverViewController;
 	
 	public Board() {
+		resetBoard();
 	}
 	
 	// Ustawienie referencji do kontrolera widoku dla serwera
@@ -26,8 +27,19 @@ public class Board {
 		this.serverViewController = controller;
 	}
 	
-	public BoardState[][] getBoardState(){
-		return board;
+	//metoda zwracająca stan tablicy
+		public BoardState[][] getBoardState(){
+			return board;
+		}
+	
+	//Metoda ustawiająca pole tablicy
+	public void setBoardCell(int x, int y, BoardState state){
+		board[x][y] = state;
+	}
+	
+	//metoda pobierająca pole tablicy
+	public BoardState getBoardCell(int x, int y){
+		return board[x][y];
 	}
 	
 	/**
@@ -56,6 +68,7 @@ public class Board {
 		} else {
 			board[x][y] = BoardState.STATEK_TRAFIONY;
 			if(isSunk(x,y)){
+				board[x][y] = BoardState.STATEK_ZATOPIONY;
 				setSunk(x, y);
 				return BoardState.STATEK_ZATOPIONY;
 			}
@@ -95,14 +108,14 @@ public class Board {
 	}
 	
 	/**
-	 * Metoda pomocnicza oznaczająca statek jako zatopiony
+	 * Metoda oznaczająca statek jako zatopiony
 	 * 
 	 * @param x współrzędna X pola strzału
 	 * @param y współrzędna Y pola strzału
 	 */
-	private void setSunk(int x, int y) {
+	public void setSunk(int x, int y) {
 		int t = x;
-		while (--t >= 0 && board[t][y] == BoardState.STATEK_TRAFIONY){
+		while (t >= 0 && (board[t][y] == BoardState.STATEK_TRAFIONY || board[t][y] == BoardState.STATEK_ZATOPIONY)){
 			board[t][y] = BoardState.STATEK_ZATOPIONY;
 			for(int i=-1; i<2;i++){
 				for(int j=-1; j<2; j++){
@@ -110,9 +123,10 @@ public class Board {
 					board[round(t+i)][round(y+j)] = BoardState.PUDLO;
 				}
 			}
+			--t;
 		}
 		t = x;
-		while (++t < 11 && board[t][y] == BoardState.STATEK_TRAFIONY){
+		while (t < 11 && (board[t][y] == BoardState.STATEK_TRAFIONY || board[t][y] == BoardState.STATEK_ZATOPIONY)){
 			board[t][y] = BoardState.STATEK_ZATOPIONY;
 			for(int i=-1; i<2;i++){
 				for(int j=-1; j<2; j++){
@@ -120,9 +134,10 @@ public class Board {
 					board[round(t+i)][round(y+j)] = BoardState.PUDLO;
 				}
 			}
+			++t;
 		}
 		t = y;
-		while (--t >= 0 && board[x][t] == BoardState.STATEK_TRAFIONY){
+		while (t >= 0 && (board[x][t] == BoardState.STATEK_TRAFIONY || board[x][t] == BoardState.STATEK_ZATOPIONY)){
 			board[x][t] = BoardState.STATEK_ZATOPIONY;
 			for(int i=-1; i<2;i++){
 				for(int j=-1; j<2; j++){
@@ -130,9 +145,10 @@ public class Board {
 					board[round(x+i)][round(t+j)] = BoardState.PUDLO;
 				}
 			}
+			--t;
 		}
 		t = y;
-		while (++t < 11 && board[x][t] == BoardState.STATEK_TRAFIONY){
+		while (t < 11 && (board[x][t] == BoardState.STATEK_TRAFIONY || board[x][t] == BoardState.STATEK_ZATOPIONY)){
 			board[x][t] = BoardState.STATEK_ZATOPIONY;
 			for(int i=-1; i<2;i++){
 				for(int j=-1; j<2; j++){
@@ -140,6 +156,7 @@ public class Board {
 					board[round(x+i)][round(t+j)] = BoardState.PUDLO;
 				}
 			}
+			++t;
 		}
 	}
 
