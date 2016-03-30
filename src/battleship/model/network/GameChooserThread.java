@@ -5,14 +5,26 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketTimeoutException;
+import java.util.Arrays;
+
+import battleship.gui.game.GameChooserViewController;
+import battleship.model.server.Server;
+import javafx.collections.ObservableSet;
+import javafx.scene.control.TableView;
 
 public class GameChooserThread extends Thread {
-    private String hostname= "localhost";
     private int connectionPort = 8080; //zmienna Integer serverPort
     private InetAddress host;
     private DatagramSocket socket;
     private DatagramPacket packet;
     private boolean serverChoosen = false;
+    private ObservableSet<Server> serverObservableSet;
+    private GameChooserViewController gameChooserViewController;
+    
+    public GameChooserThread(ObservableSet<Server> serverObservableSet, GameChooserViewController gameChooserViewController){
+    	this.serverObservableSet = serverObservableSet;
+    	this.gameChooserViewController = gameChooserViewController;
+    }
     
 	public void run() {
 		try{	
@@ -32,11 +44,19 @@ public class GameChooserThread extends Thread {
 				    socket.setSoTimeout(1000);
 				    socket.receive(receivePacket);
 	                String pakiet = new String(receivePacket.getData()).trim();
-	                if (pakiet.equals("SERVER_AVAILABLE")){
-					    System.out.println(getClass().getName() + "Otrzymano odpowiedü z : " + receivePacket.getAddress().getHostAddress());
-					    serverChoosen = true;
+	                String[] pakietArray = pakiet.split(",");
+	    			System.out.println("OS TH: "+serverObservableSet);
+
+	                if (pakietArray[0].equals("SERVER_AVAILABLE")){
+	                	Server serverAvailable = new Server(receivePacket.getAddress().getHostAddress(),"BattleShip",pakietArray[1]);
+	                	serverObservableSet.addAll(Arrays.asList(serverAvailable));
+		    			System.out.println("OS TH: "+serverObservableSet);
+		    			gameChooserViewController.refreshTableView();
+	                	System.out.println("[CLIENT] Otrzymano odpowiedü z : " + receivePacket.getAddress().getHostAddress());
+					    //serverChoosen = true;
 	                }
 				}
+				
 				
 				catch (SocketTimeoutException ex){
 					continue;

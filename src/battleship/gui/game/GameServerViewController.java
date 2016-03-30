@@ -35,7 +35,6 @@ public class GameServerViewController {
 	@FXML private TextField textFieldServerPort;
 	@FXML private TextArea textLogServer;	
 	
-	
 	private ServerProcedure serverProcedure;
 	private NetworkConnection networkConnection;
 
@@ -151,7 +150,8 @@ public class GameServerViewController {
 				//PROCEDURA OPEN_CONNECTION
 				if (serverProcedure.getServerProcedure() == Procedure.OPEN_CONNECTION){
 					try {
-						ServerBroadcastingThread serverBroadcastingThread = new ServerBroadcastingThread(textLogServer);
+						serverProcedure.setServerProcedure(Procedure.READY_TO_START);
+						ServerBroadcastingThread serverBroadcastingThread = new ServerBroadcastingThread(textLogServer,serverProcedure);
 						serverBroadcastingThread.start(); //odpalenie watka
 						//if(networkConnection.createServerConnection(textLogServer)){
 						if(serverBroadcastingThread.getClientConnected()){

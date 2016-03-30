@@ -17,12 +17,11 @@
       <VBox alignment="TOP_CENTER" maxWidth="1.7976931348623157E308" prefHeight="655.0" prefWidth="900.0" spacing="10.0" BorderPane.alignment="CENTER">
          <children>
             <Label text="Lista serwerów" />
-            <TableView prefHeight="554.0" prefWidth="949.0">
+            <TableView fx:id="serverTableView" prefHeight="554.0" prefWidth="949.0">
               <columns>
-                <TableColumn prefWidth="75.0" text="IP serwera" />
-                <TableColumn prefWidth="75.0" text="Rozpoczęta gra" />
-                  <TableColumn prefWidth="75.0" text="Nazwa Gracza" />
-                  <TableColumn prefWidth="75.0" text="Status gry" />
+                <TableColumn fx:id="columnServerIP" prefWidth="75.0" text="IP serwera" />
+                <TableColumn fx:id="columnServerStartedGame" prefWidth="75.0" text="Rozpoczęta gra" />
+                <TableColumn fx:id="columnServerPlayerName" prefWidth="75.0" text="Nazwa Gracza" />
               </columns>
                <columnResizePolicy>
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -40,6 +39,7 @@
             <Label text="Gracz:" />
             <TextField />
             <Button fx:id="btnNetworkTest" mnemonicParsing="false" text="Button" />
+            <Button fx:id="btnRefresh" mnemonicParsing="false" text="Refresh" />
          </children>
          <BorderPane.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
