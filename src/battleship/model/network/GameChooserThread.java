@@ -6,6 +6,10 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import battleship.gui.game.GameChooserViewController;
 import battleship.model.server.Server;
@@ -20,7 +24,8 @@ public class GameChooserThread extends Thread {
     private boolean serverChoosen = false;
     private ObservableSet<Server> serverObservableSet;
     private GameChooserViewController gameChooserViewController;
-    
+    private Set<String> serversIP = new HashSet<String>();
+    private Timer timerServersAvailable;
     public GameChooserThread(ObservableSet<Server> serverObservableSet, GameChooserViewController gameChooserViewController){
     	this.serverObservableSet = serverObservableSet;
     	this.gameChooserViewController = gameChooserViewController;
@@ -33,8 +38,21 @@ public class GameChooserThread extends Thread {
 			socket = new DatagramSocket();
 			socket.setBroadcast(true);
 			byte[] sendData = "LOOKING_FOR_SERVERS".getBytes();
+			
+			/*
+			timerServersAvailable = new Timer();
+			timerServersAvailable.scheduleAtFixedRate((new TimerTask() {
+				  @Override
+				  public void run() {
+					  System.out.println("TIMER EVENT");
+					  serverObservableSet.clear();
+					  serversIP.clear();
+				  }
+				}), 5000,5000);
 
-			while(!serverChoosen){
+			*/
+			
+			while(!gameChooserViewController.ServerSelected()){
 				try{
 				    packet = new DatagramPacket(sendData, sendData.length,InetAddress.getByName("255.255.255.255"), connectionPort);
 				    socket.send(packet);
@@ -48,12 +66,14 @@ public class GameChooserThread extends Thread {
 	    			System.out.println("OS TH: "+serverObservableSet);
 
 	                if (pakietArray[0].equals("SERVER_AVAILABLE")){
-	                	Server serverAvailable = new Server(receivePacket.getAddress().getHostAddress(),"BattleShip",pakietArray[1]);
-	                	serverObservableSet.addAll(Arrays.asList(serverAvailable));
-		    			System.out.println("OS TH: "+serverObservableSet);
-		    			gameChooserViewController.refreshTableView();
-	                	System.out.println("[CLIENT] Otrzymano odpowiedü z : " + receivePacket.getAddress().getHostAddress());
-					    //serverChoosen = true;
+	                	if (!serversIP.contains(receivePacket.getAddress().getHostAddress())){
+		                	Server serverAvailable = new Server(receivePacket.getAddress().getHostAddress(),"BattleShip",pakietArray[1]);
+		                	serversIP.add(receivePacket.getAddress().getHostAddress());
+		                	serverObservableSet.addAll(Arrays.asList(serverAvailable));
+			    			System.out.println("OS TH: "+serverObservableSet);
+			    			gameChooserViewController.refreshTableView();
+		                	System.out.println("[CLIENT] Otrzymano odpowiedü z : " + receivePacket.getAddress().getHostAddress());
+	                	}
 	                }
 				}
 				
@@ -70,6 +90,8 @@ public class GameChooserThread extends Thread {
 			ex.printStackTrace();
 		}
 	}
+	
+	
 
 
 }
