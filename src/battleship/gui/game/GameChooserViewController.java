@@ -73,7 +73,7 @@ public class GameChooserViewController {
 					System.out.println("ROW DATA: "+rowData);
 					serverSelected = true;
 					if(GameChooserThread.connectToServer(rowData.getServerIP())){
-						ClientGameProcess();
+						ClientGameProcess(rowData);
 					}
 				}
 			});
@@ -98,10 +98,12 @@ public class GameChooserViewController {
 		return serverSelected;
 	}
 	
-	private void ClientGameProcess(){
+	private void ClientGameProcess(Server gameServer){
 		try{
-			this.setGameClientViewController(menuViewController.getFactory().getGameClientViewController());
-			menuViewController.getContentPane().setCenter(gameClientViewController.getView());
+			this.setGameClientViewController(menuViewController.getFactory().getGameClientViewController()); //utworzenie nowej instancji gry
+			menuViewController.getContentPane().setCenter(gameClientViewController.getView()); //pokazanie okna gry w BorderPane
+			gameClientViewController.setGameServer(gameServer); //przekazanie wybranego Servera do okna gry
+			
 		}
 		
 		catch(Exception ex){

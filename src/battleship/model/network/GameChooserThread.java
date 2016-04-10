@@ -43,12 +43,12 @@ public class GameChooserThread extends Thread {
 			
 			while(!gameChooserViewController.ServerSelected()){
 				try{
+					System.out.println("Chooser petla");
 				    packet = new DatagramPacket(sendData, sendData.length,InetAddress.getByName("255.255.255.255"), connectionPort);
 				    socket.send(packet);
 				    Thread.sleep(500);
 				    byte[] recvBuf = new byte[15000];
 				    DatagramPacket receivePacket = new DatagramPacket(recvBuf, recvBuf.length);
-				    socket.setSoTimeout(1000);
 				    socket.receive(receivePacket);
 	                String pakiet = new String(receivePacket.getData()).trim();
 	                String[] pakietArray = pakiet.split(",");
@@ -68,6 +68,7 @@ public class GameChooserThread extends Thread {
 				
 				
 				catch (SocketTimeoutException ex){
+					ex.printStackTrace();
 					continue;
 				}    
 			}
@@ -83,25 +84,29 @@ public class GameChooserThread extends Thread {
 
 		while(!connection){
 		try{
+			socket = new DatagramSocket();
 			byte[] sendData = "CONNECTION_WANTED".getBytes();
 		    packet = new DatagramPacket(sendData, sendData.length,InetAddress.getByName(ServerIP), connectionPort);
 		    socket.send(packet);
 		    Thread.sleep(200);
 		    byte[] recvBuf = new byte[15000];
 		    DatagramPacket receivePacket = new DatagramPacket(recvBuf, recvBuf.length);
-		    socket.setSoTimeout(1000);
 		    socket.receive(receivePacket);
             String pakiet = new String(receivePacket.getData()).trim();
             String[] pakietArray = pakiet.split(",");
             
-        	System.out.println(pakietArray);
+        	System.out.println(pakietArray[0]);
 
             if (pakietArray[0].equals("SERVER_CLIENT_CONNECTION_OPEN")){
+            	System.out.println("Connection open");
+            	socket.close();
             	connection = true;
             }
 		}
 		
 		catch (Exception ex){
+			ex.printStackTrace();
+        	socket.close();
 			return connection;
 		}
 	}

@@ -23,7 +23,6 @@ import javafx.scene.control.TextField;
 public class NetworkConnection {
 
 	//DEKLARACJA ZMIENNYCH
-	private ServerSocket serverSocket; //Deklaracja pojedynczego serverSocketa
 	private String localIP; //zmienna String serverIP
     private int connectionPort = 8080; //zmienna Integer serverPort
     private Socket serverConnection;

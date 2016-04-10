@@ -1,11 +1,18 @@
 package battleship.model.server;
 
+/**
+ * 
+ * @author Wojciech Antczak
+ *
+ */
 public class ServerProcedure {
 	public enum Procedure {
 		START_GAME,
 		OPEN_CONNECTION,
+		CONNECT_TO_CLIENT,
 		DEPLOY_SHIPS,
-		READY_TO_START
+		READY_TO_START,
+		PLAYING_GAME
 	}
 
 	Procedure procedure;

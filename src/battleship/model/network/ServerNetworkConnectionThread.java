@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.SocketException;
 
+import battleship.gui.game.GameServerViewController;
 import battleship.model.server.ServerProcedure;
 import battleship.model.server.ServerProcedure.Procedure;
 import javafx.scene.control.TextArea;
@@ -25,14 +26,20 @@ public class ServerNetworkConnectionThread extends Thread {
     private TextArea textLogServer;
     private ServerProcedure serverProcedure;
     private boolean clientConnectionOpen = false;
+	private GameServerViewController gameServerViewController;
     
-    public ServerNetworkConnectionThread(TextArea textLogServer, ServerProcedure serverProcedure){
+    public ServerNetworkConnectionThread(TextArea textLogServer, ServerProcedure serverProcedure, GameServerViewController gameServerViewController){
     	this.textLogServer = textLogServer;
     	this.serverProcedure = serverProcedure;
+    	this.gameServerViewController = gameServerViewController;
     }
     
     public boolean getClientConnectionOpen(){
     	return clientConnectionOpen;
+    }
+    
+    public void setClientConnectionOpen(boolean clientConnectionOpen){
+    	this.clientConnectionOpen = clientConnectionOpen;
     }
     
 	public void run() {
@@ -68,7 +75,9 @@ public class ServerNetworkConnectionThread extends Thread {
                     DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, packet.getAddress(), packet.getPort());
                     serverUDPSocket.send(sendPacket);
         			textLogServer.appendText("[SERVER] Wyslano gotowosc do polaczenia  klienta \n");
+        			gameServerViewController.setClientIP(packet.getAddress().getHostAddress());
         			clientConnectionOpen = true;
+        			serverUDPSocket.close();
                 	break;
                 }
                 
@@ -79,6 +88,9 @@ public class ServerNetworkConnectionThread extends Thread {
         	}
         	
         	catch(Exception ex){
+        		ex.printStackTrace();
+        	}
+        	finally{
         		
         	}
         }

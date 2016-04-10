@@ -9,6 +9,7 @@ import battleship.model.board.Board;
 import battleship.model.board.BoardState;
 import battleship.model.network.NetworkConnection;
 import battleship.model.network.ServerNetworkConnectionThread;
+import battleship.model.network.ServerNetworkGameThread;
 import battleship.model.server.ServerProcedure;
 import battleship.model.server.ServerProcedure.Procedure;
 import javafx.fxml.FXML;
@@ -38,9 +39,21 @@ public class GameServerViewController {
 	
 	private ServerProcedure serverProcedure;
 	private NetworkConnection networkConnection;
-
+	
+	//Watki
+	private ServerNetworkConnectionThread serverNetworkConnectionThread;
+	private ServerNetworkGameThread serverNetworkGameThread;
     private ServerSocket serverTCPSocket;
  
+    //Zmienne okreslajace clienta
+    private String clientIP;
+    public String getClientIP(){
+    	return clientIP;
+    }
+    
+    public void setClientIP(String clientIP){
+    	this.clientIP = clientIP;
+    }
 	Board player1board = new Board();
 	
 	//Deklaracja thread�w
@@ -56,6 +69,10 @@ public class GameServerViewController {
 		this.menuViewController = menuViewController;
 	}
 	
+	private GameServerViewController getGameServerViewController(){
+		return this;
+	}
+	
 	//METODA UZUPELNIAJACA AREALOGS
 	public void setTextAreaLogi(String message){
 		this.textLogServer.appendText("\n"+message);
@@ -65,7 +82,8 @@ public class GameServerViewController {
 	public void setProcedure(Procedure procedure){
 		serverProcedure.setServerProcedure(procedure);
 	}
-
+	
+	//ZMIENNA OKRESLAJACA POLACZENIE CLIENTA
 	
 	//METODA ODPALANA PRZY TWORZENIU NOWEGO SERWERA
 	@FXML
@@ -75,17 +93,15 @@ public class GameServerViewController {
 			if (serverProcedure.getServerProcedure()==Procedure.START_GAME)	startGameProcedure(); //Odpalenie metody startGame, i utworzenie nowego Thread
 			else if(serverProcedure.getServerProcedure()==Procedure.DEPLOY_SHIPS) textLogServer.appendText("\n Nie skonczono procedury ukladania statkow. Dokoncz procedury i kliknij w przycisk START");
 			
-			//DOCELOWO TUTAJ BEDZIE ODPALANIE NOWEGO WATKU OBSLUGUJACEGO PROCEDURY
-			//ODPALANIA NOWEJ GRY:
-			//1. Pobranie IP z komputera ( to mo�na w sumie zrealizowac zawsze przy odpalaniu okna)
-			//2. Proba stworzenia Hosta
-			//3. Okno informujace ze trzeba rozmiescic statki na planszy
-			//4. Oczekiwanie na przeciwnika
-			//5. Podlaczenie sie do clienta - test pingowania
-			//6. Start gry 
 		});		
 	}
 
+//==========================================================================
+	/**
+	 * Metoda odpalana w momencie nacisniecia przycisku pola gry
+	 * @author Wojciech Antczak
+	 * @param e - pobranie Eventu od przycisniecia myszy
+	 */
 	@FXML
 	private void Player1ClickedAction(MouseEvent e) {
 		Node src = (Node) e.getSource();
@@ -127,7 +143,7 @@ public class GameServerViewController {
 	 * Metoda rozpoczynajaca gre. Procedura jest nastepujaca:
 	 * <ul>
 	 * <li> Utworzenie nowego Thread, ktory bedzie odpowiedzialny za operacje Network;
-	 * <li> Odpalenie Timera, ktory bedzie sprawdzal dolaczenie nowego klienta do serwera;
+	 * <li> 
 	 * <li> 
 	 * </ul>
 	 * <p>
@@ -136,6 +152,7 @@ public class GameServerViewController {
 	private void startGameProcedure(){
 		startGameThread = new Thread(new Runnable() {
 		     public void run() {
+		    	 
 		    	 //PROCEDURA START_GAME
 				if (serverProcedure.getServerProcedure() == Procedure.START_GAME){
 					if (networkConnection == null) networkConnection = new NetworkConnection();
@@ -148,13 +165,17 @@ public class GameServerViewController {
 				if (serverProcedure.getServerProcedure() == Procedure.OPEN_CONNECTION){
 					try {
 						serverProcedure.setServerProcedure(Procedure.READY_TO_START);
-						ServerNetworkConnectionThread serverBroadcastingThread = new ServerNetworkConnectionThread(textLogServer,serverProcedure);
-						serverBroadcastingThread.start(); //odpalenie watka
-						//if(networkConnection.createServerConnection(textLogServer)){
-						if(serverBroadcastingThread.getClientConnectionOpen()){
-							serverProcedure.setServerProcedure(Procedure.DEPLOY_SHIPS);
-							//serverBroadcastingThread.interrupt();
-						}
+						serverNetworkConnectionThread = new ServerNetworkConnectionThread(textLogServer,serverProcedure,getGameServerViewController());
+						serverNetworkConnectionThread.start(); //odpalenie watka
+						serverNetworkConnectionThread.join(); //oczekiwanie na zakonczenie threada
+						
+						//Odpalenie nowego threada do gry
+						serverNetworkGameThread = new ServerNetworkGameThread(textLogServer,serverProcedure,getGameServerViewController());
+						serverNetworkGameThread.start(); //odpalenie watka
+						serverNetworkGameThread.join(); //oczekiwanie na zakonczenie threada
+						//textLogServer.appendText("\n BBBB!");
+						//serverProcedure.setServerProcedure(Procedure.DEPLOY_SHIPS);
+						
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -170,22 +191,3 @@ public class GameServerViewController {
 		startGameThread.start();
 	}
 }
-
-// System.out.println("Row: "+ GridPane.getRowIndex(src));
-// System.out.println("Column: "+ GridPane.getColumnIndex(src));
-// Player1GameBoard[1][5] = 1;
-// Player1GameBoard[8][6] = 1;
-// Player1GameBoard[2][7] = 1;
-// Player1GameBoard[4][8] = 1;
-//
-// checkField(GridPane.getRowIndex(src),GridPane.getColumnIndex(src),src);
-// }
-//
-// private void checkField(int row,int column, Node button){
-// if (Player1GameBoard[row][column] == 1){
-// Button btn = (Button) button;
-// btn.setStyle("-fx-background-color: slateblue;");
-//
-// }
-// }
-// }
