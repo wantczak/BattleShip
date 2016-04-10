@@ -67,6 +67,8 @@ public class MainAppFactory {
                 loader.load();
                 gameChooserViewController = (GameChooserViewController) loader.getController();
                 gameChooserViewController.setMenuViewController(getMenuViewController());
+                gameChooserViewController.setGameClientViewController(getGameClientViewController());
+
             }
             catch (IOException e){
                 throw new RuntimeException("Nie mozna zaladowac SettingsView.fxml", e);
@@ -76,7 +78,7 @@ public class MainAppFactory {
 	}
 		
 //=============POBRANIE KONTROLERA GameClientViewController I PRZYPISANIE REFERENCJI===========
-	private GameClientViewController getGameClientViewController() {
+	public GameClientViewController getGameClientViewController() {
         //if (gameClientViewController == null){
             try{
             	FXMLLoader loader = new FXMLLoader(this.getClass().getResource("/fxml/GameClientView.fxml"));

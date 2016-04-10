@@ -32,13 +32,19 @@ public class GameChooserViewController {
 	private MenuViewController menuViewController;
 	private boolean serverSelected = false;
 	private GameChooserThread chooserThread;
+	private GameClientViewController gameClientViewController;
 	
 	public Parent getView() {
 		return chooserBorderPane;
 	}
 
+	//=======================PRZYPISANIE REFERENCJI DO KONTROLEROW=============
 	public void setMenuViewController(MenuViewController menuViewController) {
 		this.menuViewController = menuViewController;		
+	}
+	
+	public void setGameClientViewController(GameClientViewController gameClientViewController) {
+		this.gameClientViewController = gameClientViewController;		
 	}
 	
 	@FXML
@@ -66,6 +72,9 @@ public class GameChooserViewController {
 					Server rowData = row.getItem();
 					System.out.println("ROW DATA: "+rowData);
 					serverSelected = true;
+					if(GameChooserThread.connectToServer(rowData.getServerIP())){
+						ClientGameProcess();
+					}
 				}
 			});
 			return row;
@@ -77,7 +86,6 @@ public class GameChooserViewController {
 		columnServerIP.setCellValueFactory(new PropertyValueFactory<Server,String>("serverIP"));
 		columnServerStartedGame.setCellValueFactory(new PropertyValueFactory<Server,String>("serverStartedGame"));
 		columnServerPlayerName.setCellValueFactory(new PropertyValueFactory<Server,String>("serverPlayerName"));
-		
 		serverTableView.setItems(FXCollections.observableArrayList(serverObservableSet));
 	}
 	
@@ -88,5 +96,16 @@ public class GameChooserViewController {
 	
 	public boolean ServerSelected(){
 		return serverSelected;
+	}
+	
+	private void ClientGameProcess(){
+		try{
+			this.setGameClientViewController(menuViewController.getFactory().getGameClientViewController());
+			menuViewController.getContentPane().setCenter(gameClientViewController.getView());
+		}
+		
+		catch(Exception ex){
+			
+		}
 	}
 }

@@ -1,13 +1,14 @@
 package battleship.gui.game;
 
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.net.SocketException;
 
 import battleship.gui.menu.MenuViewController;
 import battleship.model.board.Board;
 import battleship.model.board.BoardState;
 import battleship.model.network.NetworkConnection;
-import battleship.model.network.ServerBroadcastingThread;
+import battleship.model.network.ServerNetworkConnectionThread;
 import battleship.model.server.ServerProcedure;
 import battleship.model.server.ServerProcedure.Procedure;
 import javafx.fxml.FXML;
@@ -38,8 +39,10 @@ public class GameServerViewController {
 	private ServerProcedure serverProcedure;
 	private NetworkConnection networkConnection;
 
+    private ServerSocket serverTCPSocket;
+ 
 	Board player1board = new Board();
-
+	
 	//Deklaracja thread�w
 	Thread startGameThread;
 	
@@ -82,11 +85,6 @@ public class GameServerViewController {
 			//6. Start gry 
 		});		
 	}
-	
-	
-	
-	
-	
 
 	@FXML
 	private void Player1ClickedAction(MouseEvent e) {
@@ -98,7 +96,6 @@ public class GameServerViewController {
 		player1board.setViewControllerReference(this);
 		player1board.locateShips((int)GridPane.getColumnIndex(src),(int) GridPane.getRowIndex(src));
 		checkFields(player1board);
-
 	}
 
 	private void checkFields(Board board) {
@@ -151,12 +148,12 @@ public class GameServerViewController {
 				if (serverProcedure.getServerProcedure() == Procedure.OPEN_CONNECTION){
 					try {
 						serverProcedure.setServerProcedure(Procedure.READY_TO_START);
-						ServerBroadcastingThread serverBroadcastingThread = new ServerBroadcastingThread(textLogServer,serverProcedure);
+						ServerNetworkConnectionThread serverBroadcastingThread = new ServerNetworkConnectionThread(textLogServer,serverProcedure);
 						serverBroadcastingThread.start(); //odpalenie watka
 						//if(networkConnection.createServerConnection(textLogServer)){
-						if(serverBroadcastingThread.getClientConnected()){
+						if(serverBroadcastingThread.getClientConnectionOpen()){
 							serverProcedure.setServerProcedure(Procedure.DEPLOY_SHIPS);
-							serverBroadcastingThread.interrupt();
+							//serverBroadcastingThread.interrupt();
 						}
 					} catch (Exception e) {
 						e.printStackTrace();

@@ -22,7 +22,7 @@ public class MenuViewController {
 	@FXML private Button btnStartGame; //Button otwierajacy okno serwera do startu gry
 	@FXML private Button btnJoinGame; //Button otwierajacy okno aktywnych gier do dolaczenia
 	@FXML private BorderPane contentPane;
-	MainAppFactory factory;
+	private MainAppFactory factory;
 	
 	public Parent getView() {
 		return menu;
@@ -30,6 +30,10 @@ public class MenuViewController {
 	//==============DOSTEP DO APP FACTORY===========
 	public void init(MainAppFactory factory){
 		this.factory = factory;
+	}
+	
+	public MainAppFactory getFactory(){
+		return factory;
 	}
 
 	//===============KONTROLERY======================
@@ -61,14 +65,21 @@ public class MenuViewController {
 		//metoda obslugujaca nacisniecia buttona btnStartGame
 		btnStartGame.setOnAction(event->{
 			this.setGameServerViewController(factory.getGameServerViewController());
-			contentPane.setCenter(gameServerViewController.getView());
+			getContentPane().setCenter(gameServerViewController.getView());
 		});
 		
 		//metoda obslugujaca nacisniecia buttona btnJoinGame
 		btnJoinGame.setOnAction(event->{
-			contentPane.setCenter(gameChooserViewController.getView());
+			getContentPane().setCenter(gameChooserViewController.getView());
 
 		});	
+	}
+	public BorderPane getContentPane() {
+		return contentPane;
+	}
+	
+	public void setContentPane(BorderPane contentPane) {
+		this.contentPane = contentPane;
 	}
 	
 

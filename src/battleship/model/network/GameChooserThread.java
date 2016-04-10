@@ -14,16 +14,18 @@ import java.util.TimerTask;
 import battleship.gui.game.GameChooserViewController;
 import battleship.model.server.Server;
 import javafx.collections.ObservableSet;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TableView;
 
 public class GameChooserThread extends Thread {
-    private int connectionPort = 8080; //zmienna Integer serverPort
+    private static int connectionPort = 8080; //zmienna Integer serverPort
     private InetAddress host;
-    private DatagramSocket socket;
-    private DatagramPacket packet;
+    private static DatagramSocket socket;
+    private static DatagramPacket packet;
     private boolean serverChoosen = false;
     private ObservableSet<Server> serverObservableSet;
-    private GameChooserViewController gameChooserViewController;
+    private static GameChooserViewController gameChooserViewController;
     private Set<String> serversIP = new HashSet<String>();
     private Timer timerServersAvailable;
     public GameChooserThread(ObservableSet<Server> serverObservableSet, GameChooserViewController gameChooserViewController){
@@ -39,24 +41,11 @@ public class GameChooserThread extends Thread {
 			socket.setBroadcast(true);
 			byte[] sendData = "LOOKING_FOR_SERVERS".getBytes();
 			
-			/*
-			timerServersAvailable = new Timer();
-			timerServersAvailable.scheduleAtFixedRate((new TimerTask() {
-				  @Override
-				  public void run() {
-					  System.out.println("TIMER EVENT");
-					  serverObservableSet.clear();
-					  serversIP.clear();
-				  }
-				}), 5000,5000);
-
-			*/
-			
 			while(!gameChooserViewController.ServerSelected()){
 				try{
 				    packet = new DatagramPacket(sendData, sendData.length,InetAddress.getByName("255.255.255.255"), connectionPort);
 				    socket.send(packet);
-				    Thread.sleep(1000);
+				    Thread.sleep(500);
 				    byte[] recvBuf = new byte[15000];
 				    DatagramPacket receivePacket = new DatagramPacket(recvBuf, recvBuf.length);
 				    socket.setSoTimeout(1000);
@@ -80,15 +69,43 @@ public class GameChooserThread extends Thread {
 				
 				catch (SocketTimeoutException ex){
 					continue;
-				}
-
-			    
+				}    
 			}
 		}
 		
 		catch (Exception ex){
 			ex.printStackTrace();
 		}
+	}
+	
+	public static boolean connectToServer(String ServerIP){
+		boolean connection = false;
+
+		while(!connection){
+		try{
+			byte[] sendData = "CONNECTION_WANTED".getBytes();
+		    packet = new DatagramPacket(sendData, sendData.length,InetAddress.getByName(ServerIP), connectionPort);
+		    socket.send(packet);
+		    Thread.sleep(200);
+		    byte[] recvBuf = new byte[15000];
+		    DatagramPacket receivePacket = new DatagramPacket(recvBuf, recvBuf.length);
+		    socket.setSoTimeout(1000);
+		    socket.receive(receivePacket);
+            String pakiet = new String(receivePacket.getData()).trim();
+            String[] pakietArray = pakiet.split(",");
+            
+        	System.out.println(pakietArray);
+
+            if (pakietArray[0].equals("SERVER_CLIENT_CONNECTION_OPEN")){
+            	connection = true;
+            }
+		}
+		
+		catch (Exception ex){
+			return connection;
+		}
+	}
+		return connection;
 	}
 	
 	

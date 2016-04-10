@@ -3,6 +3,7 @@ package battleship.gui.game;
 import battleship.gui.menu.MenuViewController;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
+import javafx.scene.input.MouseEvent;
 
 /**
  * 
@@ -12,7 +13,7 @@ import javafx.scene.Parent;
 public class GameClientViewController {
 
 	@FXML private Parent root;
-
+	
 	public Parent getView() {
 		return root;
 	}
@@ -27,4 +28,9 @@ public class GameClientViewController {
 	public void setGameChooserViewController(GameChooserViewController gameChooserViewController) {
 		this.gameChooserViewController = gameChooserViewController;
 	}	
+	
+	@FXML
+	public void PlayerClickedAction(MouseEvent e){
+		
+	}
 }
