@@ -69,7 +69,6 @@ public class GameChooserThread extends Thread {
 				
 				catch (SocketTimeoutException ex){
 					ex.printStackTrace();
-					continue;
 				}    
 			}
 		}

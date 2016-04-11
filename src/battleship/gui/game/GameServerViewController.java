@@ -168,7 +168,8 @@ public class GameServerViewController {
 						serverNetworkConnectionThread = new ServerNetworkConnectionThread(textLogServer,serverProcedure,getGameServerViewController());
 						serverNetworkConnectionThread.start(); //odpalenie watka
 						serverNetworkConnectionThread.join(); //oczekiwanie na zakonczenie threada
-						
+						textLogServer.appendText("[SERVER] PO PROCEDURZE CONNECTION... \n");
+
 						//Odpalenie nowego threada do gry
 						serverNetworkGameThread = new ServerNetworkGameThread(textLogServer,serverProcedure,getGameServerViewController());
 						serverNetworkGameThread.start(); //odpalenie watka

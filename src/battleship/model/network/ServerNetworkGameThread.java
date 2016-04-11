@@ -13,8 +13,9 @@ public class ServerNetworkGameThread extends Thread {
 	private ServerProcedure serverProcedure;
 	private GameServerViewController gameServerViewController;
 	
-	boolean connectedToClient;
-	
+	private boolean connectedToClient;
+	private boolean gameOver = false;
+
 	private ServerSocket serverSocket; //Deklaracja pojedynczego serverSocketa
     private Socket serverConnection; //Socket polaczenia
 	private int connectionPort = 8080;
@@ -26,15 +27,21 @@ public class ServerNetworkGameThread extends Thread {
 	}
 
 	public void run(){
-		while(true){
+		textLogServer.appendText("[SERVER] DRUGI WATEK");
+
+		while(!gameOver){
 			try{
-				switch (serverProcedure.getServerProcedure()){
-				case CONNECT_TO_CLIENT:{
+				switch (serverProcedure.getServerProcedure().toString()){
+				case "CONNECT_TO_CLIENT":{
+					textLogServer.appendText("[SERVER] Connect to client process");
 					connectToClient();
+					textLogServer.appendText("[SERVER] Connected to client: "+connectedToClient);
+
 				}
 				
-				case DEPLOY_SHIPS:{
-					
+				case "DEPLOY_SHIPS":{
+					textLogServer.appendText("[SERVER] DEPLOY!!... \n");
+					Thread.sleep(1000);
 				}
 				default:
 					break;
@@ -51,6 +58,7 @@ public class ServerNetworkGameThread extends Thread {
 	private void connectToClient(){
 		connectedToClient = false;
 		try{
+			textLogServer.appendText("[SERVER] Connect to client inside... \n");
 			serverSocket = new ServerSocket(connectionPort);
 			serverSocket.setReuseAddress(true);
 			textLogServer.appendText("[SERVER] Oczekiwanie na polaczenie z klientem... \n");
@@ -61,6 +69,7 @@ public class ServerNetworkGameThread extends Thread {
 				connectedToClient = true;
 				serverProcedure.setServerProcedure(Procedure.DEPLOY_SHIPS);
 			}
+			
 		}
 		
 		catch (Exception ex){

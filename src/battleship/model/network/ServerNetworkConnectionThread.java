@@ -94,5 +94,6 @@ public class ServerNetworkConnectionThread extends Thread {
         		
         	}
         }
+        serverUDPSocket.close();
 	}
 }

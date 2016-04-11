@@ -1,6 +1,8 @@
 package battleship.gui.game;
 
 import battleship.gui.menu.MenuViewController;
+import battleship.model.client.ClientProcedure;
+import battleship.model.network.ClientNetworkGameThread;
 import battleship.model.server.Server;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -24,13 +26,18 @@ public class GameClientViewController {
 	@FXML private TextField textFieldServerPort;
 	@FXML private TextArea textLogServer;
 	
+	//Button
+	@FXML private Button btnStartGame;
 	//Grid Pane do gry
 	@FXML private GridPane Player1GridPane;
 	
-	@FXML private Button btnStartGame;
-
 	//Zmienne sieciowe
 	private Server gameServer;
+	private ClientProcedure clientProcedure;
+
+	//WATKI
+	private ClientNetworkGameThread clientNetworkGameThread;
+
 	
 	public Parent getView() {
 		return root;
@@ -59,5 +66,20 @@ public class GameClientViewController {
 	@FXML
 	public void PlayerClickedAction(MouseEvent e){
 		
+	}
+	
+	//METODA ODPALANA PRZY TWORZENIU NOWEGO SERWERA
+	@FXML
+	public void initialize(){
+		btnStartGame.setOnAction(e->{
+			textLogServer.appendText(gameServer.getServerIP());
+			clientNetworkGameThread = new ClientNetworkGameThread(textLogServer, clientProcedure, this,gameServer);
+			clientNetworkGameThread.start();
+			try {
+				clientNetworkGameThread.join();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		});
 	}
 }

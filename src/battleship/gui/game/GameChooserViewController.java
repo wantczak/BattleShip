@@ -71,6 +71,8 @@ public class GameChooserViewController {
 				if (event.getClickCount() == 2 && (! row.isEmpty()) ){
 					Server rowData = row.getItem();
 					System.out.println("ROW DATA: "+rowData);
+					System.out.println("ROW DATA: "+rowData.getServerIP());
+
 					serverSelected = true;
 					if(GameChooserThread.connectToServer(rowData.getServerIP())){
 						ClientGameProcess(rowData);
@@ -101,8 +103,9 @@ public class GameChooserViewController {
 	private void ClientGameProcess(Server gameServer){
 		try{
 			this.setGameClientViewController(menuViewController.getFactory().getGameClientViewController()); //utworzenie nowej instancji gry
-			menuViewController.getContentPane().setCenter(gameClientViewController.getView()); //pokazanie okna gry w BorderPane
+			System.out.println(gameServer);
 			gameClientViewController.setGameServer(gameServer); //przekazanie wybranego Servera do okna gry
+			menuViewController.getContentPane().setCenter(gameClientViewController.getView()); //pokazanie okna gry w BorderPane
 			
 		}
 		
