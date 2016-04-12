@@ -18,7 +18,7 @@ public class ServerNetworkGameThread extends Thread {
 
 	private ServerSocket serverSocket; //Deklaracja pojedynczego serverSocketa
     private Socket serverConnection; //Socket polaczenia
-	private int connectionPort = 8080;
+	private int connectionPort = 12345;
 	
 	public ServerNetworkGameThread(TextArea textLogServer, ServerProcedure serverProcedure, GameServerViewController gameServerViewController) {
 		this.textLogServer = textLogServer;

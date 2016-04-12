@@ -21,10 +21,10 @@ public class GameClientViewController {
 
 	@FXML private Parent root;
 	//TextFieldy ukazujace dane
-	@FXML private TextField textFieldServerGame; 
-	@FXML private TextField textFieldServerIP;
-	@FXML private TextField textFieldServerPort;
-	@FXML private TextArea textLogServer;
+	@FXML private TextField textFieldClientGame; 
+	@FXML private TextField textFieldClientIP;
+	@FXML private TextField textFieldClientPort;
+	@FXML private TextArea textLogClient;
 	
 	//Button
 	@FXML private Button btnStartGame;
@@ -32,7 +32,7 @@ public class GameClientViewController {
 	@FXML private GridPane Player1GridPane;
 	
 	//Zmienne sieciowe
-	private Server gameServer;
+	private Server gameServer = null;
 	private ClientProcedure clientProcedure;
 
 	//WATKI
@@ -72,8 +72,12 @@ public class GameClientViewController {
 	@FXML
 	public void initialize(){
 		btnStartGame.setOnAction(e->{
-			textLogServer.appendText(gameServer.getServerIP());
-			clientNetworkGameThread = new ClientNetworkGameThread(textLogServer, clientProcedure, this,gameServer);
+			System.out.println(gameServer);
+			System.out.println(gameServer.getServerIP());
+			System.out.println(textLogClient);
+
+			textLogClient.appendText(gameServer.getServerIP());
+			clientNetworkGameThread = new ClientNetworkGameThread(textLogClient, clientProcedure, this,gameServer);
 			clientNetworkGameThread.start();
 			try {
 				clientNetworkGameThread.join();

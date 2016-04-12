@@ -19,7 +19,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TableView;
 
 public class GameChooserThread extends Thread {
-    private static int connectionPort = 8080; //zmienna Integer serverPort
+    private static int connectionPort = 12345; //zmienna Integer serverPort
     private InetAddress host;
     private static DatagramSocket socket;
     private static DatagramPacket packet;
@@ -87,7 +87,7 @@ public class GameChooserThread extends Thread {
 			byte[] sendData = "CONNECTION_WANTED".getBytes();
 		    packet = new DatagramPacket(sendData, sendData.length,InetAddress.getByName(ServerIP), connectionPort);
 		    socket.send(packet);
-		    Thread.sleep(200);
+		   // Thread.sleep(500);
 		    byte[] recvBuf = new byte[15000];
 		    DatagramPacket receivePacket = new DatagramPacket(recvBuf, recvBuf.length);
 		    socket.receive(receivePacket);

@@ -24,7 +24,7 @@ public class NetworkConnection {
 
 	//DEKLARACJA ZMIENNYCH
 	private String localIP; //zmienna String serverIP
-    private int connectionPort = 8080; //zmienna Integer serverPort
+    private int connectionPort = 12345; //zmienna Integer serverPort
     private Socket serverConnection;
     private boolean connectionStatus;
 

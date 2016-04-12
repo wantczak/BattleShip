@@ -22,7 +22,7 @@ public class ServerNetworkConnectionThread extends Thread {
     private DatagramSocket serverUDPSocket;
     private DatagramPacket packet;
     
-    private int connectionPort = 8080; //zmienna Integer serverPort
+    private int connectionPort = 12345; //zmienna Integer serverPort
     private TextArea textLogServer;
     private ServerProcedure serverProcedure;
     private boolean clientConnectionOpen = false;
@@ -58,9 +58,7 @@ public class ServerNetworkConnectionThread extends Thread {
         		packet = new DatagramPacket(recvBuf, recvBuf.length);
                 serverUDPSocket.receive(packet);
                 String pakiet = new String(packet.getData()).trim();
-                
-                System.out.println(pakiet);
-                
+                                
                 switch (pakiet){
                 case "LOOKING_FOR_SERVERS":{
                     byte[] sendData = ("SERVER_AVAILABLE"+","+"Wojtek").getBytes();//Imie usera oczekujacego na gre wstawiono na stale
