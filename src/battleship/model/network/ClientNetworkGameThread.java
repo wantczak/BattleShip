@@ -7,6 +7,7 @@ import java.net.UnknownHostException;
 
 import battleship.gui.game.GameClientViewController;
 import battleship.model.client.ClientProcedure;
+import battleship.model.client.ClientProcedure.Procedure;
 import battleship.model.server.Server;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
@@ -34,20 +35,23 @@ public class ClientNetworkGameThread extends Thread {
 		while(!gameOver){
 			if(clientSocket == null){
 				try {
-					System.out.println(textLogClient);
-					textLogClient.appendText("Server IP: "+gameServer.getServerIP());
-					
+					textLogClient.appendText("[CLIENT]: Proba podlaczenia do serwera:  "+gameServer.getServerIP()+"\n");
 					InetAddress serverAddress = InetAddress.getByName(gameServer.getServerIP()); 
-					clientSocket = new Socket(serverAddress, 12345);
+					clientSocket = new Socket(serverAddress.getHostName(), 12345);
+					textLogClient.appendText("[CLIENT]: Status polaczenia:  "+clientSocket.isConnected()+"\n");
+					if (clientSocket.isConnected()) clientProcedure.setClientProcedure(Procedure.DEPLOY_SHIPS);
+					textLogClient.appendText("\n ROZPOCZECIE GRY!");
+					textLogClient.appendText("\n ROZSTAW STATKI!");
+
+
 				} catch (UnknownHostException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
-			   
+			
+			 
 		}
 	}
 

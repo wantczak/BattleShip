@@ -3,6 +3,7 @@ package battleship.gui.game;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.SocketException;
+import java.util.Optional;
 
 import battleship.gui.menu.MenuViewController;
 import battleship.model.board.Board;
@@ -18,6 +19,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -90,7 +92,7 @@ public class GameServerViewController {
 	private void initialize(){
 		serverProcedure = new ServerProcedure(Procedure.START_GAME);
 		btnStartGame.setOnAction(e->{
-			if (serverProcedure.getServerProcedure()==Procedure.START_GAME)	startGameProcedure(); //Odpalenie metody startGame, i utworzenie nowego Thread
+			if (serverProcedure.getServerProcedure()==Procedure.START_GAME){nameDialog();	startGameProcedure();} //Odpalenie metody startGame, i utworzenie nowego Thread
 			else if(serverProcedure.getServerProcedure()==Procedure.DEPLOY_SHIPS) textLogServer.appendText("\n Nie skonczono procedury ukladania statkow. Dokoncz procedury i kliknij w przycisk START");
 			
 		});		
@@ -107,11 +109,12 @@ public class GameServerViewController {
 		Node src = (Node) e.getSource();
 		if (serverProcedure.getServerProcedure() == Procedure.DEPLOY_SHIPS){
 			//TO BEDZIE DZIALAC PRZY TESTACH SIECIOWYCH.
+			player1board.setViewControllerReference(this);
+			player1board.locateShips((int)GridPane.getColumnIndex(src),(int) GridPane.getRowIndex(src));
+			checkFields(player1board);
+
 		}
 		
-		player1board.setViewControllerReference(this);
-		player1board.locateShips((int)GridPane.getColumnIndex(src),(int) GridPane.getRowIndex(src));
-		checkFields(player1board);
 	}
 
 	private void checkFields(Board board) {
@@ -171,11 +174,10 @@ public class GameServerViewController {
 						textLogServer.appendText("[SERVER] PO PROCEDURZE CONNECTION... \n");
 
 						//Odpalenie nowego threada do gry
+						serverProcedure.setServerProcedure(Procedure.CONNECT_TO_CLIENT);
 						serverNetworkGameThread = new ServerNetworkGameThread(textLogServer,serverProcedure,getGameServerViewController());
 						serverNetworkGameThread.start(); //odpalenie watka
-						serverNetworkGameThread.join(); //oczekiwanie na zakonczenie threada
-						//textLogServer.appendText("\n BBBB!");
-						//serverProcedure.setServerProcedure(Procedure.DEPLOY_SHIPS);
+						//serverNetworkGameThread.join(); //oczekiwanie na zakonczenie threada
 						
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -184,11 +186,21 @@ public class GameServerViewController {
 				
 				//PROCEDURA DEPLOY_SHIPS
 				if (serverProcedure.getServerProcedure() == Procedure.DEPLOY_SHIPS){
-					textLogServer.appendText("\n ROZPOCZECIE GRY!");
-					textLogServer.appendText("\n ROZSTAW STATKI!");
 				}
 		     }
 		});  
 		startGameThread.start();
 	}
+	
+	private void nameDialog(){
+		TextInputDialog dialog = new TextInputDialog("Gracz1");
+		dialog.setTitle("Imie gracza");
+		dialog.setHeaderText("Imie gracza");
+		dialog.setContentText("Podaj swoje imie:");
+		Optional<String> result = dialog.showAndWait();
+		if (result.isPresent()){
+			textFieldServerGame.setText(result.get());
+		}		
+	}
+
 }

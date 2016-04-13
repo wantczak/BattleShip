@@ -27,21 +27,21 @@ public class ServerNetworkGameThread extends Thread {
 	}
 
 	public void run(){
-		textLogServer.appendText("[SERVER] DRUGI WATEK");
+		textLogServer.appendText("[SERVER] DRUGI WATEK \n");
 
 		while(!gameOver){
 			try{
-				switch (serverProcedure.getServerProcedure().toString()){
-				case "CONNECT_TO_CLIENT":{
-					textLogServer.appendText("[SERVER] Connect to client process");
+				switch (serverProcedure.getServerProcedure()){
+				case CONNECT_TO_CLIENT:{
+					textLogServer.appendText("[SERVER] Connect to client process \n");
 					connectToClient();
 					textLogServer.appendText("[SERVER] Connected to client: "+connectedToClient);
-
+					textLogServer.appendText("\n ROZPOCZECIE GRY!");
+					textLogServer.appendText("\n ROZSTAW STATKI!");
 				}
 				
-				case "DEPLOY_SHIPS":{
-					textLogServer.appendText("[SERVER] DEPLOY!!... \n");
-					Thread.sleep(1000);
+				case DEPLOY_SHIPS:{
+					//Thread.sleep(1000);
 				}
 				default:
 					break;
@@ -58,7 +58,6 @@ public class ServerNetworkGameThread extends Thread {
 	private void connectToClient(){
 		connectedToClient = false;
 		try{
-			textLogServer.appendText("[SERVER] Connect to client inside... \n");
 			serverSocket = new ServerSocket(connectionPort);
 			serverSocket.setReuseAddress(true);
 			textLogServer.appendText("[SERVER] Oczekiwanie na polaczenie z klientem... \n");

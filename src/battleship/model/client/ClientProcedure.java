@@ -16,15 +16,15 @@ public class ClientProcedure {
 
 	Procedure procedure;
 	
-	public ClientProcedure(Procedure procedure){
-		this.procedure = procedure;
+	public ClientProcedure(Procedure startGame){
+		this.procedure = startGame;
 	}
 	
-	public Procedure getServerProcedure(){
+	public Procedure getClientProcedure(){
 		return procedure;
 	}
 	
-	public void setServerProcedure(Procedure procedure){
+	public void setClientProcedure(Procedure procedure){
 		this.procedure = procedure;
 	}
 }
