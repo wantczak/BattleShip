@@ -12,11 +12,12 @@ import battleship.model.server.ServerProcedure.Procedure;
  */
 
 public class ShipFactory {
-	public BoardState[][] board;
-	public GameViewController viewController;
+	
+	BoardState[][] board;
+	GameViewController viewController;
 
-	public ShipFactory(BoardState[][] board,GameViewController viewController) {
-		this.board = board;
+	public ShipFactory(Board board,GameViewController viewController) {
+		this.board = board.getBoardState();
 		this.viewController = viewController;
 	}
 	
@@ -26,6 +27,7 @@ public class ShipFactory {
 											// początkowy czy punkt wskazujący
 											// kierunek
 	private Point poczatek; // początek statku
+	int iloscStatkow = 8;
 	
 	/**
 	 * Metoda rozmieszczająca statki na planszy
@@ -37,7 +39,7 @@ public class ShipFactory {
 
 		Point punktKierunku; // punkt wskazania w którym kierunku układać statek
 		Point koniec = null; // punkt końcowy statku
-		int iloscStatkow = 8;
+		
 		int dlugosc; // dlugość wstawianego statku
 		
 			if (iloscStatkow > 0) {

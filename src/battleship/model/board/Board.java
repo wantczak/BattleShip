@@ -11,8 +11,10 @@ import battleship.gui.game.GameViewController;
  */
 
 public class Board {
+	
 	private BoardState[][] board = new BoardState[11][11]; //Tablica ze stanami planszy
 	private GameViewController viewController;
+	private ShipFactory shipFactory;
 	
 	public Board() {
 		resetBoard();
@@ -155,15 +157,6 @@ public class Board {
 			++t;
 		}
 	}
-	
-	
-	ShipFactory shipFactory = new ShipFactory(board, viewController);
-	
-	public void locateShips(int x, int y){
-		shipFactory.locateShip(x, y);
-	}
-	
-	
 	//ograniczenie współrzędnych do przedziału 0-10.
 	private int limitValue(int param){
 		if(param<0) return 0;

@@ -6,6 +6,7 @@ import java.net.SocketException;
 import battleship.gui.menu.MenuViewController;
 import battleship.model.board.Board;
 import battleship.model.board.BoardState;
+import battleship.model.board.ShipFactory;
 import battleship.model.network.NetworkConnection;
 import battleship.model.server.ServerProcedure;
 import battleship.model.server.ServerProcedure.Procedure;
@@ -41,6 +42,7 @@ public class GameServerViewController implements GameViewController{
 
 	Board player1board = new Board();
 	Board player2board = new Board();
+	ShipFactory shipFactory = new ShipFactory(player1board, this);
 
 	//Deklaracja thread�w
 	Thread startGameThread;
@@ -101,7 +103,7 @@ public class GameServerViewController implements GameViewController{
 //		 System.out.println("Row: "+ GridPane.getRowIndex(src));
 //		 System.out.println("Column: "+ GridPane.getColumnIndex(src));
 		player1board.setViewControllerReference(this);
-		player1board.locateShips((int)GridPane.getColumnIndex(src),(int) GridPane.getRowIndex(src));
+		shipFactory.locateShip((int)GridPane.getColumnIndex(src),(int) GridPane.getRowIndex(src));
 		redraw1GridPane(player1board);
 
 	}
