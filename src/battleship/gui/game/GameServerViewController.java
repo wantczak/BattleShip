@@ -22,7 +22,7 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.GridPane;
 
-public class GameServerViewController {
+public class GameServerViewController implements GameViewController{
 
 	@FXML private Parent root;
 	@FXML private GridPane Player1GridPane;
@@ -56,11 +56,13 @@ public class GameServerViewController {
 	}
 	
 	//METODA UZUPELNIAJACA AREALOGS
+	@Override
 	public void setTextAreaLogi(String message){
 		this.textLogServer.appendText("\n"+message);
 	}
 	
 	//METODA USTAWIAJACA PROCEDURE Z ZEWNATRZ KLASY
+	@Override
 	public void setProcedure(Procedure procedure){
 		serverProcedure.setServerProcedure(procedure);
 	}
@@ -107,8 +109,8 @@ public class GameServerViewController {
 	@FXML
 	private void Player2ClickedAction(MouseEvent e){
 		Node src = (Node) e.getSource();
-		 System.out.println("Row: "+ GridPane.getRowIndex(src));
-		 System.out.println("Column: "+ GridPane.getColumnIndex(src));
+//		 System.out.println("Row: "+ GridPane.getRowIndex(src));
+//		 System.out.println("Column: "+ GridPane.getColumnIndex(src));
 		player2board.setViewControllerReference(this);
 		int x = (int) GridPane.getColumnIndex(src);
 		int y = (int) GridPane.getRowIndex(src);
