@@ -2,6 +2,7 @@ package battleship.model.board;
 
 
 import battleship.gui.game.GameViewController;
+import battleship.model.board.ShipFactory.Kierunek;
 
 /**
  * Model planszy przechowującej stany poszczegulnych pól gry
@@ -14,7 +15,6 @@ public class Board {
 	
 	private BoardState[][] board = new BoardState[11][11]; //Tablica ze stanami planszy
 	private GameViewController viewController;
-	private ShipFactory shipFactory;
 	
 	public Board() {
 		resetBoard();
@@ -62,14 +62,17 @@ public class Board {
 	public BoardState shot(int x, int y){
 		if (board[x][y] == BoardState.PUSTE_POLE){
 			board[x][y] = BoardState.PUDLO;
+			viewController.setTextAreaLogi("Pudło!");
 			return BoardState.PUDLO;
 		} else {
 			board[x][y] = BoardState.STATEK_TRAFIONY;
 			if(isSunk(x,y)){
 				board[x][y] = BoardState.STATEK_ZATOPIONY;
 				setSunk(x, y);
+				viewController.setTextAreaLogi("Trafiony zatopiony!");
 				return BoardState.STATEK_ZATOPIONY;
 			}
+			viewController.setTextAreaLogi("Trafiony!");
 			return BoardState.STATEK_TRAFIONY;
 		}
 	}
