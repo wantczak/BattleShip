@@ -3,10 +3,14 @@ package battleship.gui.game;
 import java.util.Optional;
 
 import battleship.gui.menu.MenuViewController;
+<<<<<<< HEAD
 import battleship.model.client.ClientProcedure;
 import battleship.model.client.ClientProcedure.Procedure;
 import battleship.model.network.ClientNetworkGameThread;
 import battleship.model.server.Server;
+=======
+import battleship.model.server.ServerProcedure.Procedure;
+>>>>>>> refs/remotes/origin/Wydzielenie_metody_locateShips
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -21,7 +25,7 @@ import javafx.scene.layout.GridPane;
  * @author Wojciech Antczak
  *
  */
-public class GameClientViewController {
+public class GameClientViewController implements GameViewController{
 
 	@FXML private Parent root;
 	//TextFieldy ukazujace dane
@@ -64,6 +68,18 @@ public class GameClientViewController {
 	
 	public void setGameServer(Server gameServer){
 		this.gameServer = gameServer;
+	}
+
+	@Override
+	public void setTextAreaLogi(String message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setProcedure(Procedure procedure) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	

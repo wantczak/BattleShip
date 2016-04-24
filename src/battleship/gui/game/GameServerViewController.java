@@ -8,6 +8,7 @@ import java.util.Optional;
 import battleship.gui.menu.MenuViewController;
 import battleship.model.board.Board;
 import battleship.model.board.BoardState;
+import battleship.model.board.ShipFactory;
 import battleship.model.network.NetworkConnection;
 import battleship.model.network.ServerNetworkConnectionThread;
 import battleship.model.network.ServerNetworkGameThread;
@@ -27,10 +28,11 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.GridPane;
 
-public class GameServerViewController {
+public class GameServerViewController implements GameViewController{
 
 	@FXML private Parent root;
 	@FXML private GridPane Player1GridPane;
+	@FXML private GridPane Player2GridPane;
 	@FXML private Button btnStartGame;
 	
 	//TextFieldy ukazujace dane
@@ -57,7 +59,13 @@ public class GameServerViewController {
     	this.clientIP = clientIP;
     }
 	Board player1board = new Board();
+<<<<<<< HEAD
 	
+=======
+	Board player2board = new Board();
+	ShipFactory shipFactory = new ShipFactory(player1board, this);
+
+>>>>>>> refs/remotes/origin/Wydzielenie_metody_locateShips
 	//Deklaracja thread�w
 	Thread startGameThread;
 	
@@ -76,11 +84,13 @@ public class GameServerViewController {
 	}
 	
 	//METODA UZUPELNIAJACA AREALOGS
+	@Override
 	public void setTextAreaLogi(String message){
 		this.textLogServer.appendText("\n"+message);
 	}
 	
 	//METODA USTAWIAJACA PROCEDURE Z ZEWNATRZ KLASY
+	@Override
 	public void setProcedure(Procedure procedure){
 		serverProcedure.setServerProcedure(procedure);
 	}
@@ -114,21 +124,76 @@ public class GameServerViewController {
 			checkFields(player1board);
 
 		}
+<<<<<<< HEAD
 		
-	}
+=======
+//		 System.out.println("Row: "+ GridPane.getRowIndex(src));
+//		 System.out.println("Column: "+ GridPane.getColumnIndex(src));
+		player1board.setViewControllerReference(this);
+		shipFactory.locateShip((int)GridPane.getColumnIndex(src),(int) GridPane.getRowIndex(src));
+		redraw1GridPane(player1board);
 
-	private void checkFields(Board board) {
+>>>>>>> refs/remotes/origin/Wydzielenie_metody_locateShips
+	}
+	
+	@FXML
+	private void Player2ClickedAction(MouseEvent e){
+		Node src = (Node) e.getSource();
+//		 System.out.println("Row: "+ GridPane.getRowIndex(src));
+//		 System.out.println("Column: "+ GridPane.getColumnIndex(src));
+		player2board.setViewControllerReference(this);
+		int x = (int) GridPane.getColumnIndex(src);
+		int y = (int) GridPane.getRowIndex(src);
+		if(player2board.getBoardCell(x, y) == BoardState.PUSTE_POLE){
+			player2board.setBoardCell(x,y,player1board.shot(x, y));
+			if(player2board.getBoardCell(x, y) == BoardState.STATEK_ZATOPIONY)
+				player2board.setSunk(x, y);
+		} else {
+			setTextAreaLogi("Pole było już ostrzelane, strzelaj jeszcze raz!");
+		}
+		redraw1GridPane(player1board);
+		redraw2GridPane(player2board);
+	}
+	//metoda przerysowująca pierwszą planszę
+	private void redraw1GridPane(Board board) {
 		Button btn;
 		BoardState[][] boardSt = board.getBoardState();
 		for (int i = 0; i < boardSt.length; i++) {
 			for (int j = 0; j < boardSt[i].length; j++){
 				btn = (Button)getNodeFromGridPane(Player1GridPane, i, j);
-				if (boardSt[i][j] == BoardState.STATEK) {
+				if (boardSt[i][j] == BoardState.STATEK) 
 					btn.setStyle("-fx-background-color: slateblue;");
-				}
-				if (boardSt[i][j] == BoardState.PUSTE_POLE) {
+				if (boardSt[i][j] == BoardState.PUSTE_POLE)
 					btn.setStyle("default");
-				}
+				if (boardSt[i][j] == BoardState.PUDLO) 
+					btn.setStyle("-fx-background-color: grey;");
+				if (boardSt[i][j] == BoardState.STATEK_TRAFIONY) 
+					btn.setStyle("-fx-background-color: red;");
+				if (boardSt[i][j] == BoardState.STATEK_ZATOPIONY) 
+					btn.setStyle("-fx-background-color: black;");
+				
+			}
+		}
+	}
+	
+	//metoda przerysowująca drugą planszę
+	private void redraw2GridPane(Board board) {
+		Button btn;
+		BoardState[][] boardSt = board.getBoardState();
+		for (int i = 0; i < boardSt.length; i++) {
+			for (int j = 0; j < boardSt[i].length; j++){
+				btn = (Button)getNodeFromGridPane(Player2GridPane, i, j);
+				if (boardSt[i][j] == BoardState.STATEK) 
+					btn.setStyle("-fx-background-color: slateblue;");
+				if (boardSt[i][j] == BoardState.PUSTE_POLE)
+					btn.setStyle("default");
+				if (boardSt[i][j] == BoardState.PUDLO) 
+					btn.setStyle("-fx-background-color: grey;");
+				if (boardSt[i][j] == BoardState.STATEK_TRAFIONY) 
+					btn.setStyle("-fx-background-color: red;");
+				if (boardSt[i][j] == BoardState.STATEK_ZATOPIONY) 
+					btn.setStyle("-fx-background-color: black;");
+				
 			}
 		}
 	}
