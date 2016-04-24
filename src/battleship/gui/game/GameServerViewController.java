@@ -116,16 +116,9 @@ public class GameServerViewController implements GameViewController{
 		if (serverProcedure.getServerProcedure() == Procedure.DEPLOY_SHIPS){
 			//TO BEDZIE DZIALAC PRZY TESTACH SIECIOWYCH.
 			player1board.setViewControllerReference(this);
-			player1board.locateShips((int)GridPane.getColumnIndex(src),(int) GridPane.getRowIndex(src));
-			checkFields(player1board);
-
+			shipFactory.locateShip((int)GridPane.getColumnIndex(src),(int) GridPane.getRowIndex(src));
+			redraw1GridPane(player1board);
 		}
-		
-//		 System.out.println("Row: "+ GridPane.getRowIndex(src));
-//		 System.out.println("Column: "+ GridPane.getColumnIndex(src));
-		player1board.setViewControllerReference(this);
-		shipFactory.locateShip((int)GridPane.getColumnIndex(src),(int) GridPane.getRowIndex(src));
-		redraw1GridPane(player1board);
 	}
 	
 	@FXML
