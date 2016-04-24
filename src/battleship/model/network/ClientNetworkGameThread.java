@@ -15,12 +15,16 @@ import javafx.scene.control.TextArea;
 public class ClientNetworkGameThread extends Thread {
 
 	@FXML private TextArea textLogClient;
-	private ClientProcedure clientProcedure;
+	private volatile ClientProcedure clientProcedure;
 	private GameClientViewController gameClientViewController;
 	private Server gameServer;
 	
 	private Socket clientSocket;
 	private boolean gameOver = false;
+	private boolean playerTurn = false;
+	
+	//Deklaracja thread
+	Thread threadConnectionToServer;
 	
 	
 	public ClientNetworkGameThread(TextArea textLogClient, ClientProcedure clientProcedure, GameClientViewController gameClientViewController, Server gameServer) {
@@ -33,26 +37,57 @@ public class ClientNetworkGameThread extends Thread {
 	//=========================METODA GLOWNA WATKU=================================	Q
 	public void run(){
 		while(!gameOver){
-			if(clientSocket == null){
-				try {
-					textLogClient.appendText("[CLIENT]: Proba podlaczenia do serwera:  "+gameServer.getServerIP()+"\n");
-					InetAddress serverAddress = InetAddress.getByName(gameServer.getServerIP()); 
-					clientSocket = new Socket(serverAddress.getHostName(), 12345);
-					textLogClient.appendText("[CLIENT]: Status polaczenia:  "+clientSocket.isConnected()+"\n");
-					if (clientSocket.isConnected()) clientProcedure.setClientProcedure(Procedure.DEPLOY_SHIPS);
-					textLogClient.appendText("\n ROZPOCZECIE GRY!");
-					textLogClient.appendText("\n ROZSTAW STATKI!");
-
-
-				} catch (UnknownHostException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+			switch (clientProcedure.getClientProcedure()){
+			case CONNECT_TO_SERVER:{
+				clientConnectionProcedure();
+				break;
 			}
 			
-			 
+			case DEPLOY_SHIPS:{
+				//textLogClient.appendText("\n ROZPOCZECIE GRY!");
+				//textLogClient.appendText("\n ROZSTAW STATKI!");
+				break;
+			}
+			
+			default:
+				break;
+
 		}
+		}
+	}
+	
+	
+	private void clientConnectionProcedure() {
+		if(clientSocket == null){
+			try {
+				Runnable clientConnection = ()->{
+					try{
+						textLogClient.appendText("[CLIENT]: Proba podlaczenia do serwera:  "+gameServer.getServerIP()+"\n");
+						InetAddress serverAddress = InetAddress.getByName(gameServer.getServerIP()); 
+						clientSocket = new Socket(serverAddress.getHostName(), 12345);
+						textLogClient.appendText("[CLIENT]: Status polaczenia:  "+clientSocket.isConnected()+"\n");
+						if (clientSocket.isConnected()) clientProcedure.setClientProcedure(Procedure.DEPLOY_SHIPS);
+					}
+					
+					catch(Exception ex){
+						ex.printStackTrace();
+					}
+				};
+				threadConnectionToServer = new Thread(clientConnection); //utworzenie nowego Threada z metoda do polaczenia
+				threadConnectionToServer.start(); //wystartowanie Threada
+				threadConnectionToServer.join(); //oczekiwanie na zakonczenie metody
+			}
+			
+			catch (Exception ex){
+				ex.printStackTrace();
+			}
+
+		
+		}
+	}
+
+	private void playingGame(){
+		
 	}
 
 }

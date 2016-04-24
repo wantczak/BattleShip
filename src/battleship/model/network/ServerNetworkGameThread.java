@@ -36,11 +36,12 @@ public class ServerNetworkGameThread extends Thread {
 					textLogServer.appendText("[SERVER] Connect to client process \n");
 					connectToClient();
 					textLogServer.appendText("[SERVER] Connected to client: "+connectedToClient);
-					textLogServer.appendText("\n ROZPOCZECIE GRY!");
-					textLogServer.appendText("\n ROZSTAW STATKI!");
 				}
 				
 				case DEPLOY_SHIPS:{
+					//textLogServer.appendText("\n ROZPOCZECIE GRY!");
+					//textLogServer.appendText("\n ROZSTAW STATKI!");
+
 					//Thread.sleep(1000);
 				}
 				default:
@@ -62,7 +63,7 @@ public class ServerNetworkGameThread extends Thread {
 			serverSocket.setReuseAddress(true);
 			textLogServer.appendText("[SERVER] Oczekiwanie na polaczenie z klientem... \n");
 			serverConnection = serverSocket.accept();
-			textLogServer.appendText("[SERVER] Nazwiazano polaczenie z klientem: [IP]:"+serverConnection.getInetAddress()+" [PORT]:"+serverConnection.getPort()+"\n");
+			textLogServer.appendText("[SERVER] Nazwiazano polaczenie z klientem: [IP]: "+serverConnection.getInetAddress()+" [PORT]: "+serverConnection.getPort()+"\n");
 
 			if (serverConnection.isConnected()){
 				connectedToClient = true;
@@ -74,5 +75,9 @@ public class ServerNetworkGameThread extends Thread {
 		catch (Exception ex){
 			ex.printStackTrace();
 		}
+	}
+	
+	private void handlingGame(){
+		
 	}
 }

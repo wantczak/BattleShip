@@ -9,6 +9,7 @@ public class ClientProcedure {
 	public enum Procedure {
 		START_GAME,
 		CHOOSE_SERVER,
+		CONNECT_TO_SERVER,
 		DEPLOY_SHIPS,
 		READY_TO_START,
 		PLAYING_GAME
