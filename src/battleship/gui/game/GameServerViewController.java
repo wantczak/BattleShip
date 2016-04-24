@@ -58,14 +58,10 @@ public class GameServerViewController implements GameViewController{
     public void setClientIP(String clientIP){
     	this.clientIP = clientIP;
     }
-	Board player1board = new Board();
-<<<<<<< HEAD
-	
-=======
+	Board player1board = new Board();	
 	Board player2board = new Board();
 	ShipFactory shipFactory = new ShipFactory(player1board, this);
 
->>>>>>> refs/remotes/origin/Wydzielenie_metody_locateShips
 	//Deklaracja thread�w
 	Thread startGameThread;
 	
@@ -124,16 +120,12 @@ public class GameServerViewController implements GameViewController{
 			checkFields(player1board);
 
 		}
-<<<<<<< HEAD
 		
-=======
 //		 System.out.println("Row: "+ GridPane.getRowIndex(src));
 //		 System.out.println("Column: "+ GridPane.getColumnIndex(src));
 		player1board.setViewControllerReference(this);
 		shipFactory.locateShip((int)GridPane.getColumnIndex(src),(int) GridPane.getRowIndex(src));
 		redraw1GridPane(player1board);
-
->>>>>>> refs/remotes/origin/Wydzielenie_metody_locateShips
 	}
 	
 	@FXML

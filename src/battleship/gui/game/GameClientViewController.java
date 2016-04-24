@@ -3,14 +3,11 @@ package battleship.gui.game;
 import java.util.Optional;
 
 import battleship.gui.menu.MenuViewController;
-<<<<<<< HEAD
 import battleship.model.client.ClientProcedure;
 import battleship.model.client.ClientProcedure.Procedure;
 import battleship.model.network.ClientNetworkGameThread;
 import battleship.model.server.Server;
-=======
-import battleship.model.server.ServerProcedure.Procedure;
->>>>>>> refs/remotes/origin/Wydzielenie_metody_locateShips
+import battleship.model.server.ServerProcedure;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -77,7 +74,7 @@ public class GameClientViewController implements GameViewController{
 	}
 
 	@Override
-	public void setProcedure(Procedure procedure) {
+	public void setProcedure(battleship.model.server.ServerProcedure.Procedure procedure) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -114,4 +111,5 @@ public class GameClientViewController implements GameViewController{
 			textFieldClientGame.setText(result.get());
 		}		
 	}
+
 }
