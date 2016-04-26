@@ -91,11 +91,7 @@ public class GameClientViewController implements GameViewController{
 		// TODO Auto-generated method stub
 		
 	}
-	
-	
 
-
-	
 //=====================METODA INITIALIZE ODPALANA PRZY TWORZENIU NOWEGO KLIENTA===========
 //========================================================================================
 	@FXML
