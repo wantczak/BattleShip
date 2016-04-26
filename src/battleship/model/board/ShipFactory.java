@@ -212,7 +212,7 @@ public class ShipFactory {
 	
 	
 	/**
-	 * Metoda pomocnicza sprawdzająca kolizje między statkami
+	 * Metoda pomocnicza sprawdzajaca kolizje miedzy statkami
 	 * 
 	 * @param point
 	 * @return
@@ -227,7 +227,7 @@ public class ShipFactory {
 		return false;
 	}
 	
-	//ograniczenie współrzędnych do przedziału 0-10.
+	//ograniczenie wspolrzednych do przedzialu 0-10.
 	private int limitValue(int param){
 		if(param<0) return 0;
 		else if (param>10) return 10;

@@ -31,8 +31,8 @@ import javafx.scene.layout.GridPane;
 public class GameServerViewController implements GameViewController{
 
 	@FXML private Parent root;
-	@FXML private GridPane Player1GridPane;
-	@FXML private GridPane Player2GridPane;
+	@FXML private GridPane serverGridPane;
+	@FXML private GridPane clientGridPane;
 	@FXML private Button btnStartGame;
 	
 	//TextFieldy ukazujace dane
@@ -58,9 +58,9 @@ public class GameServerViewController implements GameViewController{
     public void setClientIP(String clientIP){
     	this.clientIP = clientIP;
     }
-	Board player1board = new Board();	
-	Board player2board = new Board();
-	ShipFactory shipFactory = new ShipFactory(player1board, this);
+	Board serverBoard = new Board();	
+	Board clientBoard = new Board();
+	ShipFactory shipFactory = new ShipFactory(serverBoard, this);
 
 	//Deklaracja thread�w
 	Thread startGameThread;
@@ -91,9 +91,9 @@ public class GameServerViewController implements GameViewController{
 		serverProcedure.setServerProcedure(procedure);
 	}
 	
-	//ZMIENNA OKRESLAJACA POLACZENIE CLIENTA
 	
-	//METODA ODPALANA PRZY TWORZENIU NOWEGO SERWERA
+//=====================METODA INITIALIZE ODPALANA PRZY TWORZENIU NOWEGO SERWERA===========
+//========================================================================================
 	@FXML
 	private void initialize(){
 		serverProcedure = new ServerProcedure(Procedure.START_GAME);
@@ -104,101 +104,9 @@ public class GameServerViewController implements GameViewController{
 		});		
 	}
 
-//==========================================================================
-	/**
-	 * Metoda odpalana w momencie nacisniecia przycisku pola gry
-	 * @author Wojciech Antczak
-	 * @param e - pobranie Eventu od przycisniecia myszy
-	 */
-	@FXML
-	private void Player1ClickedAction(MouseEvent e) {
-		Node src = (Node) e.getSource();
-		if (serverProcedure.getServerProcedure() == Procedure.DEPLOY_SHIPS){
-			//TO BEDZIE DZIALAC PRZY TESTACH SIECIOWYCH.
-			player1board.setViewControllerReference(this);
-			shipFactory.locateShip((int)GridPane.getColumnIndex(src),(int) GridPane.getRowIndex(src));
-			redraw1GridPane(player1board);
-		}
-	}
-	
-	@FXML
-	private void Player2ClickedAction(MouseEvent e){
-		Node src = (Node) e.getSource();
-//		 System.out.println("Row: "+ GridPane.getRowIndex(src));
-//		 System.out.println("Column: "+ GridPane.getColumnIndex(src));
-		player2board.setViewControllerReference(this);
-		int x = (int) GridPane.getColumnIndex(src);
-		int y = (int) GridPane.getRowIndex(src);
-		if(player2board.getBoardCell(x, y) == BoardState.PUSTE_POLE){
-			player2board.setBoardCell(x,y,player1board.shot(x, y));
-			if(player2board.getBoardCell(x, y) == BoardState.STATEK_ZATOPIONY)
-				player2board.setSunk(x, y);
-		} else {
-			setTextAreaLogi("Pole było już ostrzelane, strzelaj jeszcze raz!");
-		}
-		redraw1GridPane(player1board);
-		redraw2GridPane(player2board);
-	}
-	//metoda przerysowująca pierwszą planszę
-	private void redraw1GridPane(Board board) {
-		Button btn;
-		BoardState[][] boardSt = board.getBoardState();
-		for (int i = 0; i < boardSt.length; i++) {
-			for (int j = 0; j < boardSt[i].length; j++){
-				btn = (Button)getNodeFromGridPane(Player1GridPane, i, j);
-				if (boardSt[i][j] == BoardState.STATEK) 
-					btn.setStyle("-fx-background-color: slateblue;");
-				if (boardSt[i][j] == BoardState.PUSTE_POLE)
-					btn.setStyle("default");
-				if (boardSt[i][j] == BoardState.PUDLO) 
-					btn.setStyle("-fx-background-color: grey;");
-				if (boardSt[i][j] == BoardState.STATEK_TRAFIONY) 
-					btn.setStyle("-fx-background-color: red;");
-				if (boardSt[i][j] == BoardState.STATEK_ZATOPIONY) 
-					btn.setStyle("-fx-background-color: black;");
-				
-			}
-		}
-	}
-	
-	//metoda przerysowująca drugą planszę
-	private void redraw2GridPane(Board board) {
-		Button btn;
-		BoardState[][] boardSt = board.getBoardState();
-		for (int i = 0; i < boardSt.length; i++) {
-			for (int j = 0; j < boardSt[i].length; j++){
-				btn = (Button)getNodeFromGridPane(Player2GridPane, i, j);
-				if (boardSt[i][j] == BoardState.STATEK) 
-					btn.setStyle("-fx-background-color: slateblue;");
-				if (boardSt[i][j] == BoardState.PUSTE_POLE)
-					btn.setStyle("default");
-				if (boardSt[i][j] == BoardState.PUDLO) 
-					btn.setStyle("-fx-background-color: grey;");
-				if (boardSt[i][j] == BoardState.STATEK_TRAFIONY) 
-					btn.setStyle("-fx-background-color: red;");
-				if (boardSt[i][j] == BoardState.STATEK_ZATOPIONY) 
-					btn.setStyle("-fx-background-color: black;");
-				
-			}
-		}
-	}
-	
-	private Node getNodeFromGridPane(GridPane gridPane, int col, int row) {
-	    for (Node node : gridPane.getChildren()) {
-	        if (GridPane.getColumnIndex(node) == col && GridPane.getRowIndex(node) == row) {
-	            return node;
-	        }
-	    }
-	    return null;
-	}
 	
 	/**
-	 * Metoda rozpoczynajaca gre. Procedura jest nastepujaca:
-	 * <ul>
-	 * <li> Utworzenie nowego Thread, ktory bedzie odpowiedzialny za operacje Network;
-	 * <li> 
-	 * <li> 
-	 * </ul>
+	 * Metoda rozpoczynajaca gre.
 	 * <p>
 	 * @author Wojciech Antczak
 	 */
@@ -241,7 +149,9 @@ public class GameServerViewController implements GameViewController{
 		});  
 		startGameThread.start();
 	}
-	
+
+
+	//====================TWORZENIE DIALOGU DO WYBORU NICKA GRACZA================
 	private void nameDialog(){
 		TextInputDialog dialog = new TextInputDialog("Gracz1");
 		dialog.setTitle("Imie gracza");
@@ -252,5 +162,94 @@ public class GameServerViewController implements GameViewController{
 			textFieldServerGame.setText(result.get());
 		}		
 	}
+	
+//==============================METODY OBSLUGI PRZYCISKOW I POLA GRY=====================
+//=======================================================================================
+	/**
+	 * Metoda odpalana w momencie nacisniecia przycisku pola gry
+	 * @author Wojciech Antczak
+	 * @param e - pobranie Eventu od przycisniecia myszy
+	 */
+	@FXML
+	private void ServerBoardClickedAction(MouseEvent e) {
+		Node src = (Node) e.getSource();
+		if (serverProcedure.getServerProcedure() == Procedure.DEPLOY_SHIPS){
+			//TO BEDZIE DZIALAC PRZY TESTACH SIECIOWYCH.
+			serverBoard.setViewControllerReference(this);
+			shipFactory.locateShip((int)GridPane.getColumnIndex(src),(int) GridPane.getRowIndex(src));
+			redraw1GridPane(serverBoard);
+		}
+	}
+	
+	@FXML
+	private void ClientBoardClickedAction(MouseEvent e){
+		Node src = (Node) e.getSource();
+		clientBoard.setViewControllerReference(this);
+		int x = (int) GridPane.getColumnIndex(src);
+		int y = (int) GridPane.getRowIndex(src);
+		if(clientBoard.getBoardCell(x, y) == BoardState.PUSTE_POLE){
+			clientBoard.setBoardCell(x,y,serverBoard.shot(x, y));
+			if(clientBoard.getBoardCell(x, y) == BoardState.STATEK_ZATOPIONY)
+				clientBoard.setSunk(x, y);
+		} else {
+			setTextAreaLogi("Pole bylo juz ostrzelane, strzelaj jeszcze raz!");
+		}
+		redraw1GridPane(serverBoard);
+		redraw2GridPane(clientBoard);
+	}
+	//metoda przerysowujaca pierwsza plansze
+	private void redraw1GridPane(Board board) {
+		Button btn;
+		BoardState[][] boardSt = board.getBoardState();
+		for (int i = 0; i < boardSt.length; i++) {
+			for (int j = 0; j < boardSt[i].length; j++){
+				btn = (Button)getNodeFromGridPane(serverGridPane, i, j);
+				if (boardSt[i][j] == BoardState.STATEK) 
+					btn.setStyle("-fx-background-color: slateblue;");
+				if (boardSt[i][j] == BoardState.PUSTE_POLE)
+					btn.setStyle("default");
+				if (boardSt[i][j] == BoardState.PUDLO) 
+					btn.setStyle("-fx-background-color: grey;");
+				if (boardSt[i][j] == BoardState.STATEK_TRAFIONY) 
+					btn.setStyle("-fx-background-color: red;");
+				if (boardSt[i][j] == BoardState.STATEK_ZATOPIONY) 
+					btn.setStyle("-fx-background-color: black;");
+				
+			}
+		}
+	}
+	
+	//metoda przerysowujaca druga plansze
+	private void redraw2GridPane(Board board) {
+		Button btn;
+		BoardState[][] boardSt = board.getBoardState();
+		for (int i = 0; i < boardSt.length; i++) {
+			for (int j = 0; j < boardSt[i].length; j++){
+				btn = (Button)getNodeFromGridPane(clientGridPane, i, j);
+				if (boardSt[i][j] == BoardState.STATEK) 
+					btn.setStyle("-fx-background-color: slateblue;");
+				if (boardSt[i][j] == BoardState.PUSTE_POLE)
+					btn.setStyle("default");
+				if (boardSt[i][j] == BoardState.PUDLO) 
+					btn.setStyle("-fx-background-color: grey;");
+				if (boardSt[i][j] == BoardState.STATEK_TRAFIONY) 
+					btn.setStyle("-fx-background-color: red;");
+				if (boardSt[i][j] == BoardState.STATEK_ZATOPIONY) 
+					btn.setStyle("-fx-background-color: black;");
+				
+			}
+		}
+	}
+	
+	private Node getNodeFromGridPane(GridPane gridPane, int col, int row) {
+	    for (Node node : gridPane.getChildren()) {
+	        if (GridPane.getColumnIndex(node) == col && GridPane.getRowIndex(node) == row) {
+	            return node;
+	        }
+	    }
+	    return null;
+	}
+
+	
 
 }

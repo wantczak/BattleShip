@@ -40,12 +40,12 @@ public class ClientNetworkGameThread extends Thread {
 			switch (clientProcedure.getClientProcedure()){
 			case CONNECT_TO_SERVER:{
 				clientConnectionProcedure();
+				textLogClient.appendText("\n ROZPOCZECIE GRY!");
+				textLogClient.appendText("\n ROZSTAW STATKI!");
 				break;
 			}
 			
 			case DEPLOY_SHIPS:{
-				//textLogClient.appendText("\n ROZPOCZECIE GRY!");
-				//textLogClient.appendText("\n ROZSTAW STATKI!");
 				break;
 			}
 			
@@ -63,9 +63,11 @@ public class ClientNetworkGameThread extends Thread {
 				Runnable clientConnection = ()->{
 					try{
 						textLogClient.appendText("[CLIENT]: Proba podlaczenia do serwera:  "+gameServer.getServerIP()+"\n");
+						Thread.sleep(10);
 						InetAddress serverAddress = InetAddress.getByName(gameServer.getServerIP()); 
 						clientSocket = new Socket(serverAddress.getHostName(), 12345);
 						textLogClient.appendText("[CLIENT]: Status polaczenia:  "+clientSocket.isConnected()+"\n");
+						Thread.sleep(10);
 						if (clientSocket.isConnected()) clientProcedure.setClientProcedure(Procedure.DEPLOY_SHIPS);
 					}
 					

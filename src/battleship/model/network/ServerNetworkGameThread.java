@@ -1,5 +1,7 @@
 package battleship.model.network;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -15,10 +17,18 @@ public class ServerNetworkGameThread extends Thread {
 	
 	private boolean connectedToClient;
 	private boolean gameOver = false;
+	private boolean opponentShipsReady = false;
 
 	private ServerSocket serverSocket; //Deklaracja pojedynczego serverSocketa
     private Socket serverConnection; //Socket polaczenia
 	private int connectionPort = 12345;
+	
+	//WATKI W KLASIE
+	private Thread threadWaitingForOpponentShips;
+	
+	//BUFFORY IN I OUT
+	DataInputStream inStreamServer;
+	DataOutputStream outStreamServer ;
 	
 	public ServerNetworkGameThread(TextArea textLogServer, ServerProcedure serverProcedure, GameServerViewController gameServerViewController) {
 		this.textLogServer = textLogServer;
@@ -36,14 +46,25 @@ public class ServerNetworkGameThread extends Thread {
 					textLogServer.appendText("[SERVER] Connect to client process \n");
 					connectToClient();
 					textLogServer.appendText("[SERVER] Connected to client: "+connectedToClient);
+					textLogServer.appendText("\n ROZPOCZECIE GRY!");
+					textLogServer.appendText("\n ROZSTAW STATKI!");
+					break;
 				}
 				
 				case DEPLOY_SHIPS:{
-					//textLogServer.appendText("\n ROZPOCZECIE GRY!");
-					//textLogServer.appendText("\n ROZSTAW STATKI!");
-
-					//Thread.sleep(1000);
+					break;
 				}
+				
+				case READY_TO_START:{
+					waitingForDeployedShips();
+					break;
+				}
+				
+				case PLAYING_GAME:{
+					handlingGame();
+					break;
+				}
+
 				default:
 					break;
 				}
@@ -67,6 +88,8 @@ public class ServerNetworkGameThread extends Thread {
 
 			if (serverConnection.isConnected()){
 				connectedToClient = true;
+				inStreamServer = new DataInputStream(serverConnection.getInputStream());
+				outStreamServer = new DataOutputStream(serverConnection.getOutputStream());
 				serverProcedure.setServerProcedure(Procedure.DEPLOY_SHIPS);
 			}
 			
@@ -76,6 +99,35 @@ public class ServerNetworkGameThread extends Thread {
 			ex.printStackTrace();
 		}
 	}
+	
+	private void waitingForDeployedShips() throws InterruptedException{
+		Runnable serverWaitingForOpponentShips = ()->{
+			try{
+				textLogServer.appendText("\n [SERVER]: Oczekiwanie na zakonczenie rozstawiania statkow przez Przeciwnika \n");
+				Thread.sleep(10);
+				while(!opponentShipsReady){
+					if(inStreamServer.readUTF().equals("READY")){
+						outStreamServer.writeUTF("READY");
+						opponentShipsReady = true;
+					}
+					else{
+						Thread.sleep(100);
+					}
+					
+				
+				}
+				textLogServer.appendText("[SERVER]: ODEBRANO INFO OD PRZECIWNIKA O ZAKONCZENIU USTAWIANIU STATKOW \n");
+			}
+			
+			catch(Exception ex){
+				ex.printStackTrace();
+			}
+		};
+		threadWaitingForOpponentShips = new Thread(serverWaitingForOpponentShips); //utworzenie nowego Threada z metoda do polaczenia
+		threadWaitingForOpponentShips.start(); //wystartowanie Threada
+		threadWaitingForOpponentShips.join(); //oczekiwanie na zakonczenie metody
+	}
+	
 	
 	private void handlingGame(){
 		

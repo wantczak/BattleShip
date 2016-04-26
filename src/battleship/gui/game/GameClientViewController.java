@@ -3,12 +3,17 @@ package battleship.gui.game;
 import java.util.Optional;
 
 import battleship.gui.menu.MenuViewController;
+import battleship.model.board.Board;
+import battleship.model.board.BoardState;
+import battleship.model.board.ShipFactory;
 import battleship.model.client.ClientProcedure;
 import battleship.model.client.ClientProcedure.Procedure;
 import battleship.model.network.ClientNetworkGameThread;
+import battleship.model.network.NetworkConnection;
 import battleship.model.server.Server;
 import battleship.model.server.ServerProcedure;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
@@ -34,14 +39,22 @@ public class GameClientViewController implements GameViewController{
 	//Button
 	@FXML private Button btnStartGame;
 	//Grid Pane do gry
-	@FXML private GridPane Player1GridPane;
+	@FXML private GridPane clientGridPane;
+	@FXML private GridPane serverGridPane;
+
 	
 	//Zmienne sieciowe
 	private Server gameServer = null;
 	private ClientProcedure clientProcedure;
+	private NetworkConnection networkConnection;
 
 	//WATKI
 	private ClientNetworkGameThread clientNetworkGameThread;
+
+	//ZMIENNE POLA GRY
+	private Board serverBoard = new Board();	
+	private Board clientBoard = new Board();
+	private ShipFactory shipFactory = new ShipFactory(clientBoard, this);
 
 	
 	public Parent getView() {
@@ -80,12 +93,11 @@ public class GameClientViewController implements GameViewController{
 	}
 	
 	
-	@FXML
-	public void PlayerClickedAction(MouseEvent e){
-		
-	}
+
+
 	
-	//METODA ODPALANA PRZY TWORZENIU NOWEGO KLIENTA
+//=====================METODA INITIALIZE ODPALANA PRZY TWORZENIU NOWEGO KLIENTA===========
+//========================================================================================
 	@FXML
 	public void initialize(){
 		clientProcedure = new ClientProcedure(Procedure.START_GAME);
@@ -93,6 +105,9 @@ public class GameClientViewController implements GameViewController{
 		btnStartGame.setOnAction(e->{
 			if (clientProcedure.getClientProcedure()==Procedure.START_GAME){
 				nameDialog();
+				if (networkConnection == null) networkConnection = new NetworkConnection();
+				textFieldClientIP.setText(networkConnection.getLocalIP());
+				textFieldClientPort.setText(String.valueOf(networkConnection.getConnectionPort()));
 				clientNetworkGameThread = new ClientNetworkGameThread(textLogClient, clientProcedure, this,gameServer);
 				clientProcedure.setClientProcedure(Procedure.CONNECT_TO_SERVER);
 				clientNetworkGameThread.start();
@@ -103,14 +118,107 @@ public class GameClientViewController implements GameViewController{
 	}
 	
 	private void nameDialog(){
-		TextInputDialog dialog = new TextInputDialog("Gracz1");
+		TextInputDialog dialog = new TextInputDialog("Pawel");
 		dialog.setTitle("Imie gracza");
 		dialog.setHeaderText("Imie gracza");
 		dialog.setContentText("Podaj swoje imie:");
 		Optional<String> result = dialog.showAndWait();
 		if (result.isPresent()){
 			textFieldClientGame.setText(result.get());
-		}		
+		}
+		else{
+			textFieldClientGame.setText("Gracz2");
+		}
+	}
+	
+//==============================METODY OBSLUGI PRZYCISKOW I POLA GRY=====================
+//=======================================================================================
+	/**
+	 * Metoda odpalana w momencie nacisniecia przycisku pola gry
+	 * @author Wojciech Antczak
+	 * @param e - pobranie Eventu od przycisniecia myszy
+	 */
+	@FXML
+	public void ClientBoardClickedAction(MouseEvent e){
+		Node src = (Node) e.getSource();
+		if (clientProcedure.getClientProcedure() == Procedure.DEPLOY_SHIPS){
+			//TO BEDZIE DZIALAC PRZY TESTACH SIECIOWYCH.
+			clientBoard.setViewControllerReference(this);
+			shipFactory.locateShip((int)GridPane.getColumnIndex(src),(int) GridPane.getRowIndex(src));
+			redraw1GridPane(clientBoard);
+		}
+
+	}
+	
+	@FXML
+	public void ServerBoardClickedAction(MouseEvent e){
+		Node src = (Node) e.getSource();
+		serverBoard.setViewControllerReference(this);
+		int x = (int) GridPane.getColumnIndex(src);
+		int y = (int) GridPane.getRowIndex(src);
+		if(serverBoard.getBoardCell(x, y) == BoardState.PUSTE_POLE){
+			serverBoard.setBoardCell(x,y,clientBoard.shot(x, y));
+			if(serverBoard.getBoardCell(x, y) == BoardState.STATEK_ZATOPIONY)
+				serverBoard.setSunk(x, y);
+		} else {
+			setTextAreaLogi("Pole bylo juz ostrzelane, strzelaj jeszcze raz!");
+		}
+		redraw1GridPane(clientBoard);
+		redraw2GridPane(serverBoard);
+
+	}
+	
+	//metoda przerysowujaca pierwsza plansze
+	private void redraw1GridPane(Board board) {
+		Button btn;
+		BoardState[][] boardSt = board.getBoardState();
+		for (int i = 0; i < boardSt.length; i++) {
+			for (int j = 0; j < boardSt[i].length; j++){
+				btn = (Button)getNodeFromGridPane(clientGridPane, i, j);
+				if (boardSt[i][j] == BoardState.STATEK) 
+					btn.setStyle("-fx-background-color: slateblue;");
+				if (boardSt[i][j] == BoardState.PUSTE_POLE)
+					btn.setStyle("default");
+				if (boardSt[i][j] == BoardState.PUDLO) 
+					btn.setStyle("-fx-background-color: grey;");
+				if (boardSt[i][j] == BoardState.STATEK_TRAFIONY) 
+					btn.setStyle("-fx-background-color: red;");
+				if (boardSt[i][j] == BoardState.STATEK_ZATOPIONY) 
+					btn.setStyle("-fx-background-color: black;");
+				
+			}
+		}
+	}
+	
+	//metoda przerysowujaca druga plansze
+	private void redraw2GridPane(Board board) {
+		Button btn;
+		BoardState[][] boardSt = board.getBoardState();
+		for (int i = 0; i < boardSt.length; i++) {
+			for (int j = 0; j < boardSt[i].length; j++){
+				btn = (Button)getNodeFromGridPane(serverGridPane, i, j);
+				if (boardSt[i][j] == BoardState.STATEK) 
+					btn.setStyle("-fx-background-color: slateblue;");
+				if (boardSt[i][j] == BoardState.PUSTE_POLE)
+					btn.setStyle("default");
+				if (boardSt[i][j] == BoardState.PUDLO) 
+					btn.setStyle("-fx-background-color: grey;");
+				if (boardSt[i][j] == BoardState.STATEK_TRAFIONY) 
+					btn.setStyle("-fx-background-color: red;");
+				if (boardSt[i][j] == BoardState.STATEK_ZATOPIONY) 
+					btn.setStyle("-fx-background-color: black;");
+				
+			}
+		}
+	}
+	
+	private Node getNodeFromGridPane(GridPane gridPane, int col, int row) {
+	    for (Node node : gridPane.getChildren()) {
+	        if (GridPane.getColumnIndex(node) == col && GridPane.getRowIndex(node) == row) {
+	            return node;
+	        }
+	    }
+	    return null;
 	}
 
 }
