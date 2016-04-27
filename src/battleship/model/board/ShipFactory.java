@@ -2,7 +2,7 @@ package battleship.model.board;
 
 import java.awt.Point;
 import battleship.gui.game.GameViewController;
-import battleship.model.server.ServerProcedure.Procedure;
+import battleship.model.procedure.GameProcedure.Procedure;
 
 /**
  * Klasa obsługująca rozmieszczanie statków na czystej planszy

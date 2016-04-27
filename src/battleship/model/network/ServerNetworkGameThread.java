@@ -6,13 +6,13 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import battleship.gui.game.GameServerViewController;
-import battleship.model.server.ServerProcedure;
-import battleship.model.server.ServerProcedure.Procedure;
+import battleship.model.procedure.GameProcedure;
+import battleship.model.procedure.GameProcedure.Procedure;
 import javafx.scene.control.TextArea;
 
 public class ServerNetworkGameThread extends Thread {
 	private TextArea textLogServer;
-	private ServerProcedure serverProcedure;
+	private GameProcedure serverProcedure;
 	private GameServerViewController gameServerViewController;
 	
 	private boolean connectedToClient;
@@ -30,7 +30,7 @@ public class ServerNetworkGameThread extends Thread {
 	DataInputStream inStreamServer;
 	DataOutputStream outStreamServer ;
 	
-	public ServerNetworkGameThread(TextArea textLogServer, ServerProcedure serverProcedure, GameServerViewController gameServerViewController) {
+	public ServerNetworkGameThread(TextArea textLogServer, GameProcedure serverProcedure, GameServerViewController gameServerViewController) {
 		this.textLogServer = textLogServer;
 		this.serverProcedure = serverProcedure;
 		this.gameServerViewController = gameServerViewController;
@@ -41,7 +41,7 @@ public class ServerNetworkGameThread extends Thread {
 
 		while(!gameOver){
 			try{
-				switch (serverProcedure.getServerProcedure()){
+				switch (serverProcedure.getProcedure()){
 				case CONNECT_TO_CLIENT:{
 					textLogServer.appendText("[SERVER] Connect to client process \n");
 					connectToClient();
@@ -90,7 +90,7 @@ public class ServerNetworkGameThread extends Thread {
 				connectedToClient = true;
 				inStreamServer = new DataInputStream(serverConnection.getInputStream());
 				outStreamServer = new DataOutputStream(serverConnection.getOutputStream());
-				serverProcedure.setServerProcedure(Procedure.DEPLOY_SHIPS);
+				serverProcedure.setProcedure(Procedure.DEPLOY_SHIPS);
 			}
 			
 		}
@@ -104,15 +104,17 @@ public class ServerNetworkGameThread extends Thread {
 		Runnable serverWaitingForOpponentShips = ()->{
 			try{
 				textLogServer.appendText("\n [SERVER]: Oczekiwanie na zakonczenie rozstawiania statkow przez Przeciwnika \n");
-				Thread.sleep(10);
+				Thread.sleep(500);
 				while(!opponentShipsReady){
 					if(inStreamServer.readUTF().equals("READY")){
+						System.out.println("Ready");
 						outStreamServer.writeUTF("READY");
 						opponentShipsReady = true;
 					}
 					else{
-						Thread.sleep(100);
+						Thread.sleep(500);
 					}
+					
 					
 				
 				}

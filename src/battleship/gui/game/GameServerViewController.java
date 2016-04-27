@@ -12,8 +12,8 @@ import battleship.model.board.ShipFactory;
 import battleship.model.network.NetworkConnection;
 import battleship.model.network.ServerNetworkConnectionThread;
 import battleship.model.network.ServerNetworkGameThread;
-import battleship.model.server.ServerProcedure;
-import battleship.model.server.ServerProcedure.Procedure;
+import battleship.model.procedure.GameProcedure;
+import battleship.model.procedure.GameProcedure.Procedure;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -41,7 +41,7 @@ public class GameServerViewController implements GameViewController{
 	@FXML private TextField textFieldServerPort;
 	@FXML private TextArea textLogServer;	
 	
-	private ServerProcedure serverProcedure;
+	private GameProcedure serverProcedure;
 	private NetworkConnection networkConnection;
 	
 	//Watki
@@ -88,7 +88,7 @@ public class GameServerViewController implements GameViewController{
 	//METODA USTAWIAJACA PROCEDURE Z ZEWNATRZ KLASY
 	@Override
 	public void setProcedure(Procedure procedure){
-		serverProcedure.setServerProcedure(procedure);
+		serverProcedure.setProcedure(procedure);
 	}
 	
 	
@@ -96,10 +96,10 @@ public class GameServerViewController implements GameViewController{
 //========================================================================================
 	@FXML
 	private void initialize(){
-		serverProcedure = new ServerProcedure(Procedure.START_GAME);
+		serverProcedure = new GameProcedure(Procedure.START_GAME);
 		btnStartGame.setOnAction(e->{
-			if (serverProcedure.getServerProcedure()==Procedure.START_GAME){nameDialog();	startGameProcedure();} //Odpalenie metody startGame, i utworzenie nowego Thread
-			else if(serverProcedure.getServerProcedure()==Procedure.DEPLOY_SHIPS) textLogServer.appendText("\n Nie skonczono procedury ukladania statkow. Dokoncz procedury i kliknij w przycisk START");
+			if (serverProcedure.getProcedure()==Procedure.START_GAME){nameDialog();	startGameProcedure();} //Odpalenie metody startGame, i utworzenie nowego Thread
+			else if(serverProcedure.getProcedure()==Procedure.DEPLOY_SHIPS) textLogServer.appendText("\n Nie skonczono procedury ukladania statkow. Dokoncz procedury i kliknij w przycisk START");
 			
 		});		
 	}
@@ -115,24 +115,24 @@ public class GameServerViewController implements GameViewController{
 		     public void run() {
 		    	 
 		    	 //PROCEDURA START_GAME
-				if (serverProcedure.getServerProcedure() == Procedure.START_GAME){
+				if (serverProcedure.getProcedure() == Procedure.START_GAME){
 					if (networkConnection == null) networkConnection = new NetworkConnection();
 					textFieldServerIP.setText(networkConnection.getLocalIP());
 					textFieldServerPort.setText(String.valueOf(networkConnection.getConnectionPort()));
-					serverProcedure.setServerProcedure(Procedure.OPEN_CONNECTION);
+					serverProcedure.setProcedure(Procedure.OPEN_CONNECTION);
 				}
 				
 				//PROCEDURA OPEN_CONNECTION
-				if (serverProcedure.getServerProcedure() == Procedure.OPEN_CONNECTION){
+				if (serverProcedure.getProcedure() == Procedure.OPEN_CONNECTION){
 					try {
-						serverProcedure.setServerProcedure(Procedure.READY_TO_START);
+						serverProcedure.setProcedure(Procedure.READY_TO_START);
 						serverNetworkConnectionThread = new ServerNetworkConnectionThread(textLogServer,serverProcedure,getGameServerViewController());
 						serverNetworkConnectionThread.start(); //odpalenie watka
 						serverNetworkConnectionThread.join(); //oczekiwanie na zakonczenie threada
 						textLogServer.appendText("[SERVER] PO PROCEDURZE CONNECTION... \n");
 
 						//Odpalenie nowego threada do gry
-						serverProcedure.setServerProcedure(Procedure.CONNECT_TO_CLIENT);
+						serverProcedure.setProcedure(Procedure.CONNECT_TO_CLIENT);
 						serverNetworkGameThread = new ServerNetworkGameThread(textLogServer,serverProcedure,getGameServerViewController());
 						serverNetworkGameThread.start(); //odpalenie watka
 						//serverNetworkGameThread.join(); //oczekiwanie na zakonczenie threada
@@ -143,7 +143,7 @@ public class GameServerViewController implements GameViewController{
 				}
 				
 				//PROCEDURA DEPLOY_SHIPS
-				if (serverProcedure.getServerProcedure() == Procedure.DEPLOY_SHIPS){
+				if (serverProcedure.getProcedure() == Procedure.DEPLOY_SHIPS){
 				}
 		     }
 		});  
@@ -173,7 +173,7 @@ public class GameServerViewController implements GameViewController{
 	@FXML
 	private void ServerBoardClickedAction(MouseEvent e) {
 		Node src = (Node) e.getSource();
-		if (serverProcedure.getServerProcedure() == Procedure.DEPLOY_SHIPS){
+		if (serverProcedure.getProcedure() == Procedure.DEPLOY_SHIPS){
 			//TO BEDZIE DZIALAC PRZY TESTACH SIECIOWYCH.
 			serverBoard.setViewControllerReference(this);
 			shipFactory.locateShip((int)GridPane.getColumnIndex(src),(int) GridPane.getRowIndex(src));

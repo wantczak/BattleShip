@@ -1,6 +1,6 @@
 package battleship.gui.game;
 
-import battleship.model.server.ServerProcedure.Procedure;
+import battleship.model.procedure.GameProcedure.Procedure;
 
 public interface GameViewController {
 	

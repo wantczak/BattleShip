@@ -8,8 +8,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import battleship.gui.game.GameClientViewController;
-import battleship.model.client.ClientProcedure;
-import battleship.model.client.ClientProcedure.Procedure;
+import battleship.model.procedure.GameProcedure;
+import battleship.model.procedure.GameProcedure.Procedure;
 import battleship.model.server.Server;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
@@ -17,7 +17,7 @@ import javafx.scene.control.TextArea;
 public class ClientNetworkGameThread extends Thread {
 
 	@FXML private TextArea textLogClient;
-	private volatile ClientProcedure clientProcedure;
+	private GameProcedure clientProcedure;
 	private GameClientViewController gameClientViewController;
 	private Server gameServer;
 	
@@ -33,7 +33,7 @@ public class ClientNetworkGameThread extends Thread {
 	DataOutputStream outStreamClient;
 
 	
-	public ClientNetworkGameThread(TextArea textLogClient, ClientProcedure clientProcedure, GameClientViewController gameClientViewController, Server gameServer) {
+	public ClientNetworkGameThread(TextArea textLogClient, GameProcedure clientProcedure, GameClientViewController gameClientViewController, Server gameServer) {
 		this.textLogClient = textLogClient;
 		this.clientProcedure = clientProcedure;
 		this.gameClientViewController = gameClientViewController;
@@ -43,7 +43,8 @@ public class ClientNetworkGameThread extends Thread {
 	//=========================METODA GLOWNA WATKU=================================	Q
 	public void run(){
 		while(!gameOver){
-			switch (clientProcedure.getClientProcedure()){
+			
+			switch (clientProcedure.getProcedure()){
 			case CONNECT_TO_SERVER:{
 				clientConnectionProcedure();
 				textLogClient.appendText("\n ROZPOCZECIE GRY!");
@@ -56,6 +57,24 @@ public class ClientNetworkGameThread extends Thread {
 			}
 			
 			case READY_TO_START:{
+				try {
+					Thread.sleep(500);
+					
+					while(true){
+						outStreamClient.writeUTF("READY");
+
+					}
+
+					//System.out.println(inStreamClient.readUTF());
+					//while(!inStreamClient.readUTF().equals("READY")){
+						//outStreamClient.writeUTF("READY");
+
+					//}
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}					
 				
 				break;
 			}
@@ -82,7 +101,7 @@ public class ClientNetworkGameThread extends Thread {
 						if (clientSocket.isConnected()){
 							inStreamClient = new DataInputStream(clientSocket.getInputStream());
 							outStreamClient = new DataOutputStream(clientSocket.getOutputStream());
-							clientProcedure.setClientProcedure(Procedure.DEPLOY_SHIPS);
+							clientProcedure.setProcedure(Procedure.DEPLOY_SHIPS);
 						}
 					}
 					

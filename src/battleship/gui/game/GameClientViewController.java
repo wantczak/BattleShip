@@ -6,12 +6,11 @@ import battleship.gui.menu.MenuViewController;
 import battleship.model.board.Board;
 import battleship.model.board.BoardState;
 import battleship.model.board.ShipFactory;
-import battleship.model.client.ClientProcedure;
-import battleship.model.client.ClientProcedure.Procedure;
 import battleship.model.network.ClientNetworkGameThread;
 import battleship.model.network.NetworkConnection;
+import battleship.model.procedure.GameProcedure;
+import battleship.model.procedure.GameProcedure.Procedure;
 import battleship.model.server.Server;
-import battleship.model.server.ServerProcedure;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -45,7 +44,7 @@ public class GameClientViewController implements GameViewController{
 	
 	//Zmienne sieciowe
 	private Server gameServer = null;
-	private ClientProcedure clientProcedure;
+	private GameProcedure clientProcedure;
 	private NetworkConnection networkConnection;
 
 	//WATKI
@@ -80,35 +79,34 @@ public class GameClientViewController implements GameViewController{
 		this.gameServer = gameServer;
 	}
 
-	@Override
-	public void setTextAreaLogi(String message) {
-		// TODO Auto-generated method stub
+	//METODA UZUPELNIAJACA AREALOGS
+		@Override
+		public void setTextAreaLogi(String message){
+			this.textLogClient.appendText("\n"+message);
+		}
 		
-	}
-
-	@Override
-	public void setProcedure(battleship.model.server.ServerProcedure.Procedure procedure) {
-		// TODO Auto-generated method stub
-		
-	}
-	
+		//METODA USTAWIAJACA PROCEDURE Z ZEWNATRZ KLASY
+		@Override
+		public void setProcedure(Procedure procedure){
+			clientProcedure.setProcedure(procedure);
+		}	
 //=====================METODA INITIALIZE ODPALANA PRZY TWORZENIU NOWEGO KLIENTA===========
 //========================================================================================
 	@FXML
 	public void initialize(){
-		clientProcedure = new ClientProcedure(Procedure.START_GAME);
+		clientProcedure = new GameProcedure(Procedure.START_GAME);
 
 		btnStartGame.setOnAction(e->{
-			if (clientProcedure.getClientProcedure()==Procedure.START_GAME){
+			if (clientProcedure.getProcedure()==Procedure.START_GAME){
 				nameDialog();
 				if (networkConnection == null) networkConnection = new NetworkConnection();
 				textFieldClientIP.setText(networkConnection.getLocalIP());
 				textFieldClientPort.setText(String.valueOf(networkConnection.getConnectionPort()));
 				clientNetworkGameThread = new ClientNetworkGameThread(textLogClient, clientProcedure, this,gameServer);
-				clientProcedure.setClientProcedure(Procedure.CONNECT_TO_SERVER);
+				clientProcedure.setProcedure(Procedure.CONNECT_TO_SERVER);
 				clientNetworkGameThread.start();
 			}
-			else if(clientProcedure.getClientProcedure()==Procedure.DEPLOY_SHIPS) textLogClient.appendText("\n Nie skonczono procedury ukladania statkow. Dokoncz procedury i kliknij w przycisk START");
+			else if(clientProcedure.getProcedure()==Procedure.DEPLOY_SHIPS) textLogClient.appendText("\n Nie skonczono procedury ukladania statkow. Dokoncz procedury i kliknij w przycisk START");
 			
 		});
 	}
@@ -137,7 +135,7 @@ public class GameClientViewController implements GameViewController{
 	@FXML
 	public void ClientBoardClickedAction(MouseEvent e){
 		Node src = (Node) e.getSource();
-		if (clientProcedure.getClientProcedure() == Procedure.DEPLOY_SHIPS){
+		if (clientProcedure.getProcedure() == Procedure.DEPLOY_SHIPS){
 			//TO BEDZIE DZIALAC PRZY TESTACH SIECIOWYCH.
 			clientBoard.setViewControllerReference(this);
 			shipFactory.locateShip((int)GridPane.getColumnIndex(src),(int) GridPane.getRowIndex(src));
@@ -216,5 +214,4 @@ public class GameClientViewController implements GameViewController{
 	    }
 	    return null;
 	}
-
 }

@@ -8,8 +8,7 @@ import java.net.ServerSocket;
 import java.net.SocketException;
 
 import battleship.gui.game.GameServerViewController;
-import battleship.model.server.ServerProcedure;
-import battleship.model.server.ServerProcedure.Procedure;
+import battleship.model.procedure.GameProcedure;
 import javafx.scene.control.TextArea;
 
 /**
@@ -24,11 +23,11 @@ public class ServerNetworkConnectionThread extends Thread {
     
     private int connectionPort = 12345; //zmienna Integer serverPort
     private TextArea textLogServer;
-    private ServerProcedure serverProcedure;
+    private GameProcedure serverProcedure;
     private boolean clientConnectionOpen = false;
 	private GameServerViewController gameServerViewController;
     
-    public ServerNetworkConnectionThread(TextArea textLogServer, ServerProcedure serverProcedure, GameServerViewController gameServerViewController){
+    public ServerNetworkConnectionThread(TextArea textLogServer, GameProcedure serverProcedure, GameServerViewController gameServerViewController){
     	this.textLogServer = textLogServer;
     	this.serverProcedure = serverProcedure;
     	this.gameServerViewController = gameServerViewController;

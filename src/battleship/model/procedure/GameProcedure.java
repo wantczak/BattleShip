@@ -1,14 +1,11 @@
-package battleship.model.client;
+package battleship.model.procedure;
 
-/**
- * 
- * @author Wojciech Antczak
- *
- */
-public class ClientProcedure {
+public class GameProcedure {
 	public enum Procedure {
 		START_GAME,
+		OPEN_CONNECTION,
 		CHOOSE_SERVER,
+		CONNECT_TO_CLIENT,
 		CONNECT_TO_SERVER,
 		DEPLOY_SHIPS,
 		READY_TO_START,
@@ -17,16 +14,15 @@ public class ClientProcedure {
 
 	Procedure procedure;
 	
-	public ClientProcedure(Procedure startGame){
+	public GameProcedure(Procedure startGame){
 		this.procedure = startGame;
 	}
 	
-	public Procedure getClientProcedure(){
+	public Procedure getProcedure(){
 		return procedure;
 	}
 	
-	public void setClientProcedure(Procedure procedure){
+	public void setProcedure(Procedure procedure){
 		this.procedure = procedure;
 	}
 }
-
