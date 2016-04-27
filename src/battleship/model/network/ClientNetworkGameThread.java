@@ -1,5 +1,7 @@
 package battleship.model.network;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -26,6 +28,10 @@ public class ClientNetworkGameThread extends Thread {
 	//Deklaracja thread
 	Thread threadConnectionToServer;
 	
+	//BUFFORY IN I OUT
+	DataInputStream inStreamClient;
+	DataOutputStream outStreamClient;
+
 	
 	public ClientNetworkGameThread(TextArea textLogClient, ClientProcedure clientProcedure, GameClientViewController gameClientViewController, Server gameServer) {
 		this.textLogClient = textLogClient;
@@ -49,6 +55,11 @@ public class ClientNetworkGameThread extends Thread {
 				break;
 			}
 			
+			case READY_TO_START:{
+				
+				break;
+			}
+			
 			default:
 				break;
 
@@ -62,13 +73,17 @@ public class ClientNetworkGameThread extends Thread {
 			try {
 				Runnable clientConnection = ()->{
 					try{
-						textLogClient.appendText("[CLIENT]: Proba podlaczenia do serwera:  "+gameServer.getServerIP()+"\n");
+						//textLogClient.appendText("[CLIENT]: Proba podlaczenia do serwera:  "+gameServer.getServerIP()+"\n");
 						Thread.sleep(10);
 						InetAddress serverAddress = InetAddress.getByName(gameServer.getServerIP()); 
 						clientSocket = new Socket(serverAddress.getHostName(), 12345);
-						textLogClient.appendText("[CLIENT]: Status polaczenia:  "+clientSocket.isConnected()+"\n");
+						//textLogClient.appendText("[CLIENT]: Status polaczenia:  "+clientSocket.isConnected()+"\n");
 						Thread.sleep(10);
-						if (clientSocket.isConnected()) clientProcedure.setClientProcedure(Procedure.DEPLOY_SHIPS);
+						if (clientSocket.isConnected()){
+							inStreamClient = new DataInputStream(clientSocket.getInputStream());
+							outStreamClient = new DataOutputStream(clientSocket.getOutputStream());
+							clientProcedure.setClientProcedure(Procedure.DEPLOY_SHIPS);
+						}
 					}
 					
 					catch(Exception ex){

@@ -13,8 +13,9 @@ import battleship.model.server.ServerProcedure.Procedure;
 
 public class ShipFactory {
 	
-	BoardState[][] board;
-	GameViewController viewController;
+	private BoardState[][] board;
+	private GameViewController viewController;
+	
 
 	public ShipFactory(Board board,GameViewController viewController) {
 		this.board = board.getBoardState();
