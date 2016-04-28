@@ -187,6 +187,14 @@ public class GameServerViewController implements GameViewController{
 		clientBoard.setViewControllerReference(this);
 		int x = (int) GridPane.getColumnIndex(src);
 		int y = (int) GridPane.getRowIndex(src);
+		
+		if (serverProcedure.getProcedure() == Procedure.PLAYING_GAME&&serverNetworkGameThread.isPlayerTurn()){
+			textLogServer.appendText("\n NACISNIETO: ["+x+"] ["+y+"]");
+			
+			//clientNetworkGameThread.handlingCommand(Command.SHOT, Player.CLIENT_PLAYER, x, y);
+
+		}
+		/*
 		if(clientBoard.getBoardCell(x, y) == BoardState.PUSTE_POLE){
 			clientBoard.setBoardCell(x,y,serverBoard.shot(x, y));
 			if(clientBoard.getBoardCell(x, y) == BoardState.STATEK_ZATOPIONY)
@@ -196,6 +204,7 @@ public class GameServerViewController implements GameViewController{
 		}
 		redraw1GridPane(serverBoard);
 		redraw2GridPane(clientBoard);
+		*/
 	}
 	//metoda przerysowujaca pierwsza plansze
 	private void redraw1GridPane(Board board) {

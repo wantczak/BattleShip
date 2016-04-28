@@ -17,6 +17,7 @@ public class ServerNetworkGameThread extends Thread {
 	
 	private boolean connectedToClient;
 	private boolean gameOver = false;
+	private boolean playerTurn = true;
 	private boolean opponentShipsReady = false;
 
 	private ServerSocket serverSocket; //Deklaracja pojedynczego serverSocketa
@@ -68,7 +69,6 @@ public class ServerNetworkGameThread extends Thread {
 				default:
 					break;
 				}
-				
 			}
 			
 			catch(Exception ex){
@@ -130,12 +130,22 @@ public class ServerNetworkGameThread extends Thread {
 			}
 		};
 		threadWaitingForOpponentShips = new Thread(serverWaitingForOpponentShips); //utworzenie nowego Threada z metoda do polaczenia
+		threadWaitingForOpponentShips.setName("Server - Waiting for ships");
 		threadWaitingForOpponentShips.start(); //wystartowanie Threada
 		//threadWaitingForOpponentShips.join(); //oczekiwanie na zakonczenie metody
 	}
 	
 	
 	private void playingGame() throws InterruptedException{
-		Thread.sleep(1000);
+		
+		
+	}
+
+	public boolean isPlayerTurn() {
+		return playerTurn;
+	}
+
+	public void setPlayerTurn(boolean playerTurn) {
+		this.playerTurn = playerTurn;
 	}
 }

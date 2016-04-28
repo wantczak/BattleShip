@@ -9,8 +9,6 @@ import battleship.model.user.Player;
  * @author Paweł Czernek
  *
  */
-enum Command { SHOT, ANSWER}
-
 public class CommunicationMessage {
 	
 	private int coordinateX; //

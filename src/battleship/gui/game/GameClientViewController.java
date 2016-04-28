@@ -1,5 +1,6 @@
 package battleship.gui.game;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import battleship.gui.menu.MenuViewController;
@@ -7,10 +8,13 @@ import battleship.model.board.Board;
 import battleship.model.board.BoardState;
 import battleship.model.board.ShipFactory;
 import battleship.model.network.ClientNetworkGameThread;
+import battleship.model.network.Command;
+import battleship.model.network.CommunicationMessage;
 import battleship.model.network.NetworkConnection;
 import battleship.model.procedure.GameProcedure;
 import battleship.model.procedure.GameProcedure.Procedure;
 import battleship.model.server.Server;
+import battleship.model.user.Player;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -46,7 +50,9 @@ public class GameClientViewController implements GameViewController{
 	private Server gameServer = null;
 	private GameProcedure clientProcedure;
 	private NetworkConnection networkConnection;
-
+	private CommunicationMessage clientCommunicationMessage;
+	
+	
 	//WATKI
 	private ClientNetworkGameThread clientNetworkGameThread;
 
@@ -145,11 +151,19 @@ public class GameClientViewController implements GameViewController{
 	}
 	
 	@FXML
-	public void ServerBoardClickedAction(MouseEvent e){
+	public void ServerBoardClickedAction(MouseEvent e) throws IOException{
 		Node src = (Node) e.getSource();
 		serverBoard.setViewControllerReference(this);
 		int x = (int) GridPane.getColumnIndex(src);
 		int y = (int) GridPane.getRowIndex(src);
+		
+		if (clientProcedure.getProcedure() == Procedure.PLAYING_GAME&&clientNetworkGameThread.isPlayerTurn()){
+			//clientNetworkGameThread.handlingCommand(Command.SHOT, Player.CLIENT_PLAYER, x, y);
+
+		}
+		
+		/*
+		
 		if(serverBoard.getBoardCell(x, y) == BoardState.PUSTE_POLE){
 			serverBoard.setBoardCell(x,y,clientBoard.shot(x, y));
 			if(serverBoard.getBoardCell(x, y) == BoardState.STATEK_ZATOPIONY)
@@ -158,8 +172,7 @@ public class GameClientViewController implements GameViewController{
 			setTextAreaLogi("Pole bylo juz ostrzelane, strzelaj jeszcze raz!");
 		}
 		redraw1GridPane(clientBoard);
-		redraw2GridPane(serverBoard);
-
+		redraw2GridPane(serverBoard);*/
 	}
 	
 	//metoda przerysowujaca pierwsza plansze
@@ -179,7 +192,6 @@ public class GameClientViewController implements GameViewController{
 					btn.setStyle("-fx-background-color: red;");
 				if (boardSt[i][j] == BoardState.STATEK_ZATOPIONY) 
 					btn.setStyle("-fx-background-color: black;");
-				
 			}
 		}
 	}

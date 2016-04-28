@@ -11,6 +11,7 @@ import battleship.gui.game.GameClientViewController;
 import battleship.model.procedure.GameProcedure;
 import battleship.model.procedure.GameProcedure.Procedure;
 import battleship.model.server.Server;
+import battleship.model.user.Player;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 
@@ -23,15 +24,18 @@ public class ClientNetworkGameThread extends Thread {
 	
 	private Socket clientSocket;
 	private boolean gameOver = false;
-	private boolean playerTurn = false;
+	private boolean playerTurn = true;
 	private boolean opponentShipsReady = false;
-	//Deklaracja thread
-	Thread threadConnectionToServer;
+
+	//WATKI W KLASIE
+	private Thread threadWaitingForOpponentShips;
+	private Thread threadConnectionToServer;
 	
 	//BUFFORY IN I OUT
 	DataInputStream inStreamClient;
 	DataOutputStream outStreamClient;
-
+	
+	CommunicationMessage communicationMessage;
 	
 	public ClientNetworkGameThread(TextArea textLogClient, GameProcedure clientProcedure, GameClientViewController gameClientViewController, Server gameServer) {
 		this.textLogClient = textLogClient;
@@ -47,8 +51,8 @@ public class ClientNetworkGameThread extends Thread {
 			switch (clientProcedure.getProcedure()){
 			case CONNECT_TO_SERVER:{
 				connectToServer();
-				textLogClient.appendText("\n ROZPOCZECIE GRY!");
-				textLogClient.appendText("\n ROZSTAW STATKI!");
+				textLogClient.appendText("ROZPOCZECIE GRY! \n ");
+				textLogClient.appendText("ROZSTAW STATKI! \n ");
 				break;
 			}
 			
@@ -57,26 +61,14 @@ public class ClientNetworkGameThread extends Thread {
 			}
 			
 			case READY_TO_START:{
-				try {
-					Thread.sleep(500);
-					textLogClient.appendText("\n [CLIENT]: Oczekiwanie na zakonczenie rozstawiania statkow przez Przeciwnika ");
-
-					while(!opponentShipsReady){
-						outStreamClient.writeUTF("READY");
-						if(inStreamClient.readUTF().equals("READY")){
-							textLogClient.appendText("[CLIENT]: ODEBRANO INFO OD PRZECIWNIKA O ZAKONCZENIU USTAWIANIU STATKOW \n");
-							clientProcedure.setProcedure(Procedure.PLAYING_GAME);
-							opponentShipsReady = true;
-						}
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}					
-				
+				if(threadWaitingForOpponentShips ==null) waitingForDeployedShips(); 
 				break;
 			}
+			
+			case PLAYING_GAME:{
+				
+			}
+
 			
 			default:
 				break;
@@ -110,19 +102,53 @@ public class ClientNetworkGameThread extends Thread {
 				};
 				threadConnectionToServer = new Thread(clientConnection); //utworzenie nowego Threada z metoda do polaczenia
 				threadConnectionToServer.start(); //wystartowanie Threada
-				//threadConnectionToServer.join(); //oczekiwanie na zakonczenie metody
+				threadConnectionToServer.join(); //oczekiwanie na zakonczenie metody
 			}
 			
 			catch (Exception ex){
 				ex.printStackTrace();
 			}
-
-		
 		}
 	}
+	
+	private void waitingForDeployedShips(){
+		Runnable clientWaitingForOpponentShips = ()->{
+			try{
+				textLogClient.appendText("\n [CLIENT]: Oczekiwanie na zakonczenie rozstawiania statkow przez Przeciwnika \n ");
+				while(!opponentShipsReady){
+					Thread.sleep(100);
+					outStreamClient.writeUTF("READY");
+					if(inStreamClient.readUTF().equals("READY")){
+						textLogClient.appendText("[CLIENT]: ODEBRANO INFO OD PRZECIWNIKA O ZAKONCZENIU USTAWIANIU STATKOW \n");
+						clientProcedure.setProcedure(Procedure.PLAYING_GAME);
+						opponentShipsReady = true;						
+					}
+					else{
+						Thread.sleep(500);
+					}
+				}
+			}
+			catch(Exception ex){
+				ex.printStackTrace();
+			}
+		};
+		threadWaitingForOpponentShips = new Thread(clientWaitingForOpponentShips); //utworzenie nowego Threada z metoda do polaczenia
+		threadWaitingForOpponentShips.setName("Client - Waiting for ships");
+		threadWaitingForOpponentShips.start(); //wystartowanie Threada
+		//threadWaitingForOpponentShips.join(); //oczekiwanie na zakonczenie metody
+	}
 
-	private void playingGame(){
-		
+	public void handlingCommand(Command command,Player own, int x, int y) throws IOException{
+		communicationMessage = new CommunicationMessage(command,own,x,y);
+		outStreamClient.writeUTF(communicationMessage.toString());
+	}
+
+	public boolean isPlayerTurn() {
+		return playerTurn;
+	}
+
+	public void setPlayerTurn(boolean playerTurn) {
+		this.playerTurn = playerTurn;
 	}
 
 }
