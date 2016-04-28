@@ -208,23 +208,28 @@ public class GameServerViewController implements GameViewController{
 	}
 	//metoda przerysowujaca pierwsza plansze
 	private void redraw1GridPane(Board board) {
-		Button btn;
-		BoardState[][] boardSt = board.getBoardState();
-		for (int i = 0; i < boardSt.length; i++) {
-			for (int j = 0; j < boardSt[i].length; j++){
-				btn = (Button)getNodeFromGridPane(serverGridPane, i, j);
-				if (boardSt[i][j] == BoardState.STATEK) 
-					btn.setStyle("-fx-background-color: slateblue;");
-				if (boardSt[i][j] == BoardState.PUSTE_POLE)
-					btn.setStyle("default");
-				if (boardSt[i][j] == BoardState.PUDLO) 
-					btn.setStyle("-fx-background-color: grey;");
-				if (boardSt[i][j] == BoardState.STATEK_TRAFIONY) 
-					btn.setStyle("-fx-background-color: red;");
-				if (boardSt[i][j] == BoardState.STATEK_ZATOPIONY) 
-					btn.setStyle("-fx-background-color: black;");
-				
+		try{
+			Button btn;
+			BoardState[][] boardSt = board.getBoardState();
+			for (int i = 0; i < boardSt.length; i++) {
+				for (int j = 0; j < boardSt[i].length; j++){
+					btn = (Button)getNodeFromGridPane(serverGridPane, i, j);
+					if (boardSt[i][j] == BoardState.STATEK) 
+						btn.setStyle("-fx-background-color: slateblue;");
+					if (boardSt[i][j] == BoardState.PUSTE_POLE)
+						btn.setStyle("default");
+					if (boardSt[i][j] == BoardState.PUDLO) 
+						btn.setStyle("-fx-background-color: grey;");
+					if (boardSt[i][j] == BoardState.STATEK_TRAFIONY) 
+						btn.setStyle("-fx-background-color: red;");
+					if (boardSt[i][j] == BoardState.STATEK_ZATOPIONY) 
+						btn.setStyle("-fx-background-color: black;");
+					
+				}
 			}
+		}
+		catch (Exception ex){
+			ex.printStackTrace();
 		}
 	}
 	

@@ -44,7 +44,7 @@ public class GameChooserThread extends Thread {
 			while(!gameChooserViewController.ServerSelected()){
 				try{
 					System.out.println("Chooser petla");
-				    packet = new DatagramPacket(sendData, sendData.length,InetAddress.getByName("255.255.255.255"), connectionPort);
+				    packet = new DatagramPacket(sendData, sendData.length,InetAddress.getByName("0.0.0.0"), connectionPort);
 				    socket.send(packet);
 				    Thread.sleep(500);
 				    byte[] recvBuf = new byte[15000];
@@ -61,7 +61,7 @@ public class GameChooserThread extends Thread {
 		                	serverObservableSet.addAll(Arrays.asList(serverAvailable));
 			    			System.out.println("OS TH: "+serverObservableSet);
 			    			gameChooserViewController.refreshTableView();
-		                	System.out.println("[CLIENT] Otrzymano odpowiedŸ z : " + receivePacket.getAddress().getHostAddress());
+		                	System.out.println("[CLIENT] Otrzymano odpowiedï¿½ z : " + receivePacket.getAddress().getHostAddress());
 	                	}
 	                }
 				}

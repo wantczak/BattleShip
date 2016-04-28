@@ -61,6 +61,7 @@ public class ClientNetworkGameThread extends Thread {
 			}
 			
 			case READY_TO_START:{
+		
 				if(threadWaitingForOpponentShips ==null) waitingForDeployedShips(); 
 				break;
 			}
@@ -138,6 +139,7 @@ public class ClientNetworkGameThread extends Thread {
 		//threadWaitingForOpponentShips.join(); //oczekiwanie na zakonczenie metody
 	}
 
+	//TODO: Dodac watek do obslugi czytania ze streama
 	public void handlingCommand(Command command,Player own, int x, int y) throws IOException{
 		communicationMessage = new CommunicationMessage(command,own,x,y);
 		outStreamClient.writeUTF(communicationMessage.toString());

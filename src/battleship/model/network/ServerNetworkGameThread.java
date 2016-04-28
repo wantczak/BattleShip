@@ -26,7 +26,8 @@ public class ServerNetworkGameThread extends Thread {
 	
 	//WATKI W KLASIE
 	private Thread threadWaitingForOpponentShips;
-	
+	private Thread threadReadingSocket;
+
 	//BUFFORY IN I OUT
 	DataInputStream inStreamServer;
 	DataOutputStream outStreamServer ;
@@ -57,12 +58,13 @@ public class ServerNetworkGameThread extends Thread {
 				}
 				
 				case READY_TO_START:{
-					if(threadWaitingForOpponentShips ==null)waitingForDeployedShips(); 
+					if(threadWaitingForOpponentShips ==null) waitingForDeployedShips(); 
 					break;
 				}
 				
 				case PLAYING_GAME:{
-					playingGame();
+					if(threadReadingSocket ==null) readingCommandGame();
+					
 					break;
 				}
 
@@ -136,8 +138,22 @@ public class ServerNetworkGameThread extends Thread {
 	}
 	
 	
-	private void playingGame() throws InterruptedException{
-		
+	private void readingCommandGame() throws InterruptedException{
+		Runnable serverReading = ()->{
+			while(!gameOver){
+				try{
+					switch(inStreamServer.readUTF()){
+					//TODO: dodac REGEXP odczytujacy poszczegolne dane z komendy oddzielone ; Command dodac w case			
+					}
+				}
+				
+				catch (Exception ex){
+					ex.printStackTrace();
+				}
+			}
+		};
+		threadReadingSocket = new Thread(serverReading);
+		threadReadingSocket.start();
 		
 	}
 

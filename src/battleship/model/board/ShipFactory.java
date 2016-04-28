@@ -207,9 +207,11 @@ public class ShipFactory {
 					viewController.setTextAreaLogi("Wskaz kierunek.");
 				} else {
 					viewController.setTextAreaLogi("Rozmieszczanie statkow zakonczone.");
+					Thread.sleep(100);
 					viewController.setProcedure(Procedure.READY_TO_START);
 				}
 
+				
 			}
 		
 		}
