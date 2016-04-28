@@ -11,7 +11,7 @@ import battleship.model.procedure.GameProcedure.Procedure;
 import javafx.scene.control.TextArea;
 
 public class ServerNetworkGameThread extends Thread {
-	private TextArea textLogServer;
+	private volatile TextArea textLogServer;
 	private GameProcedure serverProcedure;
 	private GameServerViewController gameServerViewController;
 	
@@ -56,12 +56,12 @@ public class ServerNetworkGameThread extends Thread {
 				}
 				
 				case READY_TO_START:{
-					waitingForDeployedShips();
+					if(threadWaitingForOpponentShips ==null)waitingForDeployedShips(); 
 					break;
 				}
 				
 				case PLAYING_GAME:{
-					handlingGame();
+					playingGame();
 					break;
 				}
 
@@ -77,6 +77,10 @@ public class ServerNetworkGameThread extends Thread {
 		}
 	}
 	
+	
+	/**Metoda obslugujaca polaczenie servera do klienta
+	 * @author Wojciech Antczak
+	 */
 	private void connectToClient(){
 		connectedToClient = false;
 		try{
@@ -103,22 +107,22 @@ public class ServerNetworkGameThread extends Thread {
 	private void waitingForDeployedShips() throws InterruptedException{
 		Runnable serverWaitingForOpponentShips = ()->{
 			try{
-				textLogServer.appendText("\n [SERVER]: Oczekiwanie na zakonczenie rozstawiania statkow przez Przeciwnika \n");
+				textLogServer.appendText("\n [SERVER]: Oczekiwanie na zakonczenie rozstawiania statkow przez Przeciwnika ");
 				Thread.sleep(500);
 				while(!opponentShipsReady){
 					if(inStreamServer.readUTF().equals("READY")){
-						System.out.println("Ready");
 						outStreamServer.writeUTF("READY");
+						serverProcedure.setProcedure(Procedure.PLAYING_GAME);
 						opponentShipsReady = true;
 					}
 					else{
 						Thread.sleep(500);
 					}
 					
-					
 				
 				}
-				textLogServer.appendText("[SERVER]: ODEBRANO INFO OD PRZECIWNIKA O ZAKONCZENIU USTAWIANIU STATKOW \n");
+				textLogServer.appendText("\n [SERVER]: ODEBRANO INFO OD PRZECIWNIKA O ZAKONCZENIU USTAWIANIU STATKOW");
+				
 			}
 			
 			catch(Exception ex){
@@ -127,11 +131,11 @@ public class ServerNetworkGameThread extends Thread {
 		};
 		threadWaitingForOpponentShips = new Thread(serverWaitingForOpponentShips); //utworzenie nowego Threada z metoda do polaczenia
 		threadWaitingForOpponentShips.start(); //wystartowanie Threada
-		threadWaitingForOpponentShips.join(); //oczekiwanie na zakonczenie metody
+		//threadWaitingForOpponentShips.join(); //oczekiwanie na zakonczenie metody
 	}
 	
 	
-	private void handlingGame(){
-		
+	private void playingGame() throws InterruptedException{
+		Thread.sleep(1000);
 	}
 }

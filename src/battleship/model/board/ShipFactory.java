@@ -42,6 +42,9 @@ public class ShipFactory {
 	 */
 	public void locateShip(int x, int y) {
 
+		try{
+			
+		
 		Point punktKierunku; // punkt wskazania w którym kierunku układać statek
 		Point koniec = null; // punkt końcowy statku
 		Kierunek kierunek = null; // Parametr enum wskazujący w którą strone
@@ -208,6 +211,11 @@ public class ShipFactory {
 				}
 
 			}
+		
+		}
+		}
+		catch (Exception ex){
+			ex.printStackTrace();
 		}
 	} // Koniec rozmieszczania statków
 	

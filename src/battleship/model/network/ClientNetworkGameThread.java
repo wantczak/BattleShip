@@ -16,7 +16,7 @@ import javafx.scene.control.TextArea;
 
 public class ClientNetworkGameThread extends Thread {
 
-	@FXML private TextArea textLogClient;
+	private volatile TextArea textLogClient;
 	private GameProcedure clientProcedure;
 	private GameClientViewController gameClientViewController;
 	private Server gameServer;
@@ -24,7 +24,7 @@ public class ClientNetworkGameThread extends Thread {
 	private Socket clientSocket;
 	private boolean gameOver = false;
 	private boolean playerTurn = false;
-	
+	private boolean opponentShipsReady = false;
 	//Deklaracja thread
 	Thread threadConnectionToServer;
 	
@@ -46,7 +46,7 @@ public class ClientNetworkGameThread extends Thread {
 			
 			switch (clientProcedure.getProcedure()){
 			case CONNECT_TO_SERVER:{
-				clientConnectionProcedure();
+				connectToServer();
 				textLogClient.appendText("\n ROZPOCZECIE GRY!");
 				textLogClient.appendText("\n ROZSTAW STATKI!");
 				break;
@@ -59,17 +59,16 @@ public class ClientNetworkGameThread extends Thread {
 			case READY_TO_START:{
 				try {
 					Thread.sleep(500);
-					
-					while(true){
+					textLogClient.appendText("\n [CLIENT]: Oczekiwanie na zakonczenie rozstawiania statkow przez Przeciwnika ");
+
+					while(!opponentShipsReady){
 						outStreamClient.writeUTF("READY");
-
+						if(inStreamClient.readUTF().equals("READY")){
+							textLogClient.appendText("[CLIENT]: ODEBRANO INFO OD PRZECIWNIKA O ZAKONCZENIU USTAWIANIU STATKOW \n");
+							clientProcedure.setProcedure(Procedure.PLAYING_GAME);
+							opponentShipsReady = true;
+						}
 					}
-
-					//System.out.println(inStreamClient.readUTF());
-					//while(!inStreamClient.readUTF().equals("READY")){
-						//outStreamClient.writeUTF("READY");
-
-					//}
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (InterruptedException e) {
@@ -87,16 +86,16 @@ public class ClientNetworkGameThread extends Thread {
 	}
 	
 	
-	private void clientConnectionProcedure() {
+	private void connectToServer() {
 		if(clientSocket == null){
 			try {
 				Runnable clientConnection = ()->{
 					try{
-						//textLogClient.appendText("[CLIENT]: Proba podlaczenia do serwera:  "+gameServer.getServerIP()+"\n");
+						textLogClient.appendText("[CLIENT]: Proba podlaczenia do serwera:  "+gameServer.getServerIP()+"\n");
 						Thread.sleep(10);
 						InetAddress serverAddress = InetAddress.getByName(gameServer.getServerIP()); 
 						clientSocket = new Socket(serverAddress.getHostName(), 12345);
-						//textLogClient.appendText("[CLIENT]: Status polaczenia:  "+clientSocket.isConnected()+"\n");
+						textLogClient.appendText("[CLIENT]: Status polaczenia:  "+clientSocket.isConnected()+"\n");
 						Thread.sleep(10);
 						if (clientSocket.isConnected()){
 							inStreamClient = new DataInputStream(clientSocket.getInputStream());
@@ -111,7 +110,7 @@ public class ClientNetworkGameThread extends Thread {
 				};
 				threadConnectionToServer = new Thread(clientConnection); //utworzenie nowego Threada z metoda do polaczenia
 				threadConnectionToServer.start(); //wystartowanie Threada
-				threadConnectionToServer.join(); //oczekiwanie na zakonczenie metody
+				//threadConnectionToServer.join(); //oczekiwanie na zakonczenie metody
 			}
 			
 			catch (Exception ex){
