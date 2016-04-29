@@ -44,7 +44,7 @@ public class GameChooserThread extends Thread {
 			while(!gameChooserViewController.ServerSelected()){
 				try{
 					System.out.println("Chooser petla");
-				    packet = new DatagramPacket(sendData, sendData.length,InetAddress.getByName("0.0.0.0"), connectionPort);
+				    packet = new DatagramPacket(sendData, sendData.length,InetAddress.getByName("255.255.255.255"), connectionPort);
 				    socket.send(packet);
 				    Thread.sleep(500);
 				    byte[] recvBuf = new byte[15000];

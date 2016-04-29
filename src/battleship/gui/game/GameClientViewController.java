@@ -59,7 +59,7 @@ public class GameClientViewController implements GameViewController{
 	//ZMIENNE POLA GRY
 	private Board serverBoard = new Board();	
 	private Board clientBoard = new Board();
-	private ShipFactory shipFactory = new ShipFactory(clientBoard, this);
+	private ShipFactory shipFactory = new ShipFactory(getClientBoard(), this);
 
 	
 	public Parent getView() {
@@ -108,9 +108,9 @@ public class GameClientViewController implements GameViewController{
 				if (networkConnection == null) networkConnection = new NetworkConnection();
 				textFieldClientIP.setText(networkConnection.getLocalIP());
 				textFieldClientPort.setText(String.valueOf(networkConnection.getConnectionPort()));
-				clientNetworkGameThread = new ClientNetworkGameThread(textLogClient, clientProcedure, this,gameServer);
+				setClientNetworkGameThread(new ClientNetworkGameThread(textLogClient, clientProcedure, this,gameServer));
 				clientProcedure.setProcedure(Procedure.CONNECT_TO_SERVER);
-				clientNetworkGameThread.start();
+				getClientNetworkGameThread().start();
 			}
 			else if(clientProcedure.getProcedure()==Procedure.DEPLOY_SHIPS) textLogClient.appendText("\n Nie skonczono procedury ukladania statkow. Dokoncz procedury i kliknij w przycisk START");
 			
@@ -143,9 +143,9 @@ public class GameClientViewController implements GameViewController{
 		Node src = (Node) e.getSource();
 		if (clientProcedure.getProcedure() == Procedure.DEPLOY_SHIPS){
 			//TO BEDZIE DZIALAC PRZY TESTACH SIECIOWYCH.
-			clientBoard.setViewControllerReference(this);
-			shipFactory.locateShip((int)GridPane.getColumnIndex(src),(int) GridPane.getRowIndex(src));
-			redraw1GridPane(clientBoard);
+			getClientBoard().setViewControllerReference(this);
+			getShipFactory().locateShip((int)GridPane.getColumnIndex(src),(int) GridPane.getRowIndex(src));
+			redraw1GridPane(getClientBoard());
 		}
 
 	}
@@ -153,26 +153,15 @@ public class GameClientViewController implements GameViewController{
 	@FXML
 	public void ServerBoardClickedAction(MouseEvent e) throws IOException{
 		Node src = (Node) e.getSource();
-		serverBoard.setViewControllerReference(this);
+		getServerBoard().setViewControllerReference(this);
 		int x = (int) GridPane.getColumnIndex(src);
 		int y = (int) GridPane.getRowIndex(src);
 		
-		if (clientProcedure.getProcedure() == Procedure.PLAYING_GAME&&clientNetworkGameThread.isPlayerTurn()){
+		if (clientProcedure.getProcedure() == Procedure.PLAYING_GAME&&getClientNetworkGameThread().isPlayerTurn()){
 			//clientNetworkGameThread.handlingCommand(Command.SHOT, Player.CLIENT_PLAYER, x, y);
 
 		}
 		
-		/*
-		
-		if(serverBoard.getBoardCell(x, y) == BoardState.PUSTE_POLE){
-			serverBoard.setBoardCell(x,y,clientBoard.shot(x, y));
-			if(serverBoard.getBoardCell(x, y) == BoardState.STATEK_ZATOPIONY)
-				serverBoard.setSunk(x, y);
-		} else {
-			setTextAreaLogi("Pole bylo juz ostrzelane, strzelaj jeszcze raz!");
-		}
-		redraw1GridPane(clientBoard);
-		redraw2GridPane(serverBoard);*/
 	}
 	
 	//metoda przerysowujaca pierwsza plansze
@@ -231,5 +220,37 @@ public class GameClientViewController implements GameViewController{
 	        }
 	    }
 	    return null;
+	}
+
+	public ClientNetworkGameThread getClientNetworkGameThread() {
+		return clientNetworkGameThread;
+	}
+
+	public void setClientNetworkGameThread(ClientNetworkGameThread clientNetworkGameThread) {
+		this.clientNetworkGameThread = clientNetworkGameThread;
+	}
+
+	public Board getServerBoard() {
+		return serverBoard;
+	}
+
+	public void setServerBoard(Board serverBoard) {
+		this.serverBoard = serverBoard;
+	}
+
+	public Board getClientBoard() {
+		return clientBoard;
+	}
+
+	public void setClientBoard(Board clientBoard) {
+		this.clientBoard = clientBoard;
+	}
+
+	public ShipFactory getShipFactory() {
+		return shipFactory;
+	}
+
+	public void setShipFactory(ShipFactory shipFactory) {
+		this.shipFactory = shipFactory;
 	}
 }

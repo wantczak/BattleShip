@@ -2,6 +2,7 @@ package battleship.gui.menu;
 
 import battleship.application.MainAppFactory;
 import battleship.gui.game.GameChooserViewController;
+import battleship.gui.game.GameClientViewController;
 import battleship.gui.game.GameServerViewController;
 import battleship.gui.main.MainViewController;
 import javafx.application.Platform;
@@ -40,7 +41,8 @@ public class MenuViewController {
 	private MainViewController mainViewController;
 	private GameChooserViewController gameChooserViewController;
 	private GameServerViewController gameServerViewController;
-	
+	private GameClientViewController gameClientViewController;
+
 	//=======================PRZYPISANIE REFERENCJI DO KONTROLEROW=============
 	public void setMainViewController(MainViewController mainViewController) {
 		this.mainViewController = mainViewController;
@@ -53,12 +55,16 @@ public class MenuViewController {
 	private void setGameServerViewController(GameServerViewController gameServerViewController) {
 		this.gameServerViewController = gameServerViewController;
 	}
+	
+
 
 	//METODA INICJALIZUJACA POLA I PRZYPISUJACA FUNKCJE DO BUTTONOW
 	@FXML
 	void initialize(){
 		//metoda obslugujaca nacisniecia buttona btnClose
 		btnClose.setOnAction(event->{
+			//if (gameServerViewController!=null||gameServerViewController.getServerNetworkGameThread()!=null)gameServerViewController.getServerNetworkGameThread().setGameOver(true);
+			//if (gameChooserViewController.getGameClientViewController()!=null||gameChooserViewController.getGameClientViewController().getClientNetworkGameThread()!=null) gameChooserViewController.getGameClientViewController().getClientNetworkGameThread().setGameOver(true);
 			Platform.exit(); //zamkniecie aplikacji
 		});
 		

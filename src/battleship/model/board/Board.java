@@ -1,6 +1,5 @@
 package battleship.model.board;
 
-
 import battleship.gui.game.GameViewController;
 import battleship.model.board.ShipFactory.Kierunek;
 

@@ -2,12 +2,14 @@ package battleship.model.network;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 import battleship.gui.game.GameServerViewController;
 import battleship.model.procedure.GameProcedure;
 import battleship.model.procedure.GameProcedure.Procedure;
+import battleship.model.user.Player;
 import javafx.scene.control.TextArea;
 
 public class ServerNetworkGameThread extends Thread {
@@ -32,6 +34,9 @@ public class ServerNetworkGameThread extends Thread {
 	DataInputStream inStreamServer;
 	DataOutputStream outStreamServer ;
 	
+	
+	private CommunicationMessage communicationMessage;
+
 	public ServerNetworkGameThread(TextArea textLogServer, GameProcedure serverProcedure, GameServerViewController gameServerViewController) {
 		this.textLogServer = textLogServer;
 		this.serverProcedure = serverProcedure;
@@ -41,7 +46,7 @@ public class ServerNetworkGameThread extends Thread {
 	public void run(){
 		textLogServer.appendText("[SERVER] DRUGI WATEK \n");
 
-		while(!gameOver){
+		while(!isGameOver()){
 			try{
 				switch (serverProcedure.getProcedure()){
 				case CONNECT_TO_CLIENT:{
@@ -58,6 +63,8 @@ public class ServerNetworkGameThread extends Thread {
 				}
 				
 				case READY_TO_START:{
+					Thread.sleep(100);
+
 					if(threadWaitingForOpponentShips ==null) waitingForDeployedShips(); 
 					break;
 				}
@@ -98,9 +105,7 @@ public class ServerNetworkGameThread extends Thread {
 				outStreamServer = new DataOutputStream(serverConnection.getOutputStream());
 				serverProcedure.setProcedure(Procedure.DEPLOY_SHIPS);
 			}
-			
 		}
-		
 		catch (Exception ex){
 			ex.printStackTrace();
 		}
@@ -120,8 +125,6 @@ public class ServerNetworkGameThread extends Thread {
 					else{
 						Thread.sleep(500);
 					}
-					
-				
 				}
 				textLogServer.appendText("\n [SERVER]: ODEBRANO INFO OD PRZECIWNIKA O ZAKONCZENIU USTAWIANIU STATKOW");
 				
@@ -140,11 +143,11 @@ public class ServerNetworkGameThread extends Thread {
 	
 	private void readingCommandGame() throws InterruptedException{
 		Runnable serverReading = ()->{
-			while(!gameOver){
+			while(!isGameOver()){
 				try{
-					switch(inStreamServer.readUTF()){
+					//switch(inStreamServer.readUTF()){
 					//TODO: dodac REGEXP odczytujacy poszczegolne dane z komendy oddzielone ; Command dodac w case			
-					}
+					//}
 				}
 				
 				catch (Exception ex){
@@ -154,8 +157,13 @@ public class ServerNetworkGameThread extends Thread {
 		};
 		threadReadingSocket = new Thread(serverReading);
 		threadReadingSocket.start();
-		
 	}
+	
+	public void handlingCommand(Command command,Player own, int x, int y) throws IOException{
+		communicationMessage = new CommunicationMessage(command,own,x,y);
+		outStreamServer.writeUTF(communicationMessage.toString());
+	}
+
 
 	public boolean isPlayerTurn() {
 		return playerTurn;
@@ -163,5 +171,13 @@ public class ServerNetworkGameThread extends Thread {
 
 	public void setPlayerTurn(boolean playerTurn) {
 		this.playerTurn = playerTurn;
+	}
+
+	public boolean isGameOver() {
+		return gameOver;
+	}
+
+	public void setGameOver(boolean gameOver) {
+		this.gameOver = gameOver;
 	}
 }

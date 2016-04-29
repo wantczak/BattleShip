@@ -2,5 +2,7 @@ package battleship.model.network;
 
 public enum Command {
 	SHOT, 
-	ANSWER;
+	ANSWER,
+	INFORMATION,
+	ERROR;
 }

@@ -47,6 +47,11 @@ public class GameChooserViewController {
 		this.gameClientViewController = gameClientViewController;		
 	}
 	
+	public GameClientViewController getGameClientViewController() {
+		return gameClientViewController;		
+	}
+
+	
 	@FXML
 	private void initialize(){
 		configureTableView(); //USTAWIENIE TABLEVIEW

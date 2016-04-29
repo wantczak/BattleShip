@@ -9,11 +9,13 @@ import battleship.gui.menu.MenuViewController;
 import battleship.model.board.Board;
 import battleship.model.board.BoardState;
 import battleship.model.board.ShipFactory;
+import battleship.model.network.Command;
 import battleship.model.network.NetworkConnection;
 import battleship.model.network.ServerNetworkConnectionThread;
 import battleship.model.network.ServerNetworkGameThread;
 import battleship.model.procedure.GameProcedure;
 import battleship.model.procedure.GameProcedure.Procedure;
+import battleship.model.user.Player;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -133,8 +135,8 @@ public class GameServerViewController implements GameViewController{
 
 						//Odpalenie nowego threada do gry
 						serverProcedure.setProcedure(Procedure.CONNECT_TO_CLIENT);
-						serverNetworkGameThread = new ServerNetworkGameThread(textLogServer,serverProcedure,getGameServerViewController());
-						serverNetworkGameThread.start(); //odpalenie watka
+						setServerNetworkGameThread(new ServerNetworkGameThread(textLogServer,serverProcedure,getGameServerViewController()));
+						getServerNetworkGameThread().start(); //odpalenie watka
 						//serverNetworkGameThread.join(); //oczekiwanie na zakonczenie threada
 						
 					} catch (Exception e) {
@@ -182,16 +184,15 @@ public class GameServerViewController implements GameViewController{
 	}
 	
 	@FXML
-	private void ClientBoardClickedAction(MouseEvent e){
+	private void ClientBoardClickedAction(MouseEvent e) throws IOException{
 		Node src = (Node) e.getSource();
 		clientBoard.setViewControllerReference(this);
 		int x = (int) GridPane.getColumnIndex(src);
 		int y = (int) GridPane.getRowIndex(src);
 		
-		if (serverProcedure.getProcedure() == Procedure.PLAYING_GAME&&serverNetworkGameThread.isPlayerTurn()){
+		if (serverProcedure.getProcedure() == Procedure.PLAYING_GAME&&getServerNetworkGameThread().isPlayerTurn()){
 			textLogServer.appendText("\n NACISNIETO: ["+x+"] ["+y+"]");
-			
-			//clientNetworkGameThread.handlingCommand(Command.SHOT, Player.CLIENT_PLAYER, x, y);
+			serverNetworkGameThread.handlingCommand(Command.SHOT, Player.CLIENT_PLAYER, x, y);
 
 		}
 		/*
@@ -262,6 +263,14 @@ public class GameServerViewController implements GameViewController{
 	        }
 	    }
 	    return null;
+	}
+
+	public ServerNetworkGameThread getServerNetworkGameThread() {
+		return serverNetworkGameThread;
+	}
+
+	public void setServerNetworkGameThread(ServerNetworkGameThread serverNetworkGameThread) {
+		this.serverNetworkGameThread = serverNetworkGameThread;
 	}
 
 	

@@ -6,8 +6,10 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.regex.Pattern;
 
 import battleship.gui.game.GameClientViewController;
+import battleship.model.board.BoardState;
 import battleship.model.procedure.GameProcedure;
 import battleship.model.procedure.GameProcedure.Procedure;
 import battleship.model.server.Server;
@@ -30,12 +32,13 @@ public class ClientNetworkGameThread extends Thread {
 	//WATKI W KLASIE
 	private Thread threadWaitingForOpponentShips;
 	private Thread threadConnectionToServer;
-	
+	private Thread threadReadingSocket;
+
 	//BUFFORY IN I OUT
 	DataInputStream inStreamClient;
 	DataOutputStream outStreamClient;
 	
-	CommunicationMessage communicationMessage;
+	private CommunicationMessage communicationMessage;
 	
 	public ClientNetworkGameThread(TextArea textLogClient, GameProcedure clientProcedure, GameClientViewController gameClientViewController, Server gameServer) {
 		this.textLogClient = textLogClient;
@@ -46,7 +49,7 @@ public class ClientNetworkGameThread extends Thread {
 	
 	//=========================METODA GLOWNA WATKU=================================	Q
 	public void run(){
-		while(!gameOver){
+		while(!isGameOver()){
 			
 			switch (clientProcedure.getProcedure()){
 			case CONNECT_TO_SERVER:{
@@ -61,13 +64,19 @@ public class ClientNetworkGameThread extends Thread {
 			}
 			
 			case READY_TO_START:{
-		
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				if(threadWaitingForOpponentShips ==null) waitingForDeployedShips(); 
 				break;
 			}
 			
 			case PLAYING_GAME:{
-				
+				if(threadReadingSocket ==null) readingCommandGame();
+
 			}
 
 			
@@ -78,7 +87,10 @@ public class ClientNetworkGameThread extends Thread {
 		}
 	}
 	
-	
+	/**Metoda polaczenia clienta do servera
+	 * 
+	 * @author Wojciech Antczak
+	 */
 	private void connectToServer() {
 		if(clientSocket == null){
 			try {
@@ -112,6 +124,9 @@ public class ClientNetworkGameThread extends Thread {
 		}
 	}
 	
+	/**Metoda oczekiwania na ustawienie statkow przez przeciwnika
+	 * @author Wojciech Antczak
+	 */
 	private void waitingForDeployedShips(){
 		Runnable clientWaitingForOpponentShips = ()->{
 			try{
@@ -139,7 +154,58 @@ public class ClientNetworkGameThread extends Thread {
 		//threadWaitingForOpponentShips.join(); //oczekiwanie na zakonczenie metody
 	}
 
-	//TODO: Dodac watek do obslugi czytania ze streama
+	
+	/**Metoda odpowiedzialna za obsluge pakietow komunikacyjnych od serwera
+	 * @author Wojciech Antczak
+	 * 
+	 */
+	private void readingCommandGame(){
+		Runnable clientReading = ()->{
+			while(!isGameOver()){
+				try{
+					String packetAll = inStreamClient.readUTF(); //pobranie pakietu ze Streama i zapisanie do nowego Stringa
+					String[] packet = packetAll.split(Pattern.quote(";")); // Podzielenie komendy na poszczegolne parametry (podzielenie dzieki ";")
+					textLogClient.appendText("\n [COMMAND]: "+packet[0]);
+					textLogClient.appendText("\n [USER]: "+packet[1]);
+					textLogClient.appendText("\n [X]: "+packet[2]);
+					textLogClient.appendText("\n [Y]: "+packet[3]);
+
+					//switch odpowiadajacy za obsluge komend
+					switch (packet[0]){
+					case "SHOT":{
+						checkBoard(Integer.parseInt(packet[2]),Integer.parseInt(packet[3])); //parsowanie 
+						break;
+					}
+					
+					case "ANSWER":{
+						break;
+					}
+					
+					case "INFORMATION":{
+						break;
+					}
+					
+					case "ERROR":{
+						break;
+					}
+					
+					default: break;
+
+					}
+					Thread.sleep(100);
+				}
+				
+				catch (Exception ex){
+					ex.printStackTrace();
+				}
+			}
+		};
+		threadReadingSocket = new Thread(clientReading);
+		threadReadingSocket.start();
+		
+	}
+	
+	
 	public void handlingCommand(Command command,Player own, int x, int y) throws IOException{
 		communicationMessage = new CommunicationMessage(command,own,x,y);
 		outStreamClient.writeUTF(communicationMessage.toString());
@@ -151,6 +217,31 @@ public class ClientNetworkGameThread extends Thread {
 
 	public void setPlayerTurn(boolean playerTurn) {
 		this.playerTurn = playerTurn;
+	}
+
+	public boolean isGameOver() {
+		return gameOver;
+	}
+
+	public void setGameOver(boolean gameOver) {
+		this.gameOver = gameOver;
+	}
+	
+	
+	/**Sprawdzenie planszy po strzale
+	 * @author Pawel Czernek
+	 */
+	private void checkBoard(int x,int y){
+		if(gameClientViewController.getServerBoard().getBoardCell(x, y) == BoardState.PUSTE_POLE){
+			gameClientViewController.getServerBoard().setBoardCell(x,y,gameClientViewController.getClientBoard().shot(x, y));
+			if(gameClientViewController.getServerBoard().getBoardCell(x, y) == BoardState.STATEK_ZATOPIONY)
+				gameClientViewController.getServerBoard().setSunk(x, y);
+		} else {
+			//TODO:Wyslanie informacji do servera o zlym polu
+			//textLogClient.appendText("Pole bylo juz ostrzelane, strzelaj jeszcze raz!");
+		}
+		//redraw1GridPane(clientBoard);
+		//redraw2GridPane(serverBoard);*/
 	}
 
 }
