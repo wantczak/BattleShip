@@ -145,7 +145,7 @@ public class GameClientViewController implements GameViewController{
 			//TO BEDZIE DZIALAC PRZY TESTACH SIECIOWYCH.
 			getClientBoard().setViewControllerReference(this);
 			getShipFactory().locateShip((int)GridPane.getColumnIndex(src),(int) GridPane.getRowIndex(src));
-			redraw1GridPane(getClientBoard());
+			redraw1GridPane();
 		}
 
 	}
@@ -153,22 +153,28 @@ public class GameClientViewController implements GameViewController{
 	@FXML
 	public void ServerBoardClickedAction(MouseEvent e) throws IOException{
 		Node src = (Node) e.getSource();
-		getServerBoard().setViewControllerReference(this);
+		getClientBoard().setViewControllerReference(this);
 		int x = (int) GridPane.getColumnIndex(src);
 		int y = (int) GridPane.getRowIndex(src);
 		
 		if (clientProcedure.getProcedure() == Procedure.PLAYING_GAME&&getClientNetworkGameThread().isPlayerTurn()){
-			//clientNetworkGameThread.handlingCommand(Command.SHOT, Player.CLIENT_PLAYER, x, y);
-
+			textLogClient.appendText("\n NACISNIETO: ["+x+"] ["+y+"]");
+			if(serverBoard.getBoardCell(x, y) != BoardState.PUSTE_POLE){
+				textLogClient.appendText("To pole było już ostrzelane, strzelaj jeszcze raz!");
+			} else {
+				clientNetworkGameThread.handlingCommand(Command.SHOT, Player.SERVER_PLAYER, x, y);
+			}
+			
+		} else if (clientProcedure.getProcedure() == Procedure.PLAYING_GAME) {
+			textLogClient.appendText("Kolej na strzał przeciwnika!");
 		}
-		
 	}
 	
 	//metoda przerysowujaca pierwsza plansze
-	private void redraw1GridPane(Board board) {
+	public void redraw1GridPane() {
 		try{
 			Button btn;
-			BoardState[][] boardSt = board.getBoardState();
+			BoardState[][] boardSt = clientBoard.getBoardState();
 			for (int i = 0; i < boardSt.length; i++) {
 				for (int j = 0; j < boardSt[i].length; j++){
 					btn = (Button)getNodeFromGridPane(clientGridPane, i, j);
@@ -192,9 +198,9 @@ public class GameClientViewController implements GameViewController{
 	}
 	
 	//metoda przerysowujaca druga plansze
-	private void redraw2GridPane(Board board) {
+	public void redraw2GridPane() {
 		Button btn;
-		BoardState[][] boardSt = board.getBoardState();
+		BoardState[][] boardSt = serverBoard.getBoardState();
 		for (int i = 0; i < boardSt.length; i++) {
 			for (int j = 0; j < boardSt[i].length; j++){
 				btn = (Button)getNodeFromGridPane(serverGridPane, i, j);

@@ -60,9 +60,9 @@ public class GameServerViewController implements GameViewController{
     public void setClientIP(String clientIP){
     	this.clientIP = clientIP;
     }
-	Board serverBoard = new Board();	
-	Board clientBoard = new Board();
-	ShipFactory shipFactory = new ShipFactory(serverBoard, this);
+	private Board serverBoard = new Board();	
+	private Board clientBoard = new Board();
+	ShipFactory shipFactory = new ShipFactory(getServerBoard(), this);
 
 	//Deklaracja thread�w
 	Thread startGameThread;
@@ -169,7 +169,7 @@ public class GameServerViewController implements GameViewController{
 //=======================================================================================
 	/**
 	 * Metoda odpalana w momencie nacisniecia przycisku pola gry
-	 * @author Wojciech Antczak
+	 * @author Wojciech Antczak , Paweł Czernek
 	 * @param e - pobranie Eventu od przycisniecia myszy
 	 */
 	@FXML
@@ -179,7 +179,7 @@ public class GameServerViewController implements GameViewController{
 			//TO BEDZIE DZIALAC PRZY TESTACH SIECIOWYCH.
 			serverBoard.setViewControllerReference(this);
 			shipFactory.locateShip((int)GridPane.getColumnIndex(src),(int) GridPane.getRowIndex(src));
-			redraw1GridPane(serverBoard);
+			redraw1GridPane();
 		}
 	}
 	
@@ -192,8 +192,14 @@ public class GameServerViewController implements GameViewController{
 		
 		if (serverProcedure.getProcedure() == Procedure.PLAYING_GAME&&getServerNetworkGameThread().isPlayerTurn()){
 			textLogServer.appendText("\n NACISNIETO: ["+x+"] ["+y+"]");
-			serverNetworkGameThread.handlingCommand(Command.SHOT, Player.CLIENT_PLAYER, x, y);
-
+			if(clientBoard.getBoardCell(x, y) != BoardState.PUSTE_POLE){
+				textLogServer.appendText("To pole było już ostrzelane, strzelaj jeszcze raz!");
+			} else {
+				serverNetworkGameThread.handlingCommand(Command.SHOT, Player.SERVER_PLAYER, x, y);
+			}
+			
+		} else if (serverProcedure.getProcedure() == Procedure.PLAYING_GAME) {
+			textLogServer.appendText("Kolej na strzał przeciwnika!");
 		}
 		/*
 		if(clientBoard.getBoardCell(x, y) == BoardState.PUSTE_POLE){
@@ -208,10 +214,10 @@ public class GameServerViewController implements GameViewController{
 		*/
 	}
 	//metoda przerysowujaca pierwsza plansze
-	private void redraw1GridPane(Board board) {
+	public void redraw1GridPane() {
 		try{
 			Button btn;
-			BoardState[][] boardSt = board.getBoardState();
+			BoardState[][] boardSt = serverBoard.getBoardState();
 			for (int i = 0; i < boardSt.length; i++) {
 				for (int j = 0; j < boardSt[i].length; j++){
 					btn = (Button)getNodeFromGridPane(serverGridPane, i, j);
@@ -235,9 +241,9 @@ public class GameServerViewController implements GameViewController{
 	}
 	
 	//metoda przerysowujaca druga plansze
-	private void redraw2GridPane(Board board) {
+	public void redraw2GridPane() {
 		Button btn;
-		BoardState[][] boardSt = board.getBoardState();
+		BoardState[][] boardSt = clientBoard.getBoardState();
 		for (int i = 0; i < boardSt.length; i++) {
 			for (int j = 0; j < boardSt[i].length; j++){
 				btn = (Button)getNodeFromGridPane(clientGridPane, i, j);
@@ -272,7 +278,29 @@ public class GameServerViewController implements GameViewController{
 	public void setServerNetworkGameThread(ServerNetworkGameThread serverNetworkGameThread) {
 		this.serverNetworkGameThread = serverNetworkGameThread;
 	}
+	public Board getServerBoard() {
+		return serverBoard;
+	}
 
+	public void setServerBoard(Board serverBoard) {
+		this.serverBoard = serverBoard;
+	}
+
+	public Board getClientBoard() {
+		return clientBoard;
+	}
+
+	public void setClientBoard(Board clientBoard) {
+		this.clientBoard = clientBoard;
+	}
+
+	public ShipFactory getShipFactory() {
+		return shipFactory;
+	}
+
+	public void setShipFactory(ShipFactory shipFactory) {
+		this.shipFactory = shipFactory;
+	}
 	
 
 }
