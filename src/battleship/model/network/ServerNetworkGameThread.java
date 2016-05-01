@@ -5,8 +5,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.regex.Pattern;
 
 import battleship.gui.game.GameServerViewController;
+import battleship.model.board.BoardState;
 import battleship.model.procedure.GameProcedure;
 import battleship.model.procedure.GameProcedure.Procedure;
 import battleship.model.user.Player;
@@ -21,6 +23,7 @@ public class ServerNetworkGameThread extends Thread {
 	private boolean gameOver = false;
 	private boolean playerTurn = true;
 	private boolean opponentShipsReady = false;
+	private int shipsCount = 8;
 
 	private ServerSocket serverSocket; //Deklaracja pojedynczego serverSocketa
     private Socket serverConnection; //Socket polaczenia
@@ -145,9 +148,62 @@ public class ServerNetworkGameThread extends Thread {
 		Runnable serverReading = ()->{
 			while(!isGameOver()){
 				try{
-					//switch(inStreamServer.readUTF()){
-					//TODO: dodac REGEXP odczytujacy poszczegolne dane z komendy oddzielone ; Command dodac w case			
-					//}
+					String packetAll = inStreamServer.readUTF(); //pobranie pakietu ze Streama i zapisanie do nowego Stringa
+					String[] packet = packetAll.split(Pattern.quote(";")); // Podzielenie komendy na poszczegolne parametry (podzielenie dzieki ";")
+					textLogServer.appendText("\n [COMMAND]: "+packet[0]);
+					textLogServer.appendText("\n [USER]: "+packet[1]);
+					textLogServer.appendText("\n [X]: "+packet[2]);
+					textLogServer.appendText("\n [Y]: "+packet[3]);
+					if(packet[0].equals("ANSWER")){
+					textLogServer.appendText("\n [Stan Strzału]: "+packet[4]);
+					}
+					//switch odpowiadajacy za obsluge komend
+					switch (packet[0]){
+					case "SHOT":{
+						
+						BoardState shotState = checkBoard(Integer.parseInt(packet[2]),Integer.parseInt(packet[3])); //parsowanie 
+						handlingCommand(Command.ANSWER, Player.CLIENT_PLAYER, Integer.parseInt(packet[2]), Integer.parseInt(packet[3]),shotState);//odpowiedź
+						if(shotState.equals("STATEK_ZATOPIONY")||shotState.equals("STATEK_TRAFIONY")){
+							playerTurn = false;
+						}else{
+							playerTurn = true;
+						}
+						gameServerViewController.redraw1GridPane();
+						gameServerViewController.redraw2GridPane();
+						break;
+					}
+					
+					case "ANSWER":{
+						BoardState state = BoardState.valueOf(packet[4]);
+						gameServerViewController.getClientBoard().setBoardCell(Integer.parseInt(packet[2]), Integer.parseInt(packet[3]), state);
+						if(packet[4].equals("STATEK_ZATOPIONY")){
+							gameServerViewController.getClientBoard().setSunk(Integer.parseInt(packet[2]),Integer.parseInt(packet[3]));
+							shipsCount--;
+							if(shipsCount == 0) gameOver = true;
+							textLogServer.appendText("Koniec gry, wygrał" + packet[1]);
+						}
+						if(packet[4].equals("STATEK_ZATOPIONY")||packet[4].equals("STATEK_TRAFIONY")){
+							playerTurn = true;
+						}else{
+							playerTurn = false;
+						}
+						gameServerViewController.redraw1GridPane();
+						gameServerViewController.redraw2GridPane();
+						break;
+					}
+					
+					case "INFORMATION":{
+						break;
+					}
+					
+					case "ERROR":{
+						break;
+					}
+					
+					default: break;
+
+					}
+					Thread.sleep(100);
 				}
 				
 				catch (Exception ex){
@@ -161,6 +217,10 @@ public class ServerNetworkGameThread extends Thread {
 	
 	public void handlingCommand(Command command,Player own, int x, int y) throws IOException{
 		communicationMessage = new CommunicationMessage(command,own,x,y);
+		outStreamServer.writeUTF(communicationMessage.toString());
+	}
+	public void handlingCommand(Command command, Player own, int x, int y, BoardState state) throws IOException {
+		communicationMessage = new CommunicationMessage(command, own, x, y, state);
 		outStreamServer.writeUTF(communicationMessage.toString());
 	}
 
@@ -179,5 +239,17 @@ public class ServerNetworkGameThread extends Thread {
 
 	public void setGameOver(boolean gameOver) {
 		this.gameOver = gameOver;
+	}
+	/**
+	 * Sprawdzenie planszy po strzale
+	 * 
+	 * @author Pawel Czernek
+	 */
+	private BoardState checkBoard(int x, int y) {
+		gameServerViewController.getServerBoard().shot(x, y);
+		if (gameServerViewController.getServerBoard().getBoardCell(x, y) == BoardState.STATEK_ZATOPIONY) {
+			gameServerViewController.getServerBoard().setSunk(x, y);
+		}
+		return gameServerViewController.getServerBoard().getBoardCell(x, y);
 	}
 }
