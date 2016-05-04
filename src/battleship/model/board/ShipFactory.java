@@ -2,7 +2,7 @@ package battleship.model.board;
 
 import java.awt.Point;
 import battleship.gui.game.GameViewController;
-import battleship.model.server.ServerProcedure.Procedure;
+import battleship.model.procedure.GameProcedure.Procedure;
 
 /**
  * Klasa obsługująca rozmieszczanie statków na czystej planszy
@@ -13,8 +13,9 @@ import battleship.model.server.ServerProcedure.Procedure;
 
 public class ShipFactory {
 	
-	BoardState[][] board;
-	GameViewController viewController;
+	private BoardState[][] board;
+	private GameViewController viewController;
+	
 
 	public ShipFactory(Board board,GameViewController viewController) {
 		this.board = board.getBoardState();
@@ -41,6 +42,9 @@ public class ShipFactory {
 	 */
 	public void locateShip(int x, int y) {
 
+		try{
+			
+		
 		Point punktKierunku; // punkt wskazania w którym kierunku układać statek
 		Point koniec = null; // punkt końcowy statku
 		Kierunek kierunek = null; // Parametr enum wskazujący w którą strone
@@ -206,13 +210,19 @@ public class ShipFactory {
 					viewController.setProcedure(Procedure.READY_TO_START);
 				}
 
+				
 			}
+		
+		}
+		}
+		catch (Exception ex){
+			ex.printStackTrace();
 		}
 	} // Koniec rozmieszczania statków
 	
 	
 	/**
-	 * Metoda pomocnicza sprawdzająca kolizje między statkami
+	 * Metoda pomocnicza sprawdzajaca kolizje miedzy statkami
 	 * 
 	 * @param point
 	 * @return
@@ -227,7 +237,7 @@ public class ShipFactory {
 		return false;
 	}
 	
-	//ograniczenie współrzędnych do przedziału 0-10.
+	//ograniczenie wspolrzednych do przedzialu 0-10.
 	private int limitValue(int param){
 		if(param<0) return 0;
 		else if (param>10) return 10;

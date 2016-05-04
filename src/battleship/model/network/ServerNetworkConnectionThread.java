@@ -8,8 +8,8 @@ import java.net.ServerSocket;
 import java.net.SocketException;
 
 import battleship.gui.game.GameServerViewController;
-import battleship.model.server.ServerProcedure;
-import battleship.model.server.ServerProcedure.Procedure;
+import battleship.model.procedure.GameProcedure;
+import javafx.application.Platform;
 import javafx.scene.control.TextArea;
 
 /**
@@ -24,11 +24,11 @@ public class ServerNetworkConnectionThread extends Thread {
     
     private int connectionPort = 12345; //zmienna Integer serverPort
     private TextArea textLogServer;
-    private ServerProcedure serverProcedure;
+    private GameProcedure serverProcedure;
     private boolean clientConnectionOpen = false;
 	private GameServerViewController gameServerViewController;
     
-    public ServerNetworkConnectionThread(TextArea textLogServer, ServerProcedure serverProcedure, GameServerViewController gameServerViewController){
+    public ServerNetworkConnectionThread(TextArea textLogServer, GameProcedure serverProcedure, GameServerViewController gameServerViewController){
     	this.textLogServer = textLogServer;
     	this.serverProcedure = serverProcedure;
     	this.gameServerViewController = gameServerViewController;
@@ -44,7 +44,7 @@ public class ServerNetworkConnectionThread extends Thread {
     
 	public void run() {
         try {
-			textLogServer.appendText("[SERVER] Rozpoczecie wysylania broadcastingu obecnosci w sieci \n");
+			Platform.runLater(()->gameServerViewController.setTextAreaLogi("[SERVER] Rozpoczecie wysylania broadcastingu obecnosci w sieci"));
 		    serverUDPSocket = new DatagramSocket(connectionPort, InetAddress.getByName("0.0.0.0")); //LISTEN NA WIADOMOSC OD KLIENTA 
 		    serverUDPSocket.setBroadcast(true); //ODPALENIE BROADCASTINGU			
 		} catch (Exception ex) {
@@ -68,11 +68,11 @@ public class ServerNetworkConnectionThread extends Thread {
                 }
                 
                 case "CONNECTION_WANTED":{
-        			textLogServer.appendText("[SERVER] Otrzymano zapytanie o polaczenie od klienta \n");
+                	Platform.runLater(()->gameServerViewController.setTextAreaLogi("[SERVER] Otrzymano zapytanie o polaczenie od klienta"));
                     byte[] sendData = ("SERVER_CLIENT_CONNECTION_OPEN").getBytes();//Imie usera oczekujacego na gre wstawiono na stale
                     DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, packet.getAddress(), packet.getPort());
                     serverUDPSocket.send(sendPacket);
-        			textLogServer.appendText("[SERVER] Wyslano gotowosc do polaczenia  klienta \n");
+                    Platform.runLater(()->gameServerViewController.setTextAreaLogi("[SERVER] Wyslano gotowosc do polaczenia  klienta"));
         			gameServerViewController.setClientIP(packet.getAddress().getHostAddress());
         			clientConnectionOpen = true;
         			serverUDPSocket.close();

@@ -9,11 +9,14 @@ import battleship.gui.menu.MenuViewController;
 import battleship.model.board.Board;
 import battleship.model.board.BoardState;
 import battleship.model.board.ShipFactory;
+import battleship.model.network.Command;
 import battleship.model.network.NetworkConnection;
 import battleship.model.network.ServerNetworkConnectionThread;
 import battleship.model.network.ServerNetworkGameThread;
-import battleship.model.server.ServerProcedure;
-import battleship.model.server.ServerProcedure.Procedure;
+import battleship.model.procedure.GameProcedure;
+import battleship.model.procedure.GameProcedure.Procedure;
+import battleship.model.user.Player;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -31,8 +34,8 @@ import javafx.scene.layout.GridPane;
 public class GameServerViewController implements GameViewController{
 
 	@FXML private Parent root;
-	@FXML private GridPane Player1GridPane;
-	@FXML private GridPane Player2GridPane;
+	@FXML private GridPane serverGridPane;
+	@FXML private GridPane clientGridPane;
 	@FXML private Button btnStartGame;
 	
 	//TextFieldy ukazujace dane
@@ -41,7 +44,7 @@ public class GameServerViewController implements GameViewController{
 	@FXML private TextField textFieldServerPort;
 	@FXML private TextArea textLogServer;	
 	
-	private ServerProcedure serverProcedure;
+	private GameProcedure serverProcedure;
 	private NetworkConnection networkConnection;
 	
 	//Watki
@@ -58,9 +61,9 @@ public class GameServerViewController implements GameViewController{
     public void setClientIP(String clientIP){
     	this.clientIP = clientIP;
     }
-	Board player1board = new Board();	
-	Board player2board = new Board();
-	ShipFactory shipFactory = new ShipFactory(player1board, this);
+	private Board serverBoard = new Board();	
+	private Board clientBoard = new Board();
+	ShipFactory shipFactory = new ShipFactory(getServerBoard(), this);
 
 	//Deklaracja thread�w
 	Thread startGameThread;
@@ -82,123 +85,31 @@ public class GameServerViewController implements GameViewController{
 	//METODA UZUPELNIAJACA AREALOGS
 	@Override
 	public void setTextAreaLogi(String message){
-		this.textLogServer.appendText("\n"+message);
+		Platform.runLater(()->this.textLogServer.appendText(message+"\n"));
 	}
 	
 	//METODA USTAWIAJACA PROCEDURE Z ZEWNATRZ KLASY
 	@Override
 	public void setProcedure(Procedure procedure){
-		serverProcedure.setServerProcedure(procedure);
+		serverProcedure.setProcedure(procedure);
 	}
 	
-	//ZMIENNA OKRESLAJACA POLACZENIE CLIENTA
 	
-	//METODA ODPALANA PRZY TWORZENIU NOWEGO SERWERA
+//=====================METODA INITIALIZE ODPALANA PRZY TWORZENIU NOWEGO SERWERA===========
+//========================================================================================
 	@FXML
 	private void initialize(){
-		serverProcedure = new ServerProcedure(Procedure.START_GAME);
+		serverProcedure = new GameProcedure(Procedure.START_GAME);
 		btnStartGame.setOnAction(e->{
-			if (serverProcedure.getServerProcedure()==Procedure.START_GAME){nameDialog();	startGameProcedure();} //Odpalenie metody startGame, i utworzenie nowego Thread
-			else if(serverProcedure.getServerProcedure()==Procedure.DEPLOY_SHIPS) textLogServer.appendText("\n Nie skonczono procedury ukladania statkow. Dokoncz procedury i kliknij w przycisk START");
+			if (serverProcedure.getProcedure()==Procedure.START_GAME){nameDialog();	startGameProcedure();} //Odpalenie metody startGame, i utworzenie nowego Thread
+			else if(serverProcedure.getProcedure()==Procedure.DEPLOY_SHIPS) setTextAreaLogi("Nie skonczono procedury ukladania statkow. Dokoncz procedure");
 			
 		});		
 	}
 
-//==========================================================================
-	/**
-	 * Metoda odpalana w momencie nacisniecia przycisku pola gry
-	 * @author Wojciech Antczak
-	 * @param e - pobranie Eventu od przycisniecia myszy
-	 */
-	@FXML
-	private void Player1ClickedAction(MouseEvent e) {
-		Node src = (Node) e.getSource();
-		if (serverProcedure.getServerProcedure() == Procedure.DEPLOY_SHIPS){
-			//TO BEDZIE DZIALAC PRZY TESTACH SIECIOWYCH.
-			player1board.setViewControllerReference(this);
-			shipFactory.locateShip((int)GridPane.getColumnIndex(src),(int) GridPane.getRowIndex(src));
-			redraw1GridPane(player1board);
-		}
-	}
-	
-	@FXML
-	private void Player2ClickedAction(MouseEvent e){
-		Node src = (Node) e.getSource();
-//		 System.out.println("Row: "+ GridPane.getRowIndex(src));
-//		 System.out.println("Column: "+ GridPane.getColumnIndex(src));
-		player2board.setViewControllerReference(this);
-		int x = (int) GridPane.getColumnIndex(src);
-		int y = (int) GridPane.getRowIndex(src);
-		if(player2board.getBoardCell(x, y) == BoardState.PUSTE_POLE){
-			player2board.setBoardCell(x,y,player1board.shot(x, y));
-			if(player2board.getBoardCell(x, y) == BoardState.STATEK_ZATOPIONY)
-				player2board.setSunk(x, y);
-		} else {
-			setTextAreaLogi("Pole było już ostrzelane, strzelaj jeszcze raz!");
-		}
-		redraw1GridPane(player1board);
-		redraw2GridPane(player2board);
-	}
-	//metoda przerysowująca pierwszą planszę
-	private void redraw1GridPane(Board board) {
-		Button btn;
-		BoardState[][] boardSt = board.getBoardState();
-		for (int i = 0; i < boardSt.length; i++) {
-			for (int j = 0; j < boardSt[i].length; j++){
-				btn = (Button)getNodeFromGridPane(Player1GridPane, i, j);
-				if (boardSt[i][j] == BoardState.STATEK) 
-					btn.setStyle("-fx-background-color: slateblue;");
-				if (boardSt[i][j] == BoardState.PUSTE_POLE)
-					btn.setStyle("default");
-				if (boardSt[i][j] == BoardState.PUDLO) 
-					btn.setStyle("-fx-background-color: grey;");
-				if (boardSt[i][j] == BoardState.STATEK_TRAFIONY) 
-					btn.setStyle("-fx-background-color: red;");
-				if (boardSt[i][j] == BoardState.STATEK_ZATOPIONY) 
-					btn.setStyle("-fx-background-color: black;");
-				
-			}
-		}
-	}
-	
-	//metoda przerysowująca drugą planszę
-	private void redraw2GridPane(Board board) {
-		Button btn;
-		BoardState[][] boardSt = board.getBoardState();
-		for (int i = 0; i < boardSt.length; i++) {
-			for (int j = 0; j < boardSt[i].length; j++){
-				btn = (Button)getNodeFromGridPane(Player2GridPane, i, j);
-				if (boardSt[i][j] == BoardState.STATEK) 
-					btn.setStyle("-fx-background-color: slateblue;");
-				if (boardSt[i][j] == BoardState.PUSTE_POLE)
-					btn.setStyle("default");
-				if (boardSt[i][j] == BoardState.PUDLO) 
-					btn.setStyle("-fx-background-color: grey;");
-				if (boardSt[i][j] == BoardState.STATEK_TRAFIONY) 
-					btn.setStyle("-fx-background-color: red;");
-				if (boardSt[i][j] == BoardState.STATEK_ZATOPIONY) 
-					btn.setStyle("-fx-background-color: black;");
-				
-			}
-		}
-	}
-	
-	private Node getNodeFromGridPane(GridPane gridPane, int col, int row) {
-	    for (Node node : gridPane.getChildren()) {
-	        if (GridPane.getColumnIndex(node) == col && GridPane.getRowIndex(node) == row) {
-	            return node;
-	        }
-	    }
-	    return null;
-	}
 	
 	/**
-	 * Metoda rozpoczynajaca gre. Procedura jest nastepujaca:
-	 * <ul>
-	 * <li> Utworzenie nowego Thread, ktory bedzie odpowiedzialny za operacje Network;
-	 * <li> 
-	 * <li> 
-	 * </ul>
+	 * Metoda rozpoczynajaca gre.
 	 * <p>
 	 * @author Wojciech Antczak
 	 */
@@ -207,26 +118,26 @@ public class GameServerViewController implements GameViewController{
 		     public void run() {
 		    	 
 		    	 //PROCEDURA START_GAME
-				if (serverProcedure.getServerProcedure() == Procedure.START_GAME){
+				if (serverProcedure.getProcedure() == Procedure.START_GAME){
 					if (networkConnection == null) networkConnection = new NetworkConnection();
 					textFieldServerIP.setText(networkConnection.getLocalIP());
 					textFieldServerPort.setText(String.valueOf(networkConnection.getConnectionPort()));
-					serverProcedure.setServerProcedure(Procedure.OPEN_CONNECTION);
+					serverProcedure.setProcedure(Procedure.OPEN_CONNECTION);
 				}
 				
 				//PROCEDURA OPEN_CONNECTION
-				if (serverProcedure.getServerProcedure() == Procedure.OPEN_CONNECTION){
+				if (serverProcedure.getProcedure() == Procedure.OPEN_CONNECTION){
 					try {
-						serverProcedure.setServerProcedure(Procedure.READY_TO_START);
+						serverProcedure.setProcedure(Procedure.READY_TO_START);
 						serverNetworkConnectionThread = new ServerNetworkConnectionThread(textLogServer,serverProcedure,getGameServerViewController());
 						serverNetworkConnectionThread.start(); //odpalenie watka
 						serverNetworkConnectionThread.join(); //oczekiwanie na zakonczenie threada
-						textLogServer.appendText("[SERVER] PO PROCEDURZE CONNECTION... \n");
+						setTextAreaLogi("[SERVER] PO PROCEDURZE CONNECTION... ");
 
 						//Odpalenie nowego threada do gry
-						serverProcedure.setServerProcedure(Procedure.CONNECT_TO_CLIENT);
-						serverNetworkGameThread = new ServerNetworkGameThread(textLogServer,serverProcedure,getGameServerViewController());
-						serverNetworkGameThread.start(); //odpalenie watka
+						serverProcedure.setProcedure(Procedure.CONNECT_TO_CLIENT);
+						setServerNetworkGameThread(new ServerNetworkGameThread(textLogServer,serverProcedure,getGameServerViewController()));
+						getServerNetworkGameThread().start(); //odpalenie watka
 						//serverNetworkGameThread.join(); //oczekiwanie na zakonczenie threada
 						
 					} catch (Exception e) {
@@ -235,13 +146,15 @@ public class GameServerViewController implements GameViewController{
 				}
 				
 				//PROCEDURA DEPLOY_SHIPS
-				if (serverProcedure.getServerProcedure() == Procedure.DEPLOY_SHIPS){
+				if (serverProcedure.getProcedure() == Procedure.DEPLOY_SHIPS){
 				}
 		     }
 		});  
 		startGameThread.start();
 	}
-	
+
+
+	//====================TWORZENIE DIALOGU DO WYBORU NICKA GRACZA================
 	private void nameDialog(){
 		TextInputDialog dialog = new TextInputDialog("Gracz1");
 		dialog.setTitle("Imie gracza");
@@ -252,5 +165,160 @@ public class GameServerViewController implements GameViewController{
 			textFieldServerGame.setText(result.get());
 		}		
 	}
+	
+//==============================METODY OBSLUGI PRZYCISKOW I POLA GRY=====================
+//=======================================================================================
+	/**
+	 * Metoda odpalana w momencie nacisniecia przycisku pola gry
+	 * @author Wojciech Antczak , Paweł Czernek
+	 * @param e - pobranie Eventu od przycisniecia myszy
+	 */
+	@FXML
+	private void ServerBoardClickedAction(MouseEvent e) {
+		try{
+			Node src = (Node) e.getSource();
+			if (serverProcedure.getProcedure() == Procedure.DEPLOY_SHIPS){
+				//TO BEDZIE DZIALAC PRZY TESTACH SIECIOWYCH.
+				serverBoard.setViewControllerReference(this);
+				shipFactory.locateShip((int)GridPane.getColumnIndex(src),(int) GridPane.getRowIndex(src));
+				redraw1GridPane();
+			}
+		}
+		
+		catch(Exception ex){
+			ex.printStackTrace();
+		}
+	}
+	
+	@FXML
+	private void ClientBoardClickedAction(MouseEvent e){
+		try{
+			Node src = (Node) e.getSource();
+			clientBoard.setViewControllerReference(this);
+			int x = (int) GridPane.getColumnIndex(src);
+			int y = (int) GridPane.getRowIndex(src);
+			
+			if (serverProcedure.getProcedure() == Procedure.PLAYING_GAME&&getServerNetworkGameThread().isPlayerTurn()){
+				this.setTextAreaLogi("NACISNIETO: ["+x+"] ["+y+"]");
+				if(clientBoard.getBoardCell(x, y) != BoardState.PUSTE_POLE){
+					this.setTextAreaLogi("To pole bylo juz ostrzelane, strzelaj jeszcze raz!");
+				} else {
+					serverNetworkGameThread.handlingCommand(Command.SHOT, Player.SERVER_PLAYER, x, y);
+				}
+				
+			} else if (serverProcedure.getProcedure() == Procedure.PLAYING_GAME) {
+				this.setTextAreaLogi("Kolej na strzal przeciwnika!");
+			}
+		}
+		
+		catch (Exception ex){
+			ex.printStackTrace();
+		}
+	}
+	//metoda przerysowujaca pierwsza plansze
+	public void redraw1GridPane() {
+		try{
+			Platform.runLater(()->{
+			Button btn;
+			BoardState[][] boardSt = serverBoard.getBoardState();
+			for (int i = 0; i < boardSt.length; i++) {
+				for (int j = 0; j < boardSt[i].length; j++){
+					btn = (Button)getNodeFromGridPane(serverGridPane, i, j);
+					if (boardSt[i][j] == BoardState.STATEK) 
+						btn.setStyle("-fx-background-color: slateblue;");
+					if (boardSt[i][j] == BoardState.PUSTE_POLE)
+						btn.setStyle("default");
+					if (boardSt[i][j] == BoardState.PUDLO) 
+						btn.setStyle("-fx-background-color: grey;");
+					if (boardSt[i][j] == BoardState.STATEK_TRAFIONY) 
+						btn.setStyle("-fx-background-color: red;");
+					if (boardSt[i][j] == BoardState.STATEK_ZATOPIONY) 
+						btn.setStyle("-fx-background-color: black;");
+					
+				}
+			}
+			});
+		}
+		catch (Exception ex){
+			ex.printStackTrace();
+		}
+	}
+	
+	//metoda przerysowujaca druga plansze
+	public void redraw2GridPane() {
+		try{
+			Platform.runLater(()->{
+			Button btn;
+			BoardState[][] boardSt = clientBoard.getBoardState();
+			for (int i = 0; i < boardSt.length; i++) {
+				for (int j = 0; j < boardSt[i].length; j++){
+					btn = (Button)getNodeFromGridPane(clientGridPane, i, j);
+					if (boardSt[i][j] == BoardState.STATEK) 
+						btn.setStyle("-fx-background-color: slateblue;");
+					if (boardSt[i][j] == BoardState.PUSTE_POLE)
+						btn.setStyle("default");
+					if (boardSt[i][j] == BoardState.PUDLO) 
+						btn.setStyle("-fx-background-color: grey;");
+					if (boardSt[i][j] == BoardState.STATEK_TRAFIONY) 
+						btn.setStyle("-fx-background-color: red;");
+					if (boardSt[i][j] == BoardState.STATEK_ZATOPIONY) 
+						btn.setStyle("-fx-background-color: black;");
+				}
+			}
+			});
+		}
+		
+		catch (Exception ex){
+			ex.printStackTrace();
+		}
+	}
+	
+	private Node getNodeFromGridPane(GridPane gridPane, int col, int row) {
+		try{
+		    for (Node node : gridPane.getChildren()) {
+		        if (GridPane.getColumnIndex(node) == col && GridPane.getRowIndex(node) == row) {
+		            return node;
+		        }
+		    }
+		}
+		
+		catch (Exception ex){
+			ex.printStackTrace();
+		    return null;
+		}
+	    return null;
+	}
+
+	public ServerNetworkGameThread getServerNetworkGameThread() {
+		return serverNetworkGameThread;
+	}
+
+	public void setServerNetworkGameThread(ServerNetworkGameThread serverNetworkGameThread) {
+		this.serverNetworkGameThread = serverNetworkGameThread;
+	}
+	public Board getServerBoard() {
+		return serverBoard;
+	}
+
+	public void setServerBoard(Board serverBoard) {
+		this.serverBoard = serverBoard;
+	}
+
+	public Board getClientBoard() {
+		return clientBoard;
+	}
+
+	public void setClientBoard(Board clientBoard) {
+		this.clientBoard = clientBoard;
+	}
+
+	public ShipFactory getShipFactory() {
+		return shipFactory;
+	}
+
+	public void setShipFactory(ShipFactory shipFactory) {
+		this.shipFactory = shipFactory;
+	}
+	
 
 }

@@ -47,6 +47,11 @@ public class GameChooserViewController {
 		this.gameClientViewController = gameClientViewController;		
 	}
 	
+	public GameClientViewController getGameClientViewController() {
+		return gameClientViewController;		
+	}
+
+	
 	@FXML
 	private void initialize(){
 		configureTableView(); //USTAWIENIE TABLEVIEW
@@ -56,6 +61,7 @@ public class GameChooserViewController {
 			System.out.println("OS GC: "+serverObservableSet);
 			chooserThread = new GameChooserThread(serverObservableSet,this);
 			chooserThread.start();
+
 		});
 		
 		btnRefresh.setOnAction(e->{

@@ -9,8 +9,6 @@ import battleship.model.user.Player;
  * @author Paweł Czernek
  *
  */
-enum Command { SHOT, ANSWER}
-
 public class CommunicationMessage {
 	
 	private int coordinateX; //
@@ -25,6 +23,12 @@ public class CommunicationMessage {
 		this.coordinateX = x;
 		this.coordinateY = y;
 	}
+	
+	public CommunicationMessage(Command command,Player own) {
+		this.command = command;
+		this.owner = own;
+	}
+
 	
 	public CommunicationMessage(Command command,Player own, int x, int y, BoardState state) {
 		this(command, own, x, y);

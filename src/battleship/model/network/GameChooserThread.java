@@ -61,7 +61,7 @@ public class GameChooserThread extends Thread {
 		                	serverObservableSet.addAll(Arrays.asList(serverAvailable));
 			    			System.out.println("OS TH: "+serverObservableSet);
 			    			gameChooserViewController.refreshTableView();
-		                	System.out.println("[CLIENT] Otrzymano odpowiedŸ z : " + receivePacket.getAddress().getHostAddress());
+		                	System.out.println("[CLIENT] Otrzymano odpowiedï¿½ z : " + receivePacket.getAddress().getHostAddress());
 	                	}
 	                }
 				}
@@ -97,7 +97,6 @@ public class GameChooserThread extends Thread {
         	System.out.println(pakietArray[0]);
 
             if (pakietArray[0].equals("SERVER_CLIENT_CONNECTION_OPEN")){
-            	System.out.println("Connection open");
             	socket.close();
             	connection = true;
             }
