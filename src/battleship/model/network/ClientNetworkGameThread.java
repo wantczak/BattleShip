@@ -5,16 +5,14 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.regex.Pattern;
 import battleship.gui.game.GameClientViewController;
-import battleship.model.board.Board;
 import battleship.model.board.BoardState;
 import battleship.model.procedure.GameProcedure;
 import battleship.model.procedure.GameProcedure.Procedure;
 import battleship.model.server.Server;
 import battleship.model.user.Player;
-import javafx.fxml.FXML;
+import javafx.application.Platform;
 import javafx.scene.control.TextArea;
 
 public class ClientNetworkGameThread extends Thread {
@@ -57,8 +55,8 @@ public class ClientNetworkGameThread extends Thread {
 			switch (clientProcedure.getProcedure()) {
 			case CONNECT_TO_SERVER: {
 				connectToServer();
-				textLogClient.appendText("ROZPOCZECIE GRY! \n ");
-				textLogClient.appendText("ROZSTAW STATKI! \n ");
+				gameClientViewController.setTextAreaLogi("ROZPOCZECIE GRY!");
+				gameClientViewController.setTextAreaLogi("ROZSTAW STATKI!");
 				break;
 			}
 
@@ -70,7 +68,6 @@ public class ClientNetworkGameThread extends Thread {
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				if (threadWaitingForOpponentShips == null)
@@ -101,12 +98,11 @@ public class ClientNetworkGameThread extends Thread {
 			try {
 				Runnable clientConnection = () -> {
 					try {
-						textLogClient.appendText(
-								"[CLIENT]: Proba podlaczenia do serwera:  " + gameServer.getServerIP() + "\n");
+						gameClientViewController.setTextAreaLogi("[CLIENT]: Proba podlaczenia do serwera:  " + gameServer.getServerIP());
 						Thread.sleep(10);
 						InetAddress serverAddress = InetAddress.getByName(gameServer.getServerIP());
 						clientSocket = new Socket(serverAddress.getHostName(), 12345);
-						textLogClient.appendText("[CLIENT]: Status polaczenia:  " + clientSocket.isConnected() + "\n");
+						gameClientViewController.setTextAreaLogi("[CLIENT]: Status polaczenia:  " + clientSocket.isConnected());
 						Thread.sleep(10);
 						if (clientSocket.isConnected()) {
 							inStreamClient = new DataInputStream(clientSocket.getInputStream());
@@ -145,14 +141,12 @@ public class ClientNetworkGameThread extends Thread {
 	private void waitingForDeployedShips() {
 		Runnable clientWaitingForOpponentShips = () -> {
 			try {
-				textLogClient.appendText(
-						"\n [CLIENT]: Oczekiwanie na zakonczenie rozstawiania statkow przez Przeciwnika \n ");
+				gameClientViewController.setTextAreaLogi("[CLIENT]: Oczekiwanie na zakonczenie rozstawiania statkow przez Przeciwnika");
 				while (!opponentShipsReady) {
 					Thread.sleep(100);
 					outStreamClient.writeUTF("READY");
 					if (inStreamClient.readUTF().equals("READY")) {
-						textLogClient.appendText(
-								"[CLIENT]: ODEBRANO INFO OD PRZECIWNIKA O ZAKONCZENIU USTAWIANIU STATKOW \n");
+						gameClientViewController.setTextAreaLogi("[CLIENT]: ODEBRANO INFO OD PRZECIWNIKA O ZAKONCZENIU USTAWIANIU STATKOW");
 						clientProcedure.setProcedure(Procedure.PLAYING_GAME);
 						opponentShipsReady = true;
 					} else {
@@ -180,40 +174,33 @@ public class ClientNetworkGameThread extends Thread {
 		Runnable clientReading = () -> {
 			while (!isGameOver()) {
 				try {
-					String packetAll = inStreamClient.readUTF(); // pobranie
-																	// pakietu
-																	// ze
-																	// Streama i
-																	// zapisanie
-																	// do nowego
-																	// Stringa
-					String[] packet = packetAll.split(Pattern.quote(";")); // Podzielenie
-																			// komendy
-																			// na
-																			// poszczegolne
-																			// parametry
-																			// (podzielenie
-																			// dzieki
-																			// ";")
-					textLogClient.appendText("\n [COMMAND]: " + packet[0]);
-					textLogClient.appendText("\n [USER]: " + packet[1]);
-					textLogClient.appendText("\n [X]: " + packet[2]);
-					textLogClient.appendText("\n [Y]: " + packet[3]);
+					String packetAll = inStreamClient.readUTF(); // pobranie pakietu ze	Streama i zapisanie do nowego Stringa
+					String[] packet = packetAll.split(Pattern.quote(";")); // Podzielenie komendy na poszczegolne parametry (podzielenie dzieki ";")
+					Thread.sleep(10);
+
+					gameClientViewController.setTextAreaLogi(packetAll);
+					gameClientViewController.setTextAreaLogi("=============================");
+					gameClientViewController.setTextAreaLogi("[COMMAND]: " + packet[0]);
+					gameClientViewController.setTextAreaLogi("[USER]: " + packet[1]);
+					gameClientViewController.setTextAreaLogi("[X]: " + packet[2]);
+					gameClientViewController.setTextAreaLogi("[Y]: " + packet[3]);
+					if(packet[0].equals("ANSWER")){
+						gameClientViewController.setTextAreaLogi("[Stan Strzalu]: "+packet[4]);
+					}
 
 					// switch odpowiadajacy za obsluge komend
 					switch (packet[0]) {
 					case "SHOT": {
 
 						BoardState shotState = checkBoard(Integer.parseInt(packet[2]), Integer.parseInt(packet[3])); // parsowanie
-						handlingCommand(Command.ANSWER, Player.CLIENT_PLAYER, Integer.parseInt(packet[2]),
-								Integer.parseInt(packet[3]), shotState);// odpowiedź
+						handlingCommand(Command.ANSWER, Player.CLIENT_PLAYER, Integer.parseInt(packet[2]),	Integer.parseInt(packet[3]), shotState);// odpowiedź
 						if(shotState.equals("STATEK_ZATOPIONY")||shotState.equals("STATEK_TRAFIONY")){
 							playerTurn = false;
 						}else{
 							playerTurn = true;
 						}
-						gameClientViewController.redraw1GridPane();
-						gameClientViewController.redraw2GridPane();
+						Platform.runLater(()->gameClientViewController.redraw1GridPane());
+						Platform.runLater(()->gameClientViewController.redraw2GridPane());
 						break;
 					}
 
@@ -223,16 +210,18 @@ public class ClientNetworkGameThread extends Thread {
 						if(packet[4].equals("STATEK_ZATOPIONY")){
 							gameClientViewController.getServerBoard().setSunk(Integer.parseInt(packet[2]),Integer.parseInt(packet[3]));
 							shipsCount--;
-							if(shipsCount == 0) gameOver = true;
-							textLogClient.appendText("Koniec gry, wygrał" + packet[1]);
+							if(shipsCount == 0){
+								gameOver = true;
+								Platform.runLater(()->gameClientViewController.setTextAreaLogi("Koniec gry, wygrales" + packet[1]));
+							}
 						}
 						if(packet[4].equals("STATEK_ZATOPIONY")||packet[4].equals("STATEK_TRAFIONY")){
 							playerTurn = true;
 						}else{
 							playerTurn = false;
 						}
-						gameClientViewController.redraw1GridPane();
-						gameClientViewController.redraw2GridPane();
+						Platform.runLater(()->gameClientViewController.redraw1GridPane());
+						Platform.runLater(()->gameClientViewController.redraw2GridPane());
 						break;
 					}
 

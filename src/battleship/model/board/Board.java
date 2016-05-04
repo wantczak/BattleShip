@@ -59,20 +59,27 @@ public class Board {
 	 * @param y współrzędna Y pola strzału
 	 */
 	public BoardState shot(int x, int y){
-		if (board[x][y] == BoardState.PUSTE_POLE){
-			board[x][y] = BoardState.PUDLO;
-			viewController.setTextAreaLogi("Pudło!");
-			return BoardState.PUDLO;
-		} else {
-			board[x][y] = BoardState.STATEK_TRAFIONY;
-			if(isSunk(x,y)){
-				board[x][y] = BoardState.STATEK_ZATOPIONY;
-				setSunk(x, y);
-				viewController.setTextAreaLogi("Trafiony zatopiony!");
-				return BoardState.STATEK_ZATOPIONY;
+		try{
+			if (board[x][y] == BoardState.PUSTE_POLE){
+				board[x][y] = BoardState.PUDLO;
+				viewController.setTextAreaLogi("Pudlo!");
+				return BoardState.PUDLO;
+			} else {
+				board[x][y] = BoardState.STATEK_TRAFIONY;
+				if(isSunk(x,y)){
+					board[x][y] = BoardState.STATEK_ZATOPIONY;
+					setSunk(x, y);
+					viewController.setTextAreaLogi("Trafiony zatopiony!");
+					return BoardState.STATEK_ZATOPIONY;
+				}
+				viewController.setTextAreaLogi("Trafiony!");
+				return BoardState.STATEK_TRAFIONY;
 			}
-			viewController.setTextAreaLogi("Trafiony!");
-			return BoardState.STATEK_TRAFIONY;
+		}
+		
+		catch (Exception ex){
+			ex.printStackTrace();
+			return null;
 		}
 	}
 	
@@ -84,27 +91,33 @@ public class Board {
 	 * @return czy statek został zatopiony
 	 */
 	private boolean isSunk(int x, int y){
-		int t = x;
-		while (--t >= 0
-				&& (board[t][y] == BoardState.STATEK || board[t][y] == BoardState.STATEK_TRAFIONY))
-			if (board[t][y] == BoardState.STATEK)
-				return false;
-		t = x;
-		while (++t < 11
-				&& (board[t][y] == BoardState.STATEK || board[t][y] == BoardState.STATEK_TRAFIONY))
-			if (board[t][y] == BoardState.STATEK)
-				return false;
-		t = y;
-		while (--t >= 0
-				&& (board[x][t] == BoardState.STATEK || board[x][t] == BoardState.STATEK_TRAFIONY))
-			if (board[x][t] == BoardState.STATEK)
-				return false;
-		t = y;
-		while (++t < 11
-				&& (board[x][t] == BoardState.STATEK || board[x][t] == BoardState.STATEK_TRAFIONY))
-			if (board[x][t] == BoardState.STATEK)
-				return false;
-		return true;
+		try{
+			int t = x;
+			while (--t >= 0
+					&& (board[t][y] == BoardState.STATEK || board[t][y] == BoardState.STATEK_TRAFIONY))
+				if (board[t][y] == BoardState.STATEK)
+					return false;
+			t = x;
+			while (++t < 11
+					&& (board[t][y] == BoardState.STATEK || board[t][y] == BoardState.STATEK_TRAFIONY))
+				if (board[t][y] == BoardState.STATEK)
+					return false;
+			t = y;
+			while (--t >= 0
+					&& (board[x][t] == BoardState.STATEK || board[x][t] == BoardState.STATEK_TRAFIONY))
+				if (board[x][t] == BoardState.STATEK)
+					return false;
+			t = y;
+			while (++t < 11
+					&& (board[x][t] == BoardState.STATEK || board[x][t] == BoardState.STATEK_TRAFIONY))
+				if (board[x][t] == BoardState.STATEK)
+					return false;
+			return true;
+		}
+		catch (Exception ex){
+			ex.printStackTrace();
+			return false;
+		}
 	}
 	
 	/**

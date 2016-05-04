@@ -16,6 +16,7 @@ import battleship.model.network.ServerNetworkGameThread;
 import battleship.model.procedure.GameProcedure;
 import battleship.model.procedure.GameProcedure.Procedure;
 import battleship.model.user.Player;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -84,7 +85,7 @@ public class GameServerViewController implements GameViewController{
 	//METODA UZUPELNIAJACA AREALOGS
 	@Override
 	public void setTextAreaLogi(String message){
-		this.textLogServer.appendText("\n"+message);
+		Platform.runLater(()->this.textLogServer.appendText(message+"\n"));
 	}
 	
 	//METODA USTAWIAJACA PROCEDURE Z ZEWNATRZ KLASY
@@ -101,7 +102,7 @@ public class GameServerViewController implements GameViewController{
 		serverProcedure = new GameProcedure(Procedure.START_GAME);
 		btnStartGame.setOnAction(e->{
 			if (serverProcedure.getProcedure()==Procedure.START_GAME){nameDialog();	startGameProcedure();} //Odpalenie metody startGame, i utworzenie nowego Thread
-			else if(serverProcedure.getProcedure()==Procedure.DEPLOY_SHIPS) textLogServer.appendText("\n Nie skonczono procedury ukladania statkow. Dokoncz procedury i kliknij w przycisk START");
+			else if(serverProcedure.getProcedure()==Procedure.DEPLOY_SHIPS) setTextAreaLogi("Nie skonczono procedury ukladania statkow. Dokoncz procedure");
 			
 		});		
 	}
@@ -131,7 +132,7 @@ public class GameServerViewController implements GameViewController{
 						serverNetworkConnectionThread = new ServerNetworkConnectionThread(textLogServer,serverProcedure,getGameServerViewController());
 						serverNetworkConnectionThread.start(); //odpalenie watka
 						serverNetworkConnectionThread.join(); //oczekiwanie na zakonczenie threada
-						textLogServer.appendText("[SERVER] PO PROCEDURZE CONNECTION... \n");
+						setTextAreaLogi("[SERVER] PO PROCEDURZE CONNECTION... ");
 
 						//Odpalenie nowego threada do gry
 						serverProcedure.setProcedure(Procedure.CONNECT_TO_CLIENT);
@@ -174,48 +175,50 @@ public class GameServerViewController implements GameViewController{
 	 */
 	@FXML
 	private void ServerBoardClickedAction(MouseEvent e) {
-		Node src = (Node) e.getSource();
-		if (serverProcedure.getProcedure() == Procedure.DEPLOY_SHIPS){
-			//TO BEDZIE DZIALAC PRZY TESTACH SIECIOWYCH.
-			serverBoard.setViewControllerReference(this);
-			shipFactory.locateShip((int)GridPane.getColumnIndex(src),(int) GridPane.getRowIndex(src));
-			redraw1GridPane();
+		try{
+			Node src = (Node) e.getSource();
+			if (serverProcedure.getProcedure() == Procedure.DEPLOY_SHIPS){
+				//TO BEDZIE DZIALAC PRZY TESTACH SIECIOWYCH.
+				serverBoard.setViewControllerReference(this);
+				shipFactory.locateShip((int)GridPane.getColumnIndex(src),(int) GridPane.getRowIndex(src));
+				redraw1GridPane();
+			}
+		}
+		
+		catch(Exception ex){
+			ex.printStackTrace();
 		}
 	}
 	
 	@FXML
-	private void ClientBoardClickedAction(MouseEvent e) throws IOException{
-		Node src = (Node) e.getSource();
-		clientBoard.setViewControllerReference(this);
-		int x = (int) GridPane.getColumnIndex(src);
-		int y = (int) GridPane.getRowIndex(src);
-		
-		if (serverProcedure.getProcedure() == Procedure.PLAYING_GAME&&getServerNetworkGameThread().isPlayerTurn()){
-			textLogServer.appendText("\n NACISNIETO: ["+x+"] ["+y+"]");
-			if(clientBoard.getBoardCell(x, y) != BoardState.PUSTE_POLE){
-				textLogServer.appendText("To pole było już ostrzelane, strzelaj jeszcze raz!");
-			} else {
-				serverNetworkGameThread.handlingCommand(Command.SHOT, Player.SERVER_PLAYER, x, y);
-			}
+	private void ClientBoardClickedAction(MouseEvent e){
+		try{
+			Node src = (Node) e.getSource();
+			clientBoard.setViewControllerReference(this);
+			int x = (int) GridPane.getColumnIndex(src);
+			int y = (int) GridPane.getRowIndex(src);
 			
-		} else if (serverProcedure.getProcedure() == Procedure.PLAYING_GAME) {
-			textLogServer.appendText("Kolej na strzał przeciwnika!");
+			if (serverProcedure.getProcedure() == Procedure.PLAYING_GAME&&getServerNetworkGameThread().isPlayerTurn()){
+				this.setTextAreaLogi("NACISNIETO: ["+x+"] ["+y+"]");
+				if(clientBoard.getBoardCell(x, y) != BoardState.PUSTE_POLE){
+					this.setTextAreaLogi("To pole bylo juz ostrzelane, strzelaj jeszcze raz!");
+				} else {
+					serverNetworkGameThread.handlingCommand(Command.SHOT, Player.SERVER_PLAYER, x, y);
+				}
+				
+			} else if (serverProcedure.getProcedure() == Procedure.PLAYING_GAME) {
+				this.setTextAreaLogi("Kolej na strzal przeciwnika!");
+			}
 		}
-		/*
-		if(clientBoard.getBoardCell(x, y) == BoardState.PUSTE_POLE){
-			clientBoard.setBoardCell(x,y,serverBoard.shot(x, y));
-			if(clientBoard.getBoardCell(x, y) == BoardState.STATEK_ZATOPIONY)
-				clientBoard.setSunk(x, y);
-		} else {
-			setTextAreaLogi("Pole bylo juz ostrzelane, strzelaj jeszcze raz!");
+		
+		catch (Exception ex){
+			ex.printStackTrace();
 		}
-		redraw1GridPane(serverBoard);
-		redraw2GridPane(clientBoard);
-		*/
 	}
 	//metoda przerysowujaca pierwsza plansze
 	public void redraw1GridPane() {
 		try{
+			Platform.runLater(()->{
 			Button btn;
 			BoardState[][] boardSt = serverBoard.getBoardState();
 			for (int i = 0; i < boardSt.length; i++) {
@@ -234,6 +237,7 @@ public class GameServerViewController implements GameViewController{
 					
 				}
 			}
+			});
 		}
 		catch (Exception ex){
 			ex.printStackTrace();
@@ -242,32 +246,46 @@ public class GameServerViewController implements GameViewController{
 	
 	//metoda przerysowujaca druga plansze
 	public void redraw2GridPane() {
-		Button btn;
-		BoardState[][] boardSt = clientBoard.getBoardState();
-		for (int i = 0; i < boardSt.length; i++) {
-			for (int j = 0; j < boardSt[i].length; j++){
-				btn = (Button)getNodeFromGridPane(clientGridPane, i, j);
-				if (boardSt[i][j] == BoardState.STATEK) 
-					btn.setStyle("-fx-background-color: slateblue;");
-				if (boardSt[i][j] == BoardState.PUSTE_POLE)
-					btn.setStyle("default");
-				if (boardSt[i][j] == BoardState.PUDLO) 
-					btn.setStyle("-fx-background-color: grey;");
-				if (boardSt[i][j] == BoardState.STATEK_TRAFIONY) 
-					btn.setStyle("-fx-background-color: red;");
-				if (boardSt[i][j] == BoardState.STATEK_ZATOPIONY) 
-					btn.setStyle("-fx-background-color: black;");
-				
+		try{
+			Platform.runLater(()->{
+			Button btn;
+			BoardState[][] boardSt = clientBoard.getBoardState();
+			for (int i = 0; i < boardSt.length; i++) {
+				for (int j = 0; j < boardSt[i].length; j++){
+					btn = (Button)getNodeFromGridPane(clientGridPane, i, j);
+					if (boardSt[i][j] == BoardState.STATEK) 
+						btn.setStyle("-fx-background-color: slateblue;");
+					if (boardSt[i][j] == BoardState.PUSTE_POLE)
+						btn.setStyle("default");
+					if (boardSt[i][j] == BoardState.PUDLO) 
+						btn.setStyle("-fx-background-color: grey;");
+					if (boardSt[i][j] == BoardState.STATEK_TRAFIONY) 
+						btn.setStyle("-fx-background-color: red;");
+					if (boardSt[i][j] == BoardState.STATEK_ZATOPIONY) 
+						btn.setStyle("-fx-background-color: black;");
+				}
 			}
+			});
+		}
+		
+		catch (Exception ex){
+			ex.printStackTrace();
 		}
 	}
 	
 	private Node getNodeFromGridPane(GridPane gridPane, int col, int row) {
-	    for (Node node : gridPane.getChildren()) {
-	        if (GridPane.getColumnIndex(node) == col && GridPane.getRowIndex(node) == row) {
-	            return node;
-	        }
-	    }
+		try{
+		    for (Node node : gridPane.getChildren()) {
+		        if (GridPane.getColumnIndex(node) == col && GridPane.getRowIndex(node) == row) {
+		            return node;
+		        }
+		    }
+		}
+		
+		catch (Exception ex){
+			ex.printStackTrace();
+		    return null;
+		}
 	    return null;
 	}
 

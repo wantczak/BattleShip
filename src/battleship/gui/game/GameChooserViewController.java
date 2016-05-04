@@ -61,6 +61,7 @@ public class GameChooserViewController {
 			System.out.println("OS GC: "+serverObservableSet);
 			chooserThread = new GameChooserThread(serverObservableSet,this);
 			chooserThread.start();
+
 		});
 		
 		btnRefresh.setOnAction(e->{

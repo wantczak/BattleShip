@@ -97,7 +97,6 @@ public class GameChooserThread extends Thread {
         	System.out.println(pakietArray[0]);
 
             if (pakietArray[0].equals("SERVER_CLIENT_CONNECTION_OPEN")){
-            	System.out.println("Connection open");
             	socket.close();
             	connection = true;
             }
