@@ -184,8 +184,8 @@ public class ServerNetworkGameThread extends Thread {
 							shipsCount--;
 							if(shipsCount == 0){
 								handlingCommand(Command.END_GAME, Player.SERVER_PLAYER);//odpowiedz
-								gameOver = true;
 								gameServerViewController.setTextAreaLogi("Koniec gry, wygral" + packet[1]);
+								setGameOver(true);
 							}
 						}
 						if(packet[4].equals("STATEK_ZATOPIONY")||packet[4].equals("STATEK_TRAFIONY")){
@@ -199,6 +199,8 @@ public class ServerNetworkGameThread extends Thread {
 					}
 					
 					case "END_GAME":{
+						Platform.runLater(()->gameServerViewController.setTextAreaLogi("Koniec gry, wygral" + packet[1]));
+						setGameOver(true);
 						break;
 					}
 					

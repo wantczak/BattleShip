@@ -86,7 +86,10 @@ public class ClientNetworkGameThread extends Thread {
 
 			}
 		}
+		closeSocket();
+
 	}
+
 
 	/**
 	 * Metoda polaczenia clienta do servera
@@ -212,8 +215,8 @@ public class ClientNetworkGameThread extends Thread {
 							shipsCount--;
 							if(shipsCount == 0){
 								handlingCommand(Command.END_GAME, Player.SERVER_PLAYER);//odpowiedz
+								Platform.runLater(()->gameClientViewController.setTextAreaLogi("Koniec gry, wygral" + packet[1]));
 								setGameOver(true);
-								Platform.runLater(()->gameClientViewController.setTextAreaLogi("Koniec gry, wygrales" + packet[1]));
 							}
 						}
 						if(packet[4].equals("STATEK_ZATOPIONY")||packet[4].equals("STATEK_TRAFIONY")){
@@ -226,13 +229,12 @@ public class ClientNetworkGameThread extends Thread {
 						break;
 					}
 
-					case "INFORMATION": {
+					case "END_GAME": {
+						Platform.runLater(()->gameClientViewController.setTextAreaLogi("Koniec gry, wygral" + packet[1]));
+						setGameOver(true);
 						break;
 					}
 
-					case "ERROR": {
-						break;
-					}
 
 					default:
 						break;
@@ -295,4 +297,17 @@ public class ClientNetworkGameThread extends Thread {
 		}
 		return gameClientViewController.getClientBoard().getBoardCell(x, y);
 	}
+	
+	private void closeSocket() {
+		try{
+			inStreamClient.close();
+			outStreamClient.close();
+			clientSocket.close(); //Socket polaczenia
+		}
+		
+		catch (Exception ex){
+			ex.printStackTrace();
+		}
+	}
+
 }
