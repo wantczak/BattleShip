@@ -24,6 +24,12 @@ public class CommunicationMessage {
 		this.coordinateY = y;
 	}
 	
+	public CommunicationMessage(Command command,Player own) {
+		this.command = command;
+		this.owner = own;
+	}
+
+	
 	public CommunicationMessage(Command command,Player own, int x, int y, BoardState state) {
 		this(command, own, x, y);
 		this.state = state;

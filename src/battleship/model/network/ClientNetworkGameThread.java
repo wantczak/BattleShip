@@ -23,9 +23,9 @@ public class ClientNetworkGameThread extends Thread {
 	private Server gameServer;
 
 	private Socket clientSocket;
-	private boolean gameOver = false;
-	private boolean playerTurn = false;
-	private boolean opponentShipsReady = false;
+	private volatile boolean gameOver = false;
+	private volatile boolean playerTurn = false;
+	private volatile boolean opponentShipsReady = false;
 	private int shipsCount = 8;
 
 	// WATKI W KLASIE
@@ -194,7 +194,7 @@ public class ClientNetworkGameThread extends Thread {
 
 						BoardState shotState = checkBoard(Integer.parseInt(packet[2]), Integer.parseInt(packet[3])); // parsowanie
 						handlingCommand(Command.ANSWER, Player.CLIENT_PLAYER, Integer.parseInt(packet[2]),	Integer.parseInt(packet[3]), shotState);// odpowiedź
-						if(shotState.equals("STATEK_ZATOPIONY")||shotState.equals("STATEK_TRAFIONY")){
+						if(shotState.toString().equals("STATEK_ZATOPIONY")||shotState.toString().equals("STATEK_TRAFIONY")){
 							playerTurn = false;
 						}else{
 							playerTurn = true;
@@ -211,14 +211,15 @@ public class ClientNetworkGameThread extends Thread {
 							gameClientViewController.getServerBoard().setSunk(Integer.parseInt(packet[2]),Integer.parseInt(packet[3]));
 							shipsCount--;
 							if(shipsCount == 0){
-								gameOver = true;
+								handlingCommand(Command.END_GAME, Player.SERVER_PLAYER);//odpowiedz
+								setGameOver(true);
 								Platform.runLater(()->gameClientViewController.setTextAreaLogi("Koniec gry, wygrales" + packet[1]));
 							}
 						}
 						if(packet[4].equals("STATEK_ZATOPIONY")||packet[4].equals("STATEK_TRAFIONY")){
-							playerTurn = true;
+							setPlayerTurn(true);
 						}else{
-							playerTurn = false;
+							setPlayerTurn(false);
 						}
 						Platform.runLater(()->gameClientViewController.redraw1GridPane());
 						Platform.runLater(()->gameClientViewController.redraw2GridPane());
@@ -250,10 +251,16 @@ public class ClientNetworkGameThread extends Thread {
 
 	}
 
+	private void handlingCommand(Command command, Player own) throws IOException {
+		communicationMessage = new CommunicationMessage(command, own);
+		outStreamClient.writeUTF(communicationMessage.toString());
+	}
+
 	public void handlingCommand(Command command, Player own, int x, int y) throws IOException {
 		communicationMessage = new CommunicationMessage(command, own, x, y);
 		outStreamClient.writeUTF(communicationMessage.toString());
 	}
+	
 
 	public void handlingCommand(Command command, Player own, int x, int y, BoardState state) throws IOException {
 		communicationMessage = new CommunicationMessage(command, own, x, y, state);

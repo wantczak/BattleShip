@@ -63,7 +63,7 @@ public class MenuViewController {
 	void initialize(){
 		//metoda obslugujaca nacisniecia buttona btnClose
 		btnClose.setOnAction(event->{
-			//if (gameServerViewController!=null||gameServerViewController.getServerNetworkGameThread()!=null)gameServerViewController.getServerNetworkGameThread().setGameOver(true);
+			if (!gameServerViewController.equals(null)||!gameServerViewController.getServerNetworkGameThread().equals(null))gameServerViewController.getServerNetworkGameThread().setGameOver(true);
 			//if (gameChooserViewController.getGameClientViewController()!=null||gameChooserViewController.getGameClientViewController().getClientNetworkGameThread()!=null) gameChooserViewController.getGameClientViewController().getClientNetworkGameThread().setGameOver(true);
 			Platform.exit(); //zamkniecie aplikacji
 		});

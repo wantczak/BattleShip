@@ -21,9 +21,9 @@ public class ServerNetworkGameThread extends Thread {
 	private GameServerViewController gameServerViewController;
 	
 	private boolean connectedToClient;
-	private boolean gameOver = false;
-	private boolean playerTurn = true;
-	private boolean opponentShipsReady = false;
+	private volatile boolean gameOver = false;
+	private volatile boolean playerTurn = true;
+	private volatile boolean opponentShipsReady = false;
 	private int shipsCount = 8;
 
 	private ServerSocket serverSocket; //Deklaracja pojedynczego serverSocketa
@@ -86,6 +86,7 @@ public class ServerNetworkGameThread extends Thread {
 				
 			}
 		}
+		closeSocket();
 	}
 	
 	
@@ -163,8 +164,9 @@ public class ServerNetworkGameThread extends Thread {
 					switch (packet[0]){
 					case "SHOT":{
 						BoardState shotState = checkBoard(Integer.parseInt(packet[2]),Integer.parseInt(packet[3])); //parsowanie 
-						handlingCommand(Command.ANSWER, Player.CLIENT_PLAYER, Integer.parseInt(packet[2]), Integer.parseInt(packet[3]),shotState);//odpowiedź
-						if(shotState.equals("STATEK_ZATOPIONY")||shotState.equals("STATEK_TRAFIONY")){
+						gameServerViewController.setTextAreaLogi("[Stan Strzalu]: "+shotState);
+						handlingCommand(Command.ANSWER, Player.SERVER_PLAYER, Integer.parseInt(packet[2]), Integer.parseInt(packet[3]),shotState);//odpowiedź
+						if(shotState.toString().equals("STATEK_ZATOPIONY")||shotState.toString().equals("STATEK_TRAFIONY")){
 							playerTurn = false;
 						}else{
 							playerTurn = true;
@@ -181,27 +183,25 @@ public class ServerNetworkGameThread extends Thread {
 							gameServerViewController.getClientBoard().setSunk(Integer.parseInt(packet[2]),Integer.parseInt(packet[3]));
 							shipsCount--;
 							if(shipsCount == 0){
+								handlingCommand(Command.END_GAME, Player.SERVER_PLAYER);//odpowiedz
 								gameOver = true;
-								gameServerViewController.setTextAreaLogi("Koniec gry, wygrales" + packet[1]);
+								gameServerViewController.setTextAreaLogi("Koniec gry, wygral" + packet[1]);
 							}
 						}
 						if(packet[4].equals("STATEK_ZATOPIONY")||packet[4].equals("STATEK_TRAFIONY")){
-							playerTurn = true;
+							setPlayerTurn(true);
 						}else{
-							playerTurn = false;
+							setPlayerTurn(false);
 						}
 						Platform.runLater(()->gameServerViewController.redraw1GridPane());
 						Platform.runLater(()->gameServerViewController.redraw2GridPane());
 						break;
 					}
 					
-					case "INFORMATION":{
+					case "END_GAME":{
 						break;
 					}
 					
-					case "ERROR":{
-						break;
-					}
 					
 					default: break;
 
@@ -226,6 +226,12 @@ public class ServerNetworkGameThread extends Thread {
 		communicationMessage = new CommunicationMessage(command, own, x, y, state);
 		outStreamServer.writeUTF(communicationMessage.toString());
 	}
+	
+	public void handlingCommand(Command command, Player own) throws IOException {
+		communicationMessage = new CommunicationMessage(command, own);
+		outStreamServer.writeUTF(communicationMessage.toString());
+	}
+
 
 
 	public boolean isPlayerTurn() {
@@ -254,5 +260,18 @@ public class ServerNetworkGameThread extends Thread {
 			gameServerViewController.getServerBoard().setSunk(x, y);
 		}
 		return gameServerViewController.getServerBoard().getBoardCell(x, y);
+	}
+	
+	private void closeSocket(){
+		try{
+			inStreamServer.close();
+			outStreamServer.close();
+			serverSocket.close(); //Deklaracja pojedynczego serverSocketa
+		    serverConnection.close(); //Socket polaczenia
+		}
+		
+		catch (Exception ex){
+			ex.printStackTrace();
+		}
 	}
 }
