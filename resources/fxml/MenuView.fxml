@@ -8,7 +8,7 @@
 
 <BorderPane fx:id="menu" prefHeight="379.0" prefWidth="624.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="battleship.gui.menu.MenuViewController">
    <left>
-      <VBox alignment="TOP_CENTER" prefHeight="369.0" prefWidth="147.0" spacing="15.0" BorderPane.alignment="CENTER">
+      <VBox alignment="TOP_CENTER" prefHeight="341.0" prefWidth="200.0" spacing="15.0" BorderPane.alignment="CENTER">
          <children>
             <Button fx:id="btnStartGame" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Rozpocznij nową grę" />
             <Button fx:id="btnJoinGame" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Dołącz do gry" />
@@ -22,4 +22,7 @@
    <center>
       <BorderPane fx:id="contentPane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
    </center>
+   <top>
+      <HBox prefHeight="28.0" prefWidth="624.0" BorderPane.alignment="CENTER" />
+   </top>
 </BorderPane>
