@@ -6,10 +6,12 @@ import battleship.gui.game.GameClientViewController;
 import battleship.gui.game.GameServerViewController;
 import battleship.gui.main.MainViewController;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 
 /**
  * 
@@ -22,6 +24,8 @@ public class MenuViewController {
 	@FXML private Button btnClose; //Button zamykajacy aplikacje
 	@FXML private Button btnStartGame; //Button otwierajacy okno serwera do startu gry
 	@FXML private Button btnJoinGame; //Button otwierajacy okno aktywnych gier do dolaczenia
+	@FXML private Button btnMinimize;
+	@FXML private Button btnClose2;
 	@FXML private BorderPane contentPane;
 	private MainAppFactory factory;
 	
@@ -89,6 +93,16 @@ public class MenuViewController {
 		this.contentPane = contentPane;
 	}
 	
+	@FXML
+	private void btnCloseEvent(){
+		Platform.exit(); //zamkniecie aplikacji
+	}
+	
+	@FXML
+	private void btnMinimizeEvent(){
+		  Stage stage = (Stage)btnMinimize.getScene().getWindow();
+          stage.setIconified(true);
+    }
 
     // Button - menuViewController.setGameServerViewController(getGameServerViewController());
 

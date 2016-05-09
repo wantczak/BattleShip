@@ -11,6 +11,7 @@ import battleship.gui.game.GameServerViewController;
 import battleship.model.procedure.GameProcedure;
 import javafx.application.Platform;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 
 /**
  * Klasa odpowiedzialna za w¹tek nas³uchiwania na odpytywania klientow
@@ -24,14 +25,16 @@ public class ServerNetworkConnectionThread extends Thread {
     
     private int connectionPort = 12345; //zmienna Integer serverPort
     private TextArea textLogServer;
+    private TextField textFieldServerGame;
     private GameProcedure serverProcedure;
     private boolean clientConnectionOpen = false;
 	private GameServerViewController gameServerViewController;
     
-    public ServerNetworkConnectionThread(TextArea textLogServer, GameProcedure serverProcedure, GameServerViewController gameServerViewController){
+    public ServerNetworkConnectionThread(TextArea textLogServer, GameProcedure serverProcedure, GameServerViewController gameServerViewController, TextField textFieldServerGame){
     	this.textLogServer = textLogServer;
     	this.serverProcedure = serverProcedure;
     	this.gameServerViewController = gameServerViewController;
+    	this.textFieldServerGame = textFieldServerGame;
     }
     
     public boolean getClientConnectionOpen(){
@@ -61,7 +64,7 @@ public class ServerNetworkConnectionThread extends Thread {
                                 
                 switch (pakiet){
                 case "LOOKING_FOR_SERVERS":{
-                    byte[] sendData = ("SERVER_AVAILABLE"+","+"Wojtek").getBytes();//Imie usera oczekujacego na gre wstawiono na stale
+                    byte[] sendData = ("SERVER_AVAILABLE"+","+textFieldServerGame.getText()).getBytes();//Imie usera oczekujacego na gre wstawiono na stale
                     DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, packet.getAddress(), packet.getPort());
                     serverUDPSocket.send(sendPacket);
                 	break;

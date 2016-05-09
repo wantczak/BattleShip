@@ -101,7 +101,7 @@ public class GameServerViewController implements GameViewController{
 	private void initialize(){
 		serverProcedure = new GameProcedure(Procedure.START_GAME);
 		btnStartGame.setOnAction(e->{
-			if (serverProcedure.getProcedure()==Procedure.START_GAME){nameDialog();	startGameProcedure();} //Odpalenie metody startGame, i utworzenie nowego Thread
+			if (serverProcedure.getProcedure()==Procedure.START_GAME){nameDialog();	startGameProcedure(); btnStartGame.setVisible(false);} //Odpalenie metody startGame, i utworzenie nowego Thread
 			else if(serverProcedure.getProcedure()==Procedure.DEPLOY_SHIPS) setTextAreaLogi("Nie skonczono procedury ukladania statkow. Dokoncz procedure");
 			
 		});		
@@ -129,7 +129,7 @@ public class GameServerViewController implements GameViewController{
 				if (serverProcedure.getProcedure() == Procedure.OPEN_CONNECTION){
 					try {
 						serverProcedure.setProcedure(Procedure.READY_TO_START);
-						serverNetworkConnectionThread = new ServerNetworkConnectionThread(textLogServer,serverProcedure,getGameServerViewController());
+						serverNetworkConnectionThread = new ServerNetworkConnectionThread(textLogServer,serverProcedure,getGameServerViewController(),textFieldServerGame);
 						serverNetworkConnectionThread.start(); //odpalenie watka
 						serverNetworkConnectionThread.join(); //oczekiwanie na zakonczenie threada
 						setTextAreaLogi("[SERVER] PO PROCEDURZE CONNECTION... ");

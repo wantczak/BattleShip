@@ -112,6 +112,7 @@ public class GameClientViewController implements GameViewController{
 				setClientNetworkGameThread(new ClientNetworkGameThread(textLogClient, clientProcedure, this,gameServer));
 				clientProcedure.setProcedure(Procedure.CONNECT_TO_SERVER);
 				getClientNetworkGameThread().start();
+				btnStartGame.setVisible(false);
 			}
 			else if(clientProcedure.getProcedure()==Procedure.DEPLOY_SHIPS) setTextAreaLogi("Nie skonczono procedury ukladania statkow. Dokoncz procedure");
 			

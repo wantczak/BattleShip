@@ -16,11 +16,11 @@ public class MainApp extends Application {
 			MainAppFactory factory = new MainAppFactory();
 	        MenuViewController menuViewController = factory.getMenuViewController();
 	        menuViewController.init(factory);
-	        Scene scene = new Scene(menuViewController.getView(), 800, 600);
+	        Scene scene = new Scene(menuViewController.getView(), 1300, 850);
 	        scene.getStylesheets().add("/css/application.css");
 	        primaryStage.setScene(scene);
 	        primaryStage.initStyle(StageStyle.UNDECORATED);
-	        primaryStage.setMaximized(true);
+	        //primaryStage.setMaximized(true);
 	        primaryStage.setTitle("Battle S.H.I.P.");
 	        primaryStage.show();
 		} catch(Exception e) {

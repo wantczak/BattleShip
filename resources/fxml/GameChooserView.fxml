@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="chooserBorderPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="655.0" prefWidth="1205.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="battleship.gui.game.GameChooserViewController">
+<BorderPane fx:id="chooserBorderPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700" prefWidth="900" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="battleship.gui.game.GameChooserViewController">
    <center>
       <VBox alignment="TOP_CENTER" maxWidth="1.7976931348623157E308" prefHeight="655.0" prefWidth="900.0" spacing="10.0" BorderPane.alignment="CENTER">
          <children>
