@@ -67,10 +67,26 @@ public class MenuViewController {
 	void initialize(){
 		//metoda obslugujaca nacisniecia buttona btnClose
 		btnClose.setOnAction(event->{
-			System.out.println(gameServerViewController);
-			//if (!gameServerViewController.equals(null)||!gameServerViewController.getServerNetworkGameThread().equals(null))gameServerViewController.getServerNetworkGameThread().setGameOver(true);
-			//if (gameChooserViewController.getGameClientViewController()!=null||gameChooserViewController.getGameClientViewController().getClientNetworkGameThread()!=null) gameChooserViewController.getGameClientViewController().getClientNetworkGameThread().setGameOver(true);
-			Platform.exit(); //zamkniecie aplikacji
+			if (gameServerViewController!=null){
+				if (gameServerViewController.getServerNetworkGameThread()!=null){
+					System.out.println("BBBBB");
+					gameServerViewController.getServerNetworkGameThread().setGameOver(true);
+				}
+				else if(gameServerViewController.getServerNetworkConnectionThread()!=null){
+					System.out.println("AAAAA");
+					gameServerViewController.getServerNetworkConnectionThread().setClientConnectionOpen(true);
+					
+				}
+			}
+			
+			if ((gameChooserViewController!=null)||(gameChooserViewController.getGameClientViewController()!=null)){
+					if (gameChooserViewController.getGameClientViewController().getClientNetworkGameThread()!=null){
+						gameChooserViewController.getGameClientViewController().getClientNetworkGameThread().setGameOver(true);
+					}	
+			}
+			
+			Platform.exit(); //zamkniecie aplikacji	
+
 		});
 		
 		//metoda obslugujaca nacisniecia buttona btnStartGame

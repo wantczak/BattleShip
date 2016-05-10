@@ -55,7 +55,7 @@ public class GameClientViewController implements GameViewController{
 	
 	
 	//WATKI
-	private ClientNetworkGameThread clientNetworkGameThread;
+	private volatile ClientNetworkGameThread clientNetworkGameThread = null;
 
 	//ZMIENNE POLA GRY
 	private Board serverBoard = new Board();	
