@@ -25,7 +25,7 @@ public class MainApp extends Application {
 	        scene.getStylesheets().add("/css/application.css");
 	        primaryStage.setScene(scene);
 	        primaryStage.initStyle(StageStyle.UNDECORATED);
-	        //primaryStage.setMaximized(true);
+	        primaryStage.setMaximized(true);
 	        primaryStage.setTitle("Battle S.H.I.P.");
 	        primaryStage.show();
 		} catch(Exception e) {

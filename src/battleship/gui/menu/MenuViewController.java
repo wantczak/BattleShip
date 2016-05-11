@@ -78,26 +78,7 @@ public class MenuViewController {
 	void initialize(){
 		//metoda obslugujaca nacisniecia buttona btnClose
 		btnClose.setOnAction(event->{
-			if (gameServerViewController!=null){
-				if (gameServerViewController.getServerNetworkGameThread()!=null){
-					gameServerViewController.getServerNetworkGameThread().setGameOver(true);
-				}
-				else if(gameServerViewController.getServerNetworkConnectionThread()!=null){
-					gameServerViewController.getServerNetworkConnectionThread().setClientConnectionOpen(true);
-				}
-			}
-			
-			if ((gameChooserViewController!=null)||(gameChooserViewController.getGameClientViewController()!=null)){
-					if (gameChooserViewController.getGameClientViewController().getClientNetworkGameThread()!=null){
-						gameChooserViewController.getGameClientViewController().getClientNetworkGameThread().setGameOver(true);
-					}	
-					System.out.println("ADSADSADAS");
-					gameChooserViewController.setServerSelected(true);
-					System.out.println(gameChooserViewController.isServerSelected());
-			}		
-			
-			Platform.exit(); //zamkniecie aplikacji	
-
+			closeProcedure();
 		});
 		
 		//metoda obslugujaca nacisniecia buttona btnStartGame
@@ -131,7 +112,7 @@ public class MenuViewController {
 	
 	@FXML
 	private void btnCloseEvent(){
-		Platform.exit(); //zamkniecie aplikacji
+		closeProcedure();
 	}
 	
 	@FXML
@@ -139,6 +120,27 @@ public class MenuViewController {
 		  Stage stage = (Stage)btnMinimize.getScene().getWindow();
           stage.setIconified(true);
     }
+	
+	private void closeProcedure() {
+		if (gameServerViewController!=null){
+			if (gameServerViewController.getServerNetworkGameThread()!=null){
+				gameServerViewController.getServerNetworkGameThread().setGameOver(true);
+			}
+			else if(gameServerViewController.getServerNetworkConnectionThread()!=null){
+				gameServerViewController.getServerNetworkConnectionThread().setClientConnectionOpen(true);
+			}
+		}
+		
+		if ((gameChooserViewController!=null)||(gameChooserViewController.getGameClientViewController()!=null)){
+				if (gameChooserViewController.getGameClientViewController().getClientNetworkGameThread()!=null){
+					gameChooserViewController.getGameClientViewController().getClientNetworkGameThread().setGameOver(true);
+				}	
+				gameChooserViewController.setServerSelected(true);
+		}		
+		
+		Platform.exit(); //zamkniecie aplikacji	
+	}
+
 
 
 	

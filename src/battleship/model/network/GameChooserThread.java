@@ -40,6 +40,7 @@ public class GameChooserThread extends Thread {
 			host = InetAddress.getLocalHost();
 			socket = new DatagramSocket();
 			socket.setBroadcast(true);
+			socket.setSoTimeout(2000);
 			byte[] sendData = "LOOKING_FOR_SERVERS".getBytes();
 			
 			while(!gameChooserViewController.ServerSelected()){

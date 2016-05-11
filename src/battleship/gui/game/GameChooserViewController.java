@@ -60,9 +60,10 @@ public class GameChooserViewController {
 			setServerSelected(true);
 			refreshTableView();
 			setServerSelected(false);
-			chooserThread = new GameChooserThread(serverObservableSet,this);
-			chooserThread.start();
-
+			if (chooserThread==null){
+				chooserThread = new GameChooserThread(serverObservableSet,this);
+				chooserThread.start();
+			}
 		});
 		
 		btnRefresh.setOnAction(e->{
