@@ -78,6 +78,11 @@ public class GameServerViewController implements GameViewController{
 		this.menuViewController = menuViewController;
 	}
 	
+	public MenuViewController getMenuViewController() {
+		return menuViewController;
+	}
+
+	
 	private GameServerViewController getGameServerViewController(){
 		return this;
 	}
@@ -101,7 +106,7 @@ public class GameServerViewController implements GameViewController{
 	private void initialize(){
 		serverProcedure = new GameProcedure(Procedure.START_GAME);
 		btnStartGame.setOnAction(e->{
-			if (serverProcedure.getProcedure()==Procedure.START_GAME){nameDialog();	startGameProcedure();} //Odpalenie metody startGame, i utworzenie nowego Thread
+			if (serverProcedure.getProcedure()==Procedure.START_GAME){nameDialog();	startGameProcedure(); btnStartGame.setVisible(false);} //Odpalenie metody startGame, i utworzenie nowego Thread
 			else if(serverProcedure.getProcedure()==Procedure.DEPLOY_SHIPS) setTextAreaLogi("Nie skonczono procedury ukladania statkow. Dokoncz procedure");
 			
 		});		
@@ -129,22 +134,30 @@ public class GameServerViewController implements GameViewController{
 				if (serverProcedure.getProcedure() == Procedure.OPEN_CONNECTION){
 					try {
 						serverProcedure.setProcedure(Procedure.READY_TO_START);
-						serverNetworkConnectionThread = new ServerNetworkConnectionThread(textLogServer,serverProcedure,getGameServerViewController());
-						serverNetworkConnectionThread.start(); //odpalenie watka
-						serverNetworkConnectionThread.join(); //oczekiwanie na zakonczenie threada
+						setServerNetworkConnectionThread(new ServerNetworkConnectionThread(textLogServer,serverProcedure,getGameServerViewController(),textFieldServerGame));
+						getServerNetworkConnectionThread().start(); //odpalenie watka
+						getServerNetworkConnectionThread().join(); //oczekiwanie na zakonczenie threada
 						setTextAreaLogi("[SERVER] PO PROCEDURZE CONNECTION... ");
-
-						//Odpalenie nowego threada do gry
-						serverProcedure.setProcedure(Procedure.CONNECT_TO_CLIENT);
-						setServerNetworkGameThread(new ServerNetworkGameThread(textLogServer,serverProcedure,getGameServerViewController()));
-						getServerNetworkGameThread().start(); //odpalenie watka
-						//serverNetworkGameThread.join(); //oczekiwanie na zakonczenie threada
-						
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
 				
+				//PROCEDURA CONNECT_TO_CLIENT
+				if (serverProcedure.getProcedure() == Procedure.CONNECT_TO_CLIENT){
+					try {
+						//Odpalenie nowego threada do gry
+						setServerNetworkGameThread(new ServerNetworkGameThread(textLogServer,serverProcedure,getGameServerViewController()));
+						getServerNetworkGameThread().start(); //odpalenie watka
+						//serverNetworkGameThread.join(); //oczekiwanie na zakonczenie threada
+
+					}
+					
+					catch (Exception ex){
+						
+					}
+				}
+
 				//PROCEDURA DEPLOY_SHIPS
 				if (serverProcedure.getProcedure() == Procedure.DEPLOY_SHIPS){
 				}
@@ -318,6 +331,14 @@ public class GameServerViewController implements GameViewController{
 
 	public void setShipFactory(ShipFactory shipFactory) {
 		this.shipFactory = shipFactory;
+	}
+
+	public ServerNetworkConnectionThread getServerNetworkConnectionThread() {
+		return serverNetworkConnectionThread;
+	}
+
+	public void setServerNetworkConnectionThread(ServerNetworkConnectionThread serverNetworkConnectionThread) {
+		this.serverNetworkConnectionThread = serverNetworkConnectionThread;
 	}
 	
 

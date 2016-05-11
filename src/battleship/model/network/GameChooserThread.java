@@ -4,6 +4,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -39,20 +40,19 @@ public class GameChooserThread extends Thread {
 			host = InetAddress.getLocalHost();
 			socket = new DatagramSocket();
 			socket.setBroadcast(true);
+			socket.setSoTimeout(2000);
 			byte[] sendData = "LOOKING_FOR_SERVERS".getBytes();
 			
 			while(!gameChooserViewController.ServerSelected()){
 				try{
-					System.out.println("Chooser petla");
 				    packet = new DatagramPacket(sendData, sendData.length,InetAddress.getByName("255.255.255.255"), connectionPort);
 				    socket.send(packet);
-				    Thread.sleep(500);
+				    Thread.sleep(1000);
 				    byte[] recvBuf = new byte[15000];
 				    DatagramPacket receivePacket = new DatagramPacket(recvBuf, recvBuf.length);
 				    socket.receive(receivePacket);
 	                String pakiet = new String(receivePacket.getData()).trim();
 	                String[] pakietArray = pakiet.split(",");
-	    			System.out.println("OS TH: "+serverObservableSet);
 
 	                if (pakietArray[0].equals("SERVER_AVAILABLE")){
 	                	if (!serversIP.contains(receivePacket.getAddress().getHostAddress())){
@@ -69,7 +69,11 @@ public class GameChooserThread extends Thread {
 				
 				catch (SocketTimeoutException ex){
 					ex.printStackTrace();
-				}    
+				} 
+				
+				catch (SocketException ex){
+					continue;
+				}
 			}
 		}
 		

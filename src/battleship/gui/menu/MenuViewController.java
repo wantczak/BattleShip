@@ -6,10 +6,12 @@ import battleship.gui.game.GameClientViewController;
 import battleship.gui.game.GameServerViewController;
 import battleship.gui.main.MainViewController;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 
 /**
  * 
@@ -22,15 +24,23 @@ public class MenuViewController {
 	@FXML private Button btnClose; //Button zamykajacy aplikacje
 	@FXML private Button btnStartGame; //Button otwierajacy okno serwera do startu gry
 	@FXML private Button btnJoinGame; //Button otwierajacy okno aktywnych gier do dolaczenia
+	@FXML private Button btnMinimize;
+	@FXML private Button btnClose2;
 	@FXML private BorderPane contentPane;
-	private MainAppFactory factory;
 	
+	private Stage primaryStage;
+    private static double xOffset = 0;
+    private static double yOffset = 0;
+    
+	private MainAppFactory factory;
+		
 	public Parent getView() {
 		return menu;
 	}
 	//==============DOSTEP DO APP FACTORY===========
-	public void init(MainAppFactory factory){
+	public void init(MainAppFactory factory, Stage primaryStage){
 		this.factory = factory;
+		this.primaryStage = primaryStage;
 	}
 	
 	public MainAppFactory getFactory(){
@@ -47,6 +57,11 @@ public class MenuViewController {
 	public void setMainViewController(MainViewController mainViewController) {
 		this.mainViewController = mainViewController;
 	}
+	
+	public MainViewController getMainViewController() {
+		return mainViewController;
+	}
+
 
 	public void setGameChooserViewController(GameChooserViewController gameChooserViewController) {
 		this.gameChooserViewController = gameChooserViewController;		
@@ -63,10 +78,7 @@ public class MenuViewController {
 	void initialize(){
 		//metoda obslugujaca nacisniecia buttona btnClose
 		btnClose.setOnAction(event->{
-			System.out.println(gameServerViewController);
-			//if (!gameServerViewController.equals(null)||!gameServerViewController.getServerNetworkGameThread().equals(null))gameServerViewController.getServerNetworkGameThread().setGameOver(true);
-			//if (gameChooserViewController.getGameClientViewController()!=null||gameChooserViewController.getGameClientViewController().getClientNetworkGameThread()!=null) gameChooserViewController.getGameClientViewController().getClientNetworkGameThread().setGameOver(true);
-			Platform.exit(); //zamkniecie aplikacji
+			closeProcedure();
 		});
 		
 		//metoda obslugujaca nacisniecia buttona btnStartGame
@@ -78,8 +90,17 @@ public class MenuViewController {
 		//metoda obslugujaca nacisniecia buttona btnJoinGame
 		btnJoinGame.setOnAction(event->{
 			getContentPane().setCenter(gameChooserViewController.getView());
-
 		});	
+		
+		menu.setOnMousePressed(e->{
+            xOffset = e.getSceneX();
+            yOffset = e.getSceneY();
+		});
+		
+		menu.setOnMouseDragged(e->{
+            primaryStage.setX(e.getScreenX() - xOffset);
+            primaryStage.setY(e.getScreenY() - yOffset);
+		});
 	}
 	public BorderPane getContentPane() {
 		return contentPane;
@@ -89,8 +110,38 @@ public class MenuViewController {
 		this.contentPane = contentPane;
 	}
 	
+	@FXML
+	private void btnCloseEvent(){
+		closeProcedure();
+	}
+	
+	@FXML
+	private void btnMinimizeEvent(){
+		  Stage stage = (Stage)btnMinimize.getScene().getWindow();
+          stage.setIconified(true);
+    }
+	
+	private void closeProcedure() {
+		if (gameServerViewController!=null){
+			if (gameServerViewController.getServerNetworkGameThread()!=null){
+				gameServerViewController.getServerNetworkGameThread().setGameOver(true);
+			}
+			else if(gameServerViewController.getServerNetworkConnectionThread()!=null){
+				gameServerViewController.getServerNetworkConnectionThread().setClientConnectionOpen(true);
+			}
+		}
+		
+		if ((gameChooserViewController!=null)||(gameChooserViewController.getGameClientViewController()!=null)){
+				if (gameChooserViewController.getGameClientViewController().getClientNetworkGameThread()!=null){
+					gameChooserViewController.getGameClientViewController().getClientNetworkGameThread().setGameOver(true);
+				}	
+				gameChooserViewController.setServerSelected(true);
+		}		
+		
+		Platform.exit(); //zamkniecie aplikacji	
+	}
 
-    // Button - menuViewController.setGameServerViewController(getGameServerViewController());
+
 
 	
 }

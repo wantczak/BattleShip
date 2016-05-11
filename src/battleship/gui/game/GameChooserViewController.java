@@ -57,16 +57,18 @@ public class GameChooserViewController {
 		configureTableView(); //USTAWIENIE TABLEVIEW
 
 		btnNetworkTest.setOnAction(e->{
-			System.out.println("GAME CHOOSER");
-			System.out.println("OS GC: "+serverObservableSet);
-			chooserThread = new GameChooserThread(serverObservableSet,this);
-			chooserThread.start();
-
+			setServerSelected(true);
+			refreshTableView();
+			setServerSelected(false);
+			if (chooserThread==null){
+				chooserThread = new GameChooserThread(serverObservableSet,this);
+				chooserThread.start();
+			}
 		});
 		
 		btnRefresh.setOnAction(e->{
 			System.out.println("Button start");
-			serverSelected = false;
+			setServerSelected(false);
 			refreshTableView();
 		});
 		
@@ -76,10 +78,7 @@ public class GameChooserViewController {
 				//Obsluga klikniecia dwa razy
 				if (event.getClickCount() == 2 && (! row.isEmpty()) ){
 					Server rowData = row.getItem();
-					System.out.println("ROW DATA: "+rowData);
-					System.out.println("ROW DATA: "+rowData.getServerIP());
-
-					serverSelected = true;
+					setServerSelected(true);
 					if(GameChooserThread.connectToServer(rowData.getServerIP())){
 						ClientGameProcess(rowData);
 					}
@@ -103,7 +102,7 @@ public class GameChooserViewController {
 	}
 	
 	public boolean ServerSelected(){
-		return serverSelected;
+		return isServerSelected();
 	}
 	
 	private void ClientGameProcess(Server gameServer){
@@ -118,5 +117,13 @@ public class GameChooserViewController {
 		catch(Exception ex){
 			
 		}
+	}
+
+	public boolean isServerSelected() {
+		return serverSelected;
+	}
+
+	public void setServerSelected(boolean serverSelected) {
+		this.serverSelected = serverSelected;
 	}
 }

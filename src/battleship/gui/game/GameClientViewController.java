@@ -55,7 +55,7 @@ public class GameClientViewController implements GameViewController{
 	
 	
 	//WATKI
-	private ClientNetworkGameThread clientNetworkGameThread;
+	private volatile ClientNetworkGameThread clientNetworkGameThread = null;
 
 	//ZMIENNE POLA GRY
 	private Board serverBoard = new Board();	
@@ -73,6 +73,11 @@ public class GameClientViewController implements GameViewController{
 	public void setMenuViewController(MenuViewController menuViewController) {
 		this.menuViewController = menuViewController;
 	}
+	
+	public MenuViewController getMenuViewController() {
+		return menuViewController;
+	}
+
 
 	public void setGameChooserViewController(GameChooserViewController gameChooserViewController) {
 		this.gameChooserViewController = gameChooserViewController;
@@ -112,6 +117,7 @@ public class GameClientViewController implements GameViewController{
 				setClientNetworkGameThread(new ClientNetworkGameThread(textLogClient, clientProcedure, this,gameServer));
 				clientProcedure.setProcedure(Procedure.CONNECT_TO_SERVER);
 				getClientNetworkGameThread().start();
+				btnStartGame.setVisible(false);
 			}
 			else if(clientProcedure.getProcedure()==Procedure.DEPLOY_SHIPS) setTextAreaLogi("Nie skonczono procedury ukladania statkow. Dokoncz procedure");
 			

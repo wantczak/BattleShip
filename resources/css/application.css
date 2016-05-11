@@ -1,8 +1,6 @@
-/* #menu{
-    -fx-background-image: url("/pictures/Background.jpg");
-    -fx-background-repeat: stretch;   
-    -fx-background-size: 1500 1000;
+ #menu{
+    -fx-background-image: url("/pictures/wallpaper.jpg");
     -fx-background-position: center center;
     -fx-effect: dropshadow(three-pass-box, black, 30, 0.5, 0, 0); 
 }
-*/
+
