@@ -80,13 +80,10 @@ public class MenuViewController {
 		btnClose.setOnAction(event->{
 			if (gameServerViewController!=null){
 				if (gameServerViewController.getServerNetworkGameThread()!=null){
-					System.out.println("BBBBB");
 					gameServerViewController.getServerNetworkGameThread().setGameOver(true);
 				}
 				else if(gameServerViewController.getServerNetworkConnectionThread()!=null){
-					System.out.println("AAAAA");
 					gameServerViewController.getServerNetworkConnectionThread().setClientConnectionOpen(true);
-					
 				}
 			}
 			
@@ -94,7 +91,10 @@ public class MenuViewController {
 					if (gameChooserViewController.getGameClientViewController().getClientNetworkGameThread()!=null){
 						gameChooserViewController.getGameClientViewController().getClientNetworkGameThread().setGameOver(true);
 					}	
-			}
+					System.out.println("ADSADSADAS");
+					gameChooserViewController.setServerSelected(true);
+					System.out.println(gameChooserViewController.isServerSelected());
+			}		
 			
 			Platform.exit(); //zamkniecie aplikacji	
 
@@ -140,7 +140,6 @@ public class MenuViewController {
           stage.setIconified(true);
     }
 
-    // Button - menuViewController.setGameServerViewController(getGameServerViewController());
 
 	
 }

@@ -217,7 +217,6 @@ public class ClientNetworkGameThread extends Thread {
 									alert.setTitle("Information Dialog");
 									alert.setHeaderText(null);
 									alert.setContentText("KONIEC GRY! Wygra³: CLIENT ");
-									Platform.runLater(()->gameClientViewController.getMenuViewController().setContentPane(null));
 
 									alert.showAndWait();
 								});

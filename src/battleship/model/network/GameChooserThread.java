@@ -44,16 +44,14 @@ public class GameChooserThread extends Thread {
 			
 			while(!gameChooserViewController.ServerSelected()){
 				try{
-					System.out.println("Chooser petla");
 				    packet = new DatagramPacket(sendData, sendData.length,InetAddress.getByName("255.255.255.255"), connectionPort);
 				    socket.send(packet);
-				    Thread.sleep(500);
+				    Thread.sleep(1000);
 				    byte[] recvBuf = new byte[15000];
 				    DatagramPacket receivePacket = new DatagramPacket(recvBuf, recvBuf.length);
 				    socket.receive(receivePacket);
 	                String pakiet = new String(receivePacket.getData()).trim();
 	                String[] pakietArray = pakiet.split(",");
-	    			System.out.println("OS TH: "+serverObservableSet);
 
 	                if (pakietArray[0].equals("SERVER_AVAILABLE")){
 	                	if (!serversIP.contains(receivePacket.getAddress().getHostAddress())){
