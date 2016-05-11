@@ -27,14 +27,20 @@ public class MenuViewController {
 	@FXML private Button btnMinimize;
 	@FXML private Button btnClose2;
 	@FXML private BorderPane contentPane;
-	private MainAppFactory factory;
 	
+	private Stage primaryStage;
+    private static double xOffset = 0;
+    private static double yOffset = 0;
+    
+	private MainAppFactory factory;
+		
 	public Parent getView() {
 		return menu;
 	}
 	//==============DOSTEP DO APP FACTORY===========
-	public void init(MainAppFactory factory){
+	public void init(MainAppFactory factory, Stage primaryStage){
 		this.factory = factory;
+		this.primaryStage = primaryStage;
 	}
 	
 	public MainAppFactory getFactory(){
@@ -51,6 +57,11 @@ public class MenuViewController {
 	public void setMainViewController(MainViewController mainViewController) {
 		this.mainViewController = mainViewController;
 	}
+	
+	public MainViewController getMainViewController() {
+		return mainViewController;
+	}
+
 
 	public void setGameChooserViewController(GameChooserViewController gameChooserViewController) {
 		this.gameChooserViewController = gameChooserViewController;		
@@ -98,8 +109,17 @@ public class MenuViewController {
 		//metoda obslugujaca nacisniecia buttona btnJoinGame
 		btnJoinGame.setOnAction(event->{
 			getContentPane().setCenter(gameChooserViewController.getView());
-
 		});	
+		
+		menu.setOnMousePressed(e->{
+            xOffset = e.getSceneX();
+            yOffset = e.getSceneY();
+		});
+		
+		menu.setOnMouseDragged(e->{
+            primaryStage.setX(e.getScreenX() - xOffset);
+            primaryStage.setY(e.getScreenY() - yOffset);
+		});
 	}
 	public BorderPane getContentPane() {
 		return contentPane;

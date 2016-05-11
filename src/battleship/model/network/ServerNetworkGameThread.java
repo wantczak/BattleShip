@@ -2,9 +2,11 @@ package battleship.model.network;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.regex.Pattern;
 
 import battleship.gui.game.GameServerViewController;
@@ -13,6 +15,8 @@ import battleship.model.procedure.GameProcedure;
 import battleship.model.procedure.GameProcedure.Procedure;
 import battleship.model.user.Player;
 import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TextArea;
 
 public class ServerNetworkGameThread extends Thread {
@@ -184,7 +188,13 @@ public class ServerNetworkGameThread extends Thread {
 							shipsCount--;
 							if(shipsCount == 0){
 								handlingCommand(Command.END_GAME, Player.SERVER_PLAYER);//odpowiedz
-								gameServerViewController.setTextAreaLogi("Koniec gry, wygral" + packet[1]);
+								Platform.runLater(()->{
+									Alert alert = new Alert(AlertType.INFORMATION);
+									alert.setTitle("Information Dialog");
+									alert.setHeaderText(null);
+									alert.setContentText("KONIEC GRY! Wygra³: SERVER ");
+									alert.showAndWait();
+								});
 								setGameOver(true);
 							}
 						}
@@ -199,7 +209,13 @@ public class ServerNetworkGameThread extends Thread {
 					}
 					
 					case "END_GAME":{
-						Platform.runLater(()->gameServerViewController.setTextAreaLogi("Koniec gry, wygral" + packet[1]));
+						Platform.runLater(()->{
+							Alert alert = new Alert(AlertType.INFORMATION);
+							alert.setTitle("Information Dialog");
+							alert.setHeaderText(null);
+							alert.setContentText("KONIEC GRY! Wygra³: CLIENT ");
+							alert.showAndWait();
+						});
 						setGameOver(true);
 						break;
 					}
@@ -210,7 +226,18 @@ public class ServerNetworkGameThread extends Thread {
 					}
 					Thread.sleep(100);
 				}
-				
+				catch (EOFException ex){
+					Platform.runLater(()->{
+						Alert alert = new Alert(AlertType.ERROR);
+						alert.setTitle("Error Dialog");
+						alert.setHeaderText("Blad polaczenia");
+						alert.setContentText("Klient zamknal polaczenie!");
+						alert.showAndWait();
+					});
+					setGameOver(true);
+
+				}
+
 				catch (Exception ex){
 					ex.printStackTrace();
 				}
@@ -220,18 +247,69 @@ public class ServerNetworkGameThread extends Thread {
 		threadReadingSocket.start();
 	}
 	
-	public void handlingCommand(Command command,Player own, int x, int y) throws IOException{
-		communicationMessage = new CommunicationMessage(command,own,x,y);
-		outStreamServer.writeUTF(communicationMessage.toString());
-	}
-	public void handlingCommand(Command command, Player own, int x, int y, BoardState state) throws IOException {
-		communicationMessage = new CommunicationMessage(command, own, x, y, state);
-		outStreamServer.writeUTF(communicationMessage.toString());
+	public void handlingCommand(Command command,Player own, int x, int y){
+		try{
+			communicationMessage = new CommunicationMessage(command,own,x,y);
+			outStreamServer.writeUTF(communicationMessage.toString());
+		}
+		catch (SocketException ex){
+			Platform.runLater(()->{
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setTitle("Error Dialog");
+				alert.setHeaderText("Blad polaczenia");
+				alert.setContentText("Klient zamknal polaczenie!");
+				alert.showAndWait();
+			});
+			setGameOver(true);
+
+		} 
+		catch (IOException ex) {
+			ex.printStackTrace();
+		}
 	}
 	
-	public void handlingCommand(Command command, Player own) throws IOException {
-		communicationMessage = new CommunicationMessage(command, own);
-		outStreamServer.writeUTF(communicationMessage.toString());
+	public void handlingCommand(Command command, Player own, int x, int y, BoardState state) {
+		try{
+			communicationMessage = new CommunicationMessage(command, own, x, y, state);
+			outStreamServer.writeUTF(communicationMessage.toString());
+		}
+		catch (SocketException ex){
+			Platform.runLater(()->{
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setTitle("Error Dialog");
+				alert.setHeaderText("Blad polaczenia");
+				alert.setContentText("Klient zamknal polaczenie!");
+				alert.showAndWait();
+			});
+			setGameOver(true);
+
+		} 
+		catch (IOException ex) {
+			ex.printStackTrace();
+		}
+
+	}
+	
+	public void handlingCommand(Command command, Player own) {
+		try{
+			communicationMessage = new CommunicationMessage(command, own);
+			outStreamServer.writeUTF(communicationMessage.toString());
+		}
+		catch (SocketException ex){
+			Platform.runLater(()->{
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setTitle("Error Dialog");
+				alert.setHeaderText("Blad polaczenia");
+				alert.setContentText("Klient zamknal polaczenie!");
+				alert.showAndWait();
+			});
+			setGameOver(true);
+
+		} 
+		catch (IOException ex) {
+			ex.printStackTrace();
+		}
+
 	}
 
 

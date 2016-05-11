@@ -4,6 +4,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -69,7 +70,11 @@ public class GameChooserThread extends Thread {
 				
 				catch (SocketTimeoutException ex){
 					ex.printStackTrace();
-				}    
+				} 
+				
+				catch (SocketException ex){
+					continue;
+				}
 			}
 		}
 		

@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.regex.Pattern;
 import battleship.gui.game.GameClientViewController;
 import battleship.model.board.BoardState;
@@ -13,7 +14,10 @@ import battleship.model.procedure.GameProcedure.Procedure;
 import battleship.model.server.Server;
 import battleship.model.user.Player;
 import javafx.application.Platform;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.control.Alert.AlertType;
 
 public class ClientNetworkGameThread extends Thread {
 
@@ -118,16 +122,9 @@ public class ClientNetworkGameThread extends Thread {
 						ex.printStackTrace();
 					}
 				};
-				threadConnectionToServer = new Thread(clientConnection); // utworzenie
-																			// nowego
-																			// Threada
-																			// z
-																			// metoda
-																			// do
-																			// polaczenia
+				threadConnectionToServer = new Thread(clientConnection); // utworzenie nowego Threada z metoda do polaczenia
 				threadConnectionToServer.start(); // wystartowanie Threada
-				threadConnectionToServer.join(); // oczekiwanie na zakonczenie
-													// metody
+				threadConnectionToServer.join(); // oczekiwanie na zakonczenie metody
 			}
 
 			catch (Exception ex) {
@@ -214,8 +211,16 @@ public class ClientNetworkGameThread extends Thread {
 							gameClientViewController.getServerBoard().setSunk(Integer.parseInt(packet[2]),Integer.parseInt(packet[3]));
 							shipsCount--;
 							if(shipsCount == 0){
-								handlingCommand(Command.END_GAME, Player.SERVER_PLAYER);//odpowiedz
-								Platform.runLater(()->gameClientViewController.setTextAreaLogi("Koniec gry, wygral" + packet[1]));
+								handlingCommand(Command.END_GAME, Player.CLIENT_PLAYER);//odpowiedz
+								Platform.runLater(()->{
+									Alert alert = new Alert(AlertType.INFORMATION);
+									alert.setTitle("Information Dialog");
+									alert.setHeaderText(null);
+									alert.setContentText("KONIEC GRY! Wygra³: CLIENT ");
+									Platform.runLater(()->gameClientViewController.getMenuViewController().setContentPane(null));
+
+									alert.showAndWait();
+								});
 								setGameOver(true);
 							}
 						}
@@ -230,7 +235,14 @@ public class ClientNetworkGameThread extends Thread {
 					}
 
 					case "END_GAME": {
-						Platform.runLater(()->gameClientViewController.setTextAreaLogi("Koniec gry, wygral" + packet[1]));
+						Platform.runLater(()->{
+							Alert alert = new Alert(AlertType.INFORMATION);
+							alert.setTitle("Information Dialog");
+							alert.setHeaderText(null);
+							alert.setContentText("KONIEC GRY! Wygra³: SERVER ");
+							alert.showAndWait();
+						});
+						Platform.runLater(()->gameClientViewController.getMenuViewController().setContentPane(null));
 						setGameOver(true);
 						break;
 					}
@@ -243,9 +255,15 @@ public class ClientNetworkGameThread extends Thread {
 					Thread.sleep(100);
 				}
 
+				catch (SocketException ex){
+					setGameOver(true);
+
+				}
+
 				catch (Exception ex) {
 					ex.printStackTrace();
 				}
+				
 			}
 		};
 		threadReadingSocket = new Thread(clientReading);

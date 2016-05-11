@@ -78,6 +78,11 @@ public class GameServerViewController implements GameViewController{
 		this.menuViewController = menuViewController;
 	}
 	
+	public MenuViewController getMenuViewController() {
+		return menuViewController;
+	}
+
+	
 	private GameServerViewController getGameServerViewController(){
 		return this;
 	}

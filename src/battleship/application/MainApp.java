@@ -10,12 +10,17 @@ import javafx.fxml.FXMLLoader;
 
 
 public class MainApp extends Application {
+	
+    private static double xOffset = 0;
+    private static double yOffset = 0;
+    
 	@Override
 	public void start(Stage primaryStage) {
 		try {
 			MainAppFactory factory = new MainAppFactory();
 	        MenuViewController menuViewController = factory.getMenuViewController();
-	        menuViewController.init(factory);
+	        menuViewController.init(factory, primaryStage);
+	        
 	        Scene scene = new Scene(menuViewController.getView(), 1300, 850);
 	        scene.getStylesheets().add("/css/application.css");
 	        primaryStage.setScene(scene);

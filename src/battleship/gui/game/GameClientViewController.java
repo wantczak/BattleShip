@@ -73,6 +73,11 @@ public class GameClientViewController implements GameViewController{
 	public void setMenuViewController(MenuViewController menuViewController) {
 		this.menuViewController = menuViewController;
 	}
+	
+	public MenuViewController getMenuViewController() {
+		return menuViewController;
+	}
+
 
 	public void setGameChooserViewController(GameChooserViewController gameChooserViewController) {
 		this.gameChooserViewController = gameChooserViewController;
