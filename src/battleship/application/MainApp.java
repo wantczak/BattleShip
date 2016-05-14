@@ -9,7 +9,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.fxml.FXMLLoader;
 
 /**
- * Glowna klasa tworzaca
+ * Glowna klasa tworzaca gre
  * @author Wojciech Antczak
  *
  */

@@ -9,6 +9,7 @@ import java.net.SocketException;
 import java.util.regex.Pattern;
 import battleship.gui.game.GameClientViewController;
 import battleship.model.board.BoardState;
+import battleship.model.board.ShipFactory;
 import battleship.model.procedure.GameProcedure;
 import battleship.model.procedure.GameProcedure.Procedure;
 import battleship.model.server.Server;
@@ -19,6 +20,12 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.control.Alert.AlertType;
 
+/**
+ * Klasa odpowiedzialna za uruchomienie gry w trybie "klient" w osobnym watku.
+ * 
+ * @author Wojciech Antczak
+ *
+ */
 public class ClientNetworkGameThread extends Thread {
 
 	private volatile TextArea textLogClient;
@@ -30,7 +37,7 @@ public class ClientNetworkGameThread extends Thread {
 	private volatile boolean gameOver = false;
 	private volatile boolean playerTurn = false;
 	private volatile boolean opponentShipsReady = false;
-	private int shipsCount = 8;
+	private int shipsCount = ShipFactory.iloscStatkow;
 
 	// WATKI W KLASIE
 	private Thread threadWaitingForOpponentShips;
@@ -216,7 +223,7 @@ public class ClientNetworkGameThread extends Thread {
 									Alert alert = new Alert(AlertType.INFORMATION);
 									alert.setTitle("Information Dialog");
 									alert.setHeaderText(null);
-									alert.setContentText("KONIEC GRY! Wygra³: CLIENT ");
+									alert.setContentText("KONIEC GRY! Wygral: CLIENT ");
 
 									alert.showAndWait();
 								});
@@ -238,7 +245,7 @@ public class ClientNetworkGameThread extends Thread {
 							Alert alert = new Alert(AlertType.INFORMATION);
 							alert.setTitle("Information Dialog");
 							alert.setHeaderText(null);
-							alert.setContentText("KONIEC GRY! Wygra³: SERVER ");
+							alert.setContentText("KONIEC GRY! Wygral: SERVER ");
 							alert.showAndWait();
 						});
 						Platform.runLater(()->gameClientViewController.getMenuViewController().setContentPane(null));
@@ -303,11 +310,14 @@ public class ClientNetworkGameThread extends Thread {
 	}
 
 	/**
-	 * Sprawdzenie planszy po strzale
+	 * Sprawdzenie stanu planszy po strzale
 	 * 
 	 * @author Pawel Czernek
+	 * @param x -wspolrzedna x sprawdzanego punktu
+	 * @param y -wspolrzedna y sprawdzanego punktu
+	 * @return zwraca aktualny stan planszy dla punktu
 	 */
-	private BoardState checkBoard(int x, int y) {
+	public BoardState checkBoard(int x, int y) {
 		gameClientViewController.getClientBoard().shot(x, y);
 		if (gameClientViewController.getClientBoard().getBoardCell(x, y) == BoardState.STATEK_ZATOPIONY) {
 			gameClientViewController.getClientBoard().setSunk(x, y);

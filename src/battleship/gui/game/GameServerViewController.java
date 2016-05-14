@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.SocketException;
 import java.util.Optional;
-
 import battleship.gui.menu.MenuViewController;
 import battleship.model.board.Board;
 import battleship.model.board.BoardState;
@@ -31,6 +30,12 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.GridPane;
 
+/**
+ * Klasa kontrolera widoku dla gry w trybie server.
+ * 
+ * @author Wojciech Antczak
+ *
+ */
 public class GameServerViewController implements GameViewController{
 
 	@FXML private Parent root;

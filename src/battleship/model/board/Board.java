@@ -4,17 +4,24 @@ import battleship.gui.game.GameViewController;
 import battleship.model.board.ShipFactory.Kierunek;
 
 /**
- * Model planszy przechowującej stany poszczegulnych pól gry
+ * Klasa modelu planszy przechowujacej stany poszczegolnych pol gry
  * 
- * @author Paweł Czernek
+ * @author Pawel Czernek
  * 
  */
-
 public class Board {
 	
 	private BoardState[][] board = new BoardState[11][11]; //Tablica ze stanami planszy
 	private GameViewController viewController;
+
 	
+	/**
+	 * Konstruktor klasy board
+	 * - przy wywolaniu ustawia wszystkie pola planszy na puste
+	 * 
+	 * @author Pawel Czernek
+	 * 
+	 */
 	public Board() {
 		resetBoard();
 	}
@@ -40,10 +47,9 @@ public class Board {
 	}
 	
 	/**
-	 * Metoda resetująca planszę i ustawiająca wszystkie pola na puste
+	 * Metoda resetujaca plansze i ustawiajaca wszystkie pola na puste
 	 * 
-	 */
-			
+	 */	
 	public void resetBoard() {
 		for (int i = 0; i < board.length; i++) {
 			for (int j = 0; j < board[i].length; j++) {
@@ -53,10 +59,11 @@ public class Board {
 	}
 	
 	/**
-	 * Metoda obsługująca oddany strzał 
+	 * Metoda obslugujaca oddany strzal
 	 * 
-	 * @param x współrzędna X pola strzału
-	 * @param y współrzędna Y pola strzału
+	 * @param x wspolrzedna X pola strzalu
+	 * @param y wspolrzedna Y pola strzalu
+	 * @return Stan planszy po oddaniu strzalu
 	 */
 	public BoardState shot(int x, int y){
 		try{
@@ -84,11 +91,11 @@ public class Board {
 	}
 	
 	/**
-	 * Metoda pomocnicza sprawdzająca czy po strzale statek został zatopiony
+	 * Metoda pomocnicza sprawdzająca czy po strzale statek zostal zatopiony
 	 * 
-	 * @param x współrzędna X pola strzału
-	 * @param y współrzędna Y pola strzału
-	 * @return czy statek został zatopiony
+	 * @param x wspolrzedna X pola strzalu
+	 * @param y wspolrzedna Y pola strzalu
+	 * @return czy statek zostal zatopiony
 	 */
 	private boolean isSunk(int x, int y){
 		try{
@@ -121,10 +128,10 @@ public class Board {
 	}
 	
 	/**
-	 * Metoda oznaczająca statek jako zatopiony
+	 * Metoda oznaczajaca statek jako zatopiony
 	 * 
-	 * @param x współrzędna X pola strzału
-	 * @param y współrzędna Y pola strzału
+	 * @param x wspolrzedna X pola strzalu
+	 * @param y wspolrzedna Y pola strzalu
 	 */
 	public void setSunk(int x, int y) {
 		int t = x;
@@ -172,6 +179,7 @@ public class Board {
 			++t;
 		}
 	}
+	
 	//ograniczenie współrzędnych do przedziału 0-10.
 	private int limitValue(int param){
 		if(param<0) return 0;

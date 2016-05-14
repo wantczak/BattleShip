@@ -1,5 +1,11 @@
 package battleship.model.user;
 
+/**
+ * Klasa przechowujaca imie gracza
+ * 
+ * @author Wojciech Antczak
+ *
+ */
 public class User {
 	private String userName;
 	

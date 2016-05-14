@@ -5,18 +5,24 @@ import battleship.gui.game.GameViewController;
 import battleship.model.procedure.GameProcedure.Procedure;
 
 /**
- * Klasa obsługująca rozmieszczanie statków na czystej planszy
+ * Klasa obslugujaca rozmieszczenie statkow na czystej planszy
  * 
  * @author Paweł Czernek
  * 
  */
-
 public class ShipFactory {
 	
 	private BoardState[][] board;
 	private GameViewController viewController;
 	
 
+	/**
+	 * Konstruktor klasy obslugujacej rozmieszczanie statkow.
+	 * 
+	 * @author Paweł Czernek
+	 * @param board - parametr przekazujacy referencje do planszy gry
+	 * @param viewController - parametr przekazujacy referencje do kontrolera widoku
+	 */
 	public ShipFactory(Board board,GameViewController viewController) {
 		this.board = board.getBoardState();
 		this.viewController = viewController;
@@ -28,17 +34,28 @@ public class ShipFactory {
 											// początkowy czy punkt wskazujący
 											// kierunek
 	private Point poczatek; // początek statku
-	int iloscStatkow = 8;
+	
+	/**
+	 * Parametr okreslajacy ilosc statkow w grze.
+	 */
+	public static int iloscStatkow = 8;
+	
+	/**
+	 * Klasa Enum okreslajaca kierunki rozkladania statkow w grze
+	 * 
+	 * @author Pawel Czernek
+	 *
+	 */
 	enum Kierunek {PRAWO, LEWO, GORA, DOL}
 	
 	
 	/**
-	 * Metoda rozmieszczająca statki na planszy
+	 * Metoda rozmieszczajaca statki na planszy.
+	 * Przy kazdym kolejnym wywolaniu okresla naprzemiennie punkt poczatkowy
+	 * dla pozycji statku oraz punkt kierunku jego ulozenia.
 	 * 
-	 * @param x
-	 *            współrzędna X pola statku
-	 * @param y
-	 *            współrzędna Y pola statku
+	 * @param x  wspolrzedna X pola statku
+	 * @param y  wspolrzedna Y pola statku
 	 */
 	public void locateShip(int x, int y) {
 
@@ -218,14 +235,15 @@ public class ShipFactory {
 		catch (Exception ex){
 			ex.printStackTrace();
 		}
-	} // Koniec rozmieszczania statków
+	} // Koniec rozmieszczania statkow
 	
 	
 	/**
 	 * Metoda pomocnicza sprawdzajaca kolizje miedzy statkami
-	 * 
-	 * @param point
-	 * @return
+	 *
+	 * @param point obiekt klasy Point z wspolrzednymi strzalu
+	 * dla ktorego sprawdzamy czy wystepuje kolizja statkow
+	 * @return wartosc boolean czy wystepuje kolizja z sasiednim statkiem
 	 */
 	private boolean czyJestStatekWsasiedztwie(Point point) {
 		Point p = new Point(point.x, point.y);

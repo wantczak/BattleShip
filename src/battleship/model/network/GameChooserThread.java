@@ -19,6 +19,12 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TableView;
 
+/**
+ * Klasa odpowiedzialna za uruchomienie wyboru gry w osobnym watku.
+ * 
+ * @author Wojciech Antczak
+ *
+ */
 public class GameChooserThread extends Thread {
     private static int connectionPort = 12345; //zmienna Integer serverPort
     private InetAddress host;
