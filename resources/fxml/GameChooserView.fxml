@@ -16,7 +16,7 @@
    <center>
       <VBox alignment="TOP_CENTER" maxWidth="1.7976931348623157E308" prefHeight="655.0" prefWidth="900.0" spacing="10.0" BorderPane.alignment="CENTER">
          <children>
-            <Label text="Lista serwerów" />
+            <Label text="Lista serwerów" textFill="WHITE" />
             <TableView fx:id="serverTableView" prefHeight="554.0" prefWidth="949.0">
               <columns>
                 <TableColumn fx:id="columnServerIP" prefWidth="75.0" text="IP serwera" />

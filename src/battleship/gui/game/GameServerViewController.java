@@ -243,7 +243,7 @@ public class GameServerViewController implements GameViewController{
 				for (int j = 0; j < boardSt[i].length; j++){
 					btn = (Button)getNodeFromGridPane(serverGridPane, i, j);
 					if (boardSt[i][j] == BoardState.STATEK) 
-						btn.setStyle("-fx-background-color: slateblue;");
+						btn.setStyle("-fx-background-color: rgb(50, 90, 180);");
 					if (boardSt[i][j] == BoardState.PUSTE_POLE)
 						btn.setStyle("default");
 					if (boardSt[i][j] == BoardState.PUDLO) 

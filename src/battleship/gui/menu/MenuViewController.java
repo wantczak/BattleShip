@@ -11,6 +11,8 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 /**
@@ -28,6 +30,7 @@ public class MenuViewController {
 	@FXML private Button btnMinimize;
 	@FXML private Button btnClose2;
 	@FXML private BorderPane contentPane;
+	@FXML private VBox buttonMenu;
 	
 	private Stage primaryStage;
     private static double xOffset = 0;
@@ -120,7 +123,7 @@ public class MenuViewController {
 	private void btnMinimizeEvent(){
 		  Stage stage = (Stage)btnMinimize.getScene().getWindow();
           stage.setIconified(true);
-    }
+	}
 	
 	private void closeProcedure() {
 		if (gameServerViewController!=null){
@@ -141,6 +144,7 @@ public class MenuViewController {
 		
 		Platform.exit(); //zamkniecie aplikacji	
 	}
+	
 
 
 
