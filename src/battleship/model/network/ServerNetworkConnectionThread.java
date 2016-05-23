@@ -16,8 +16,9 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
 /**
- * Klasa odpowiedzialna za w¹tek nas³uchiwania na odpytywania klientow
+ * Klasa odpowiedzialna za watek nasluchiwania na odpytywania klientow
  * i rozpoczecia gry przez jednego klienta
+ * 
  * @author Wojciech Antczak
  *
  */

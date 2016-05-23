@@ -18,6 +18,7 @@ import javafx.scene.control.TextField;
 
 /**
  * Klasa odpowiedzialna za obsluge polaczenia sieciowego
+ * 
  * @author Wojciech Antczak
  */
 public class NetworkConnection {
@@ -57,7 +58,7 @@ public class NetworkConnection {
 	 * @author Wojciech Antczak
 	 * @param textLogServer - TextArea do logowania
 	 * @return connectionStatus - status polaczenia z klientem. Gdy brak polaczenia to zakoncz polaczenie
-	 * @throws IOException 
+	 * @throws IOException mozliwy wyjatek przy odczycie z pliku
 	 */
 	public boolean createServerConnection(TextArea textLogServer) throws IOException{
 		/*try{

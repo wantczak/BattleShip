@@ -27,6 +27,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 
 /**
+ * Klasa kontrolera widoku dla gry w trybie klienta.
  * 
  * @author Wojciech Antczak
  *
@@ -179,7 +180,7 @@ public class GameClientViewController implements GameViewController{
 				}
 				
 			} else if (clientProcedure.getProcedure() == Procedure.PLAYING_GAME) {
-				this.setTextAreaLogi("Kolej na strzal‚ przeciwnika!");
+				this.setTextAreaLogi("Kolej na strzal przeciwnika!");
 			}
 		}
 		

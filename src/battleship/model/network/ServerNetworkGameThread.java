@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 import battleship.gui.game.GameServerViewController;
 import battleship.model.board.BoardState;
+import battleship.model.board.ShipFactory;
 import battleship.model.procedure.GameProcedure;
 import battleship.model.procedure.GameProcedure.Procedure;
 import battleship.model.user.Player;
@@ -19,6 +20,12 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TextArea;
 
+/**
+ * Klasa odpowiedzialna za uruchomienie gry w trybie "server" w osobnym watku.
+ * 
+ * @author Wojciech Antczak
+ *
+ */
 public class ServerNetworkGameThread extends Thread {
 	private volatile TextArea textLogServer;
 	private GameProcedure serverProcedure;
@@ -28,7 +35,7 @@ public class ServerNetworkGameThread extends Thread {
 	private volatile boolean gameOver = false;
 	private volatile boolean playerTurn = true;
 	private volatile boolean opponentShipsReady = false;
-	private int shipsCount = 8;
+	private int shipsCount = ShipFactory.iloscStatkow;
 
 	private ServerSocket serverSocket; //Deklaracja pojedynczego serverSocketa
     private Socket serverConnection; //Socket polaczenia
@@ -192,7 +199,7 @@ public class ServerNetworkGameThread extends Thread {
 									Alert alert = new Alert(AlertType.INFORMATION);
 									alert.setTitle("Information Dialog");
 									alert.setHeaderText(null);
-									alert.setContentText("KONIEC GRY! Wygra³: SERVER ");
+									alert.setContentText("KONIEC GRY! Wygral: SERVER ");
 									alert.showAndWait();
 								});
 								setGameOver(true);
@@ -213,7 +220,7 @@ public class ServerNetworkGameThread extends Thread {
 							Alert alert = new Alert(AlertType.INFORMATION);
 							alert.setTitle("Information Dialog");
 							alert.setHeaderText(null);
-							alert.setContentText("KONIEC GRY! Wygra³: CLIENT ");
+							alert.setContentText("KONIEC GRY! Wygral: CLIENT ");
 							alert.showAndWait();
 						});
 						setGameOver(true);
@@ -330,11 +337,14 @@ public class ServerNetworkGameThread extends Thread {
 		this.gameOver = gameOver;
 	}
 	/**
-	 * Sprawdzenie planszy po strzale
+	 * Sprawdzenie stanu planszy po strzale
 	 * 
 	 * @author Pawel Czernek
+	 * @param x -wspolrzedna x sprawdzanego punktu
+	 * @param y -wspolrzedna y sprawdzanego punktu
+	 * @return zwraca aktualny stan planszy dla punktu
 	 */
-	private BoardState checkBoard(int x, int y) {
+	public BoardState checkBoard(int x, int y) {
 		gameServerViewController.getServerBoard().shot(x, y);
 		if (gameServerViewController.getServerBoard().getBoardCell(x, y) == BoardState.STATEK_ZATOPIONY) {
 			gameServerViewController.getServerBoard().setSunk(x, y);

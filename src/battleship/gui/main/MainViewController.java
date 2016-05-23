@@ -4,6 +4,13 @@ import battleship.gui.menu.MenuViewController;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 
+
+/**
+ * Klasa kontrolera glownego widoku gry
+ * 
+ * @author Wojciech Antczak
+ *
+ */
 public class MainViewController {
 
 	@FXML private Parent root;

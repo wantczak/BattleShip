@@ -3,10 +3,10 @@ package battleship.model.network;
 import battleship.model.board.BoardState;
 import battleship.model.user.Player;
 /**
- * Klasa odpowiedzialna za przechowywanie informacji przesyłanej przez internet
- * po oddaniu strzału i jako odpowiedź na strzał.
+ * Klasa odpowiedzialna za przechowywanie informacji przesylanej przez internet
+ * po oddaniu strzalu i jako odpowiedz na strzal.
  * 
- * @author Paweł Czernek
+ * @author Pawel Czernek
  *
  */
 public class CommunicationMessage {

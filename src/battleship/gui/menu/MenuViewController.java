@@ -14,6 +14,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 /**
+ * Klasa kontrolera glownego menu gry
  * 
  * @author Wojciech Antczak
  *
