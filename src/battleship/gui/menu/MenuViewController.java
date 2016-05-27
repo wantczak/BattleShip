@@ -145,6 +145,10 @@ public class MenuViewController {
 		Platform.exit(); //zamkniecie aplikacji	
 	}
 	
+	public void setContentMain(){
+		contentPane.setCenter(mainViewController.getView());
+	}
+	
 
 
 

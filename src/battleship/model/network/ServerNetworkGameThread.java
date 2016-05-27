@@ -202,6 +202,7 @@ public class ServerNetworkGameThread extends Thread {
 									alert.setContentText("KONIEC GRY! Wygral: SERVER ");
 									alert.showAndWait();
 								});
+								Platform.runLater(()->gameServerViewController.getMenuViewController().setContentMain());
 								setGameOver(true);
 							}
 						}
@@ -223,6 +224,7 @@ public class ServerNetworkGameThread extends Thread {
 							alert.setContentText("KONIEC GRY! Wygral: CLIENT ");
 							alert.showAndWait();
 						});
+						Platform.runLater(()->gameServerViewController.getMenuViewController().setContentMain());
 						setGameOver(true);
 						break;
 					}
@@ -241,6 +243,7 @@ public class ServerNetworkGameThread extends Thread {
 						alert.setContentText("Klient zamknal polaczenie!");
 						alert.showAndWait();
 					});
+					Platform.runLater(()->gameServerViewController.getMenuViewController().setContentMain());
 					setGameOver(true);
 
 				}
@@ -267,6 +270,7 @@ public class ServerNetworkGameThread extends Thread {
 				alert.setContentText("Klient zamknal polaczenie!");
 				alert.showAndWait();
 			});
+			Platform.runLater(()->gameServerViewController.getMenuViewController().setContentMain());
 			setGameOver(true);
 
 		} 
@@ -288,6 +292,7 @@ public class ServerNetworkGameThread extends Thread {
 				alert.setContentText("Klient zamknal polaczenie!");
 				alert.showAndWait();
 			});
+			Platform.runLater(()->gameServerViewController.getMenuViewController().setContentMain());
 			setGameOver(true);
 
 		} 
@@ -310,6 +315,7 @@ public class ServerNetworkGameThread extends Thread {
 				alert.setContentText("Klient zamknal polaczenie!");
 				alert.showAndWait();
 			});
+			Platform.runLater(()->gameServerViewController.getMenuViewController().setContentMain());
 			setGameOver(true);
 
 		} 

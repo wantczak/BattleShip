@@ -22,7 +22,6 @@
             <Button fx:id="btnStartGame" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="30.0" text="Rozpocznij nową grę" />
             <Button fx:id="btnJoinGame" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="30.0" text="Dołącz do gry" />
             <Button fx:id="btnClose" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="30.0" text="Zakończ" />
-            <Button mnemonicParsing="false" prefHeight="30.0" prefWidth="198.0" text="Informacje" />
             <Pane prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
             <Label text="ver. 1.0.5" textFill="WHITE" />
          </children>
