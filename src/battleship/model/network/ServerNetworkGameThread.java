@@ -58,6 +58,10 @@ public class ServerNetworkGameThread extends Thread {
 		this.gameServerViewController = gameServerViewController;
 	}
 
+	/**
+	 * Metoda tworzaca oddzielny watek do obslugi przebiegu rozgrywki
+	 * @author Wojciech Antczak
+	 */
 	public void run(){
 		while(!isGameOver()){
 			try{
@@ -254,6 +258,13 @@ public class ServerNetworkGameThread extends Thread {
 		threadReadingSocket.start();
 	}
 	
+	/**
+	 * metoda odpowiedzialna za przesylanie informacji przez internet
+	 * po oddaniu strzalu.
+	 * 
+	 * @author Pawel Czernek
+	 *
+	 */
 	public void handlingCommand(Command command,Player own, int x, int y){
 		try{
 			communicationMessage = new CommunicationMessage(command,own,x,y);
@@ -275,6 +286,13 @@ public class ServerNetworkGameThread extends Thread {
 		}
 	}
 	
+	/**
+	 * metoda odpowiedzialna za przesylanie informacji przez internet
+	 * odpowiedz na strzal.
+	 * 
+	 * @author Pawel Czernek
+	 *
+	 */
 	public void handlingCommand(Command command, Player own, int x, int y, BoardState state) {
 		try{
 			communicationMessage = new CommunicationMessage(command, own, x, y, state);

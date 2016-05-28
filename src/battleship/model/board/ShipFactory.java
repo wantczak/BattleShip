@@ -5,24 +5,25 @@ import battleship.gui.game.GameViewController;
 import battleship.model.procedure.GameProcedure.Procedure;
 
 /**
- * Klasa obslugujaca rozmieszczenie statkow na czystej planszy
+ * Klasa obslugujaca rozmieszczanie statkow na czystej planszy znajdujacej sie w obiekcie {@see Board}.
  * 
- * @author Paweł Czernek
+ * @author Pawel Czernek
  * 
  */
+
 public class ShipFactory {
 	
 	private BoardState[][] board;
 	private GameViewController viewController;
-	
 
 	/**
 	 * Konstruktor klasy obslugujacej rozmieszczanie statkow.
 	 * 
-	 * @author Paweł Czernek
-	 * @param board - parametr przekazujacy referencje do planszy gry
-	 * @param viewController - parametr przekazujacy referencje do kontrolera widoku
+	 * @author Pawel Czernek
+	 * @param board parametr przekazujacy referencje do obiektu {@see Board} bedacego instancja planszy gry
+	 * @param viewController parametr przekazujacy referencje do kontrolera widoku
 	 */
+
 	public ShipFactory(Board board,GameViewController viewController) {
 		this.board = board.getBoardState();
 		this.viewController = viewController;
@@ -36,26 +37,17 @@ public class ShipFactory {
 	private Point poczatek; // początek statku
 	
 	/**
-	 * Parametr okreslajacy ilosc statkow w grze.
+	 * Stala okreslajaca ilosc statkow w grze
 	 */
 	public static int iloscStatkow = 8;
-	
-	/**
-	 * Klasa Enum okreslajaca kierunki rozkladania statkow w grze
-	 * 
-	 * @author Pawel Czernek
-	 *
-	 */
 	enum Kierunek {PRAWO, LEWO, GORA, DOL}
 	
 	
 	/**
-	 * Metoda rozmieszczajaca statki na planszy.
-	 * Przy kazdym kolejnym wywolaniu okresla naprzemiennie punkt poczatkowy
-	 * dla pozycji statku oraz punkt kierunku jego ulozenia.
+	 * Metoda rozmieszczajaca statki na planszy
 	 * 
-	 * @param x  wspolrzedna X pola statku
-	 * @param y  wspolrzedna Y pola statku
+	 * @param x wspolrzedna X pola statku
+	 * @param y wspolrzedna Y pola statku
 	 */
 	public void locateShip(int x, int y) {
 
@@ -235,15 +227,14 @@ public class ShipFactory {
 		catch (Exception ex){
 			ex.printStackTrace();
 		}
-	} // Koniec rozmieszczania statkow
+	} // Koniec rozmieszczania statków
 	
 	
 	/**
 	 * Metoda pomocnicza sprawdzajaca kolizje miedzy statkami
-	 *
-	 * @param point obiekt klasy Point z wspolrzednymi strzalu
-	 * dla ktorego sprawdzamy czy wystepuje kolizja statkow
-	 * @return wartosc boolean czy wystepuje kolizja z sasiednim statkiem
+	 * 
+	 * @param point parametr okreslajacy wspolrzedne punktu do sprawdzenia czy w jego sasiedztwie znajduje sie inny okret.
+	 * @return wartosc boolean czy w sasiedztwie znajduje sie inny okret.
 	 */
 	private boolean czyJestStatekWsasiedztwie(Point point) {
 		Point p = new Point(point.x, point.y);

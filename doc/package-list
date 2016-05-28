@@ -3,7 +3,6 @@ battleship.gui.game
 battleship.gui.main
 battleship.gui.menu
 battleship.model.board
-battleship.model.client
 battleship.model.network
 battleship.model.procedure
 battleship.model.server

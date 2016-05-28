@@ -13,7 +13,7 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 /**
- * Klasa kontrolera wyboru trybu gry
+ * Klasa kontrolera widoku wyboru trybu gry
  * 
  * @author Wojciech Antczak
  *

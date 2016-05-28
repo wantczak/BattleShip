@@ -39,7 +39,10 @@ public class GameChooserThread extends Thread {
     	this.serverObservableSet = serverObservableSet;
     	this.gameChooserViewController = gameChooserViewController;
     }
-    
+   
+    /**
+     * Metoda uruchamiajaca osobny watek do obslugi wyboru typu gry
+     */
 	public void run() {
 		try{	
 			System.out.println("Start chooser thread");
@@ -87,7 +90,11 @@ public class GameChooserThread extends Thread {
 			ex.printStackTrace();
 		}
 	}
-	
+	/**
+	 * Metoda realizujaca wykonanie polaczenia sieciowego
+	 * @param ServerIP numer IP servera
+	 * @return wartosc boolowska czy polaczenie zostalo nawiazane.
+	 */
 	public static boolean connectToServer(String ServerIP){
 		boolean connection = false;
 

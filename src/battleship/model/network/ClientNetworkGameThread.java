@@ -58,8 +58,10 @@ public class ClientNetworkGameThread extends Thread {
 		this.gameServer = gameServer;
 	}
 
-	// =========================METODA GLOWNA
-	// WATKU================================= Q
+	/**
+	 * Metoda glowna watku.
+	 * 
+	 */
 	public void run() {
 		while (!isGameOver()) {
 
@@ -281,30 +283,59 @@ public class ClientNetworkGameThread extends Thread {
 		communicationMessage = new CommunicationMessage(command, own);
 		outStreamClient.writeUTF(communicationMessage.toString());
 	}
-
+	
+	/**
+	 * metoda odpowiedzialna za przesylanie informacji przez internet
+	 * po oddaniu strzalu.
+	 * 
+	 * @author Pawel Czernek
+	 *
+	 */
 	public void handlingCommand(Command command, Player own, int x, int y) throws IOException {
 		communicationMessage = new CommunicationMessage(command, own, x, y);
 		outStreamClient.writeUTF(communicationMessage.toString());
 	}
 	
-
+	/**
+	 * metoda odpowiedzialna za przesylanie informacji przez internet
+	 * odpowiedz na strzal.
+	 * 
+	 * @author Pawel Czernek
+	 *
+	 */
 	public void handlingCommand(Command command, Player own, int x, int y, BoardState state) throws IOException {
 		communicationMessage = new CommunicationMessage(command, own, x, y, state);
 		outStreamClient.writeUTF(communicationMessage.toString());
 	}
-
+	
+	/**
+	 *Metoda okreslajaca czy gracz ma prawo oddac strzal
+	 * 
+	 */
 	public boolean isPlayerTurn() {
 		return playerTurn;
 	}
 
+	/**
+	 *Metoda ustawiajaca zmienna prawa oddania strzalu
+	 * @param playerTurn pobierana wartosc zmiennej czy kolej gracza
+	 */
 	public void setPlayerTurn(boolean playerTurn) {
 		this.playerTurn = playerTurn;
 	}
 
+	/**
+	 *Metoda okreslajaca czy gra zostala zakonczona
+	 * 
+	 */
 	public boolean isGameOver() {
 		return gameOver;
 	}
-
+	
+	/**
+	 *Metoda ustawiajaca parametr okreslajacy czy gra zakonczyla sie
+	 * 
+	 */
 	public void setGameOver(boolean gameOver) {
 		this.gameOver = gameOver;
 	}

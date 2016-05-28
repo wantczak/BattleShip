@@ -6,7 +6,7 @@ import javafx.scene.Parent;
 
 
 /**
- * Klasa kontrolera glownego widoku gry
+ * Klasa kontrolera widoku ramki glownego okna gry
  * 
  * @author Wojciech Antczak
  *
