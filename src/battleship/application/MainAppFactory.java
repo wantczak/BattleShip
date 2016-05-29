@@ -10,7 +10,7 @@ import battleship.gui.menu.MenuViewController;
 import javafx.fxml.FXMLLoader;
 
 /**
- * 
+ * Klasa tworzaca instancje gry wywolywana w metodzie klasy {@see MainApp}.
  * 
  * @author Wojciech Antczak
  * 

@@ -9,7 +9,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.fxml.FXMLLoader;
 
 /**
- * Glowna klasa tworzaca gre
+ * Glowna klasa wykonawcza interfejsu JavaFX uruchamiajaca gre.
+ * 
+ * 
+ * 
  * @author Wojciech Antczak
  *
  */

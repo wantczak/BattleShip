@@ -54,6 +54,7 @@ public class NetworkConnection {
 	}
 	
 	/**
+	 * Metoda tworzaca polaczenie serwera 
 	 * 
 	 * @author Wojciech Antczak
 	 * @param textLogServer - TextArea do logowania
