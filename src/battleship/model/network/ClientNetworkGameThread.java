@@ -157,6 +157,8 @@ public class ClientNetworkGameThread extends Thread {
 					outStreamClient.writeUTF("READY");
 					if (inStreamClient.readUTF().equals("READY")) {
 						gameClientViewController.setTextAreaLogi("[CLIENT]: ODEBRANO INFO OD PRZECIWNIKA O ZAKONCZENIU USTAWIANIU STATKOW");
+						gameClientViewController.setTextAreaLogi("TURA SERVERA");
+
 						clientProcedure.setProcedure(Procedure.PLAYING_GAME);
 						opponentShipsReady = true;
 					} else {

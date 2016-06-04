@@ -145,7 +145,8 @@ public class ServerNetworkGameThread extends Thread {
 					}
 				}
 				gameServerViewController.setTextAreaLogi("[SERVER]: ODEBRANO INFO OD PRZECIWNIKA O ZAKONCZENIU USTAWIANIU STATKOW");
-				
+				gameServerViewController.setTextAreaLogi("TWOJA KOLEJ - ROZPOCZNIJ STRZALEM");
+
 			}
 			
 			catch(Exception ex){
